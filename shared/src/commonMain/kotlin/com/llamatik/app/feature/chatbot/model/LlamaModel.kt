@@ -10,6 +10,12 @@ enum class ModelSource {
     CustomUrlDownload,
 }
 
+enum class SdCapability {
+    Image,
+    Video,
+    ImageAndVideo,
+}
+
 data class LlamaModel(
     val name: String,
     val url: String,
@@ -29,6 +35,10 @@ data class LlamaModel(
     val quantization: String? = null,
     val importedContextLength: Int? = null,
     val createdAtEpochMs: Long? = null,
+    // SD-specific: what this model can generate (null = not an SD model or unknown)
+    val sdCapability: SdCapability? = null,
+    // Mobile suitability rating 1–4 stars (null = not rated / not applicable)
+    val mobileSuitability: Int? = null,
 )
 
 val LlamaModel.isVlm: Boolean get() = mmprojUrl != null

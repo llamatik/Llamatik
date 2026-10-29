@@ -13,12 +13,16 @@ import androidx.compose.foundation.progressSemantics
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.llamatik.app.feature.chatbot.model.LlamaModel
+import com.llamatik.app.feature.chatbot.model.SdCapability
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.ui.theme.Typography
 
@@ -122,6 +127,52 @@ fun ModelRow(
             Column(Modifier.weight(1f)) {
                 Text(model.name, style = Typography.get().labelLarge)
                 Text("${model.sizeMb} MB", style = Typography.get().labelSmall)
+                if (model.sdCapability != null || model.mobileSuitability != null) {
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (model.sdCapability == SdCapability.Image || model.sdCapability == SdCapability.ImageAndVideo) {
+                            SuggestionChip(
+                                onClick = {},
+                                label = { Text("Image", style = Typography.get().labelSmall) },
+                                colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    labelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                ),
+                                modifier = Modifier.height(24.dp)
+                            )
+                        }
+                        if (model.sdCapability == SdCapability.Video || model.sdCapability == SdCapability.ImageAndVideo) {
+                            SuggestionChip(
+                                onClick = {},
+                                label = { Text("Video", style = Typography.get().labelSmall) },
+                                colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                    labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                ),
+                                modifier = Modifier.height(24.dp)
+                            )
+                        }
+                        if (model.mobileSuitability != null) {
+                            Spacer(Modifier.width(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                repeat(4) { index ->
+                                    Icon(
+                                        imageVector = if (index < model.mobileSuitability) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                                        contentDescription = null,
+                                        tint = if (index < model.mobileSuitability)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.outline,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             if (hasLocalFile) {

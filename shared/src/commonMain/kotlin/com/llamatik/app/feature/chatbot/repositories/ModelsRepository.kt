@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.llamatik.app.feature.chatbot.model.LlamaModel
 import com.llamatik.app.feature.chatbot.model.ModelCategory
 import com.llamatik.app.feature.chatbot.model.ModelSource
+import com.llamatik.app.feature.chatbot.model.SdCapability
 import com.llamatik.app.feature.chatbot.utils.Gemma3
 import com.llamatik.app.feature.chatbot.utils.Llama3Instruct
 import com.llamatik.app.feature.chatbot.utils.Plain
@@ -294,19 +295,71 @@ class ModelsRepository(private val service: ServiceClient) {
 
     fun getDefaultStableDiffusionModels(): List<LlamaModel> {
         return listOf(
+            // ── Image generation ──────────────────────────────────────────────
             LlamaModel(
                 name = "Stable Diffusion v1.5 Q4_0",
                 sizeMb = 1750,
                 url = "https://huggingface.co/gpustack/stable-diffusion-v1-5-GGUF/resolve/main/stable-diffusion-v1-5-Q4_0.gguf?download=true",
                 template = Plain,
-                systemPrompt = localization.defaultSystemPrompt.trimIndent()
+                sdCapability = SdCapability.Image,
+                mobileSuitability = 4,
             ),
             LlamaModel(
                 name = "SD Turbo v2.1 Q4_0",
                 sizeMb = 2190,
                 url = "https://huggingface.co/gpustack/stable-diffusion-v2-1-turbo-GGUF/resolve/main/stable-diffusion-v2-1-turbo_Q4_0.gguf?download=true",
                 template = Plain,
-                systemPrompt = localization.defaultSystemPrompt.trimIndent()
+                sdCapability = SdCapability.Image,
+                mobileSuitability = 3,
+            ),
+            LlamaModel(
+                name = "DreamShaper 8 LCM Q4_0",
+                sizeMb = 1600,
+                url = "https://huggingface.co/haven-ai-companion/dreamshaper8-lcm-gguf/resolve/main/DreamShaper8_LCM_q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Image,
+                mobileSuitability = 4,
+            ),
+            LlamaModel(
+                name = "DreamShaper XL v2 Turbo Q4_K_S",
+                sizeMb = 2800,
+                url = "https://huggingface.co/off-grid-ai/dreamshaper-xl-v2-turbo-GGUF/resolve/main/dreamshaper-xl-v2-turbo-Q4_K_S.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Image,
+                mobileSuitability = 3,
+            ),
+            // ── Video generation ──────────────────────────────────────────────
+            LlamaModel(
+                name = "Wan 2.1 T2V 1.3B Q4_0",
+                sizeMb = 866,
+                url = "https://huggingface.co/samuelchristlie/Wan2.1-T2V-1.3B-GGUF/resolve/main/Wan2.1-T2V-1.3B-Q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Video,
+                mobileSuitability = 4,
+            ),
+            LlamaModel(
+                name = "LTX-Video Q4_0",
+                sizeMb = 1260,
+                url = "https://huggingface.co/city96/LTX-Video-gguf/resolve/main/ltx-video-2b-v0.9.1-Q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Video,
+                mobileSuitability = 3,
+            ),
+            LlamaModel(
+                name = "Wan 2.2 TI2V 5B Q4_0",
+                sizeMb = 3030,
+                url = "https://huggingface.co/QuantStack/Wan2.2-TI2V-5B-GGUF/resolve/main/Wan2.2-TI2V-5B-Q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.ImageAndVideo,
+                mobileSuitability = 2,
+            ),
+            LlamaModel(
+                name = "Wan 2.1 I2V 14B 480P Q4_0",
+                sizeMb = 10200,
+                url = "https://huggingface.co/city96/Wan2.1-I2V-14B-480P-gguf/resolve/main/wan2.1-i2v-14b-480p-Q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Video,
+                mobileSuitability = 1,
             ),
         )
     }

@@ -314,7 +314,29 @@ class ChatBotViewModel(
                 .onFailure { error -> Logger.e(error.message ?: "Unknown error") }
 
             getModelsUseCase.getDefaultStableDiffusionModels()
-                .onSuccess { _state.value = _state.value.copy(stableDiffusionModels = it) }
+                .onSuccess { models ->
+                    for (model in models) {
+                        val path = resolveAndMigratePath(model) ?: continue
+                        Logger.d("StableDiffusion - Init: ${model.name} at $path")
+                        val loaded = StableDiffusionBridge.initModel(path)
+                        if (loaded) {
+                            _state.value = _state.value.copy(
+                                selectedStableDiffusionModelName = model.name,
+                                isStableDiffusionModelLoaded = true,
+                                isVideoGenerationSupported = StableDiffusionBridge.supportsVideoGeneration()
+                            )
+                            _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoaded)
+                            break
+                        } else {
+                            Logger.e { "StableDiffusion - failed to load model ${model.name}" }
+                        }
+                    }
+                    val normalized = models.map { m ->
+                        val path = resolveAndMigratePath(m)
+                        if (!path.isNullOrBlank()) m.copy(localPath = path, fileName = path) else m
+                    }
+                    _state.value = _state.value.copy(stableDiffusionModels = normalized)
+                }
                 .onFailure { error -> Logger.e(error.message ?: "Unknown error") }
 
             getModelsUseCase.getDefaultVlmModels()
@@ -1361,6 +1383,22 @@ class ChatBotViewModel(
                                 _sideEffects.trySend(ChatBotSideEffects.OnSttModelLoaded)
                             } else {
                                 _sideEffects.trySend(ChatBotSideEffects.OnSttModelLoadError)
+                            }
+                        }
+
+                        // Auto-initialize SD model if none is loaded yet
+                        val isSdModel = _state.value.stableDiffusionModels.any { it.url == url }
+                        if (isSdModel && !_state.value.isStableDiffusionModelLoaded && persistedPath.isNotBlank()) {
+                            val loaded = StableDiffusionBridge.initModel(persistedPath)
+                            if (loaded) {
+                                _state.value = _state.value.copy(
+                                    selectedStableDiffusionModelName = model.name,
+                                    isStableDiffusionModelLoaded = true,
+                                    isVideoGenerationSupported = StableDiffusionBridge.supportsVideoGeneration()
+                                )
+                                _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoaded)
+                            } else {
+                                _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoadError)
                             }
                         }
 
