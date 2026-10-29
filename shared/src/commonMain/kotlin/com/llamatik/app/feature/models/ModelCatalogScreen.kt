@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.llamatik.app.feature.chatbot.model.ModelCategory
 import com.llamatik.app.feature.chatbot.ui.ModelRow
+import com.llamatik.app.feature.chatbot.viewmodel.ChatBotSideEffects
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotViewModel
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.permissions.rememberNotificationPermissionRequester
@@ -57,6 +59,25 @@ class ModelCatalogScreen(private val type: ModelCatalogType) : Screen {
 
         val loadingModelName = remember { mutableStateOf<String?>(null) }
         var showDownloadFromUrl by remember { mutableStateOf(false) }
+
+        // Clear loading spinner when the model finishes loading (success or error)
+        LaunchedEffect(Unit) {
+            viewModel.sideEffects.collect { effect ->
+                when (effect) {
+                    is ChatBotSideEffects.OnStableDiffusionModelLoaded,
+                    is ChatBotSideEffects.OnStableDiffusionModelLoadError,
+                    is ChatBotSideEffects.OnGenerateModelLoaded,
+                    is ChatBotSideEffects.OnGenerateModelLoadError,
+                    is ChatBotSideEffects.OnSttModelLoaded,
+                    is ChatBotSideEffects.OnSttModelLoadError,
+                    is ChatBotSideEffects.OnVlmModelLoaded,
+                    is ChatBotSideEffects.OnVlmModelLoadError,
+                    is ChatBotSideEffects.OnEmbedModelLoaded,
+                    is ChatBotSideEffects.OnEmbedModelLoadError -> loadingModelName.value = null
+                    else -> Unit
+                }
+            }
+        }
 
         val catalogCategory = when (type) {
             ModelCatalogType.Generate -> ModelCategory.Generate

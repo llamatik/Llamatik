@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.llamatik.app.feature.chatbot.model.LlamaModel
 import com.llamatik.app.feature.chatbot.model.SdCapability
+import com.llamatik.app.feature.chatbot.model.totalSizeMb
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.ui.theme.Typography
 
@@ -126,7 +127,9 @@ fun ModelRow(
             )
             Column(Modifier.weight(1f)) {
                 Text(model.name, style = Typography.get().labelLarge)
-                Text("${model.sizeMb} MB", style = Typography.get().labelSmall)
+                val totalMb = model.totalSizeMb
+                val sizeText = if (totalMb > model.sizeMb) "$totalMb MB total (${model.sizeMb} MB model)" else "$totalMb MB"
+                Text(sizeText, style = Typography.get().labelSmall)
                 if (model.sdCapability != null || model.mobileSuitability != null) {
                     Spacer(Modifier.height(4.dp))
                     Row(

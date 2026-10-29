@@ -23,7 +23,9 @@ static sd_ctx_t * g_sd_ctx = nullptr;
 extern "C" {
 
 // Returns 1 on success, 0 on failure.
-int32_t sd_init(const char * model_path, int32_t threads) {
+int32_t sd_init(const char * model_path, int32_t threads,
+                const char * vae_path, const char * t5xxl_path,
+                const char * clip_vision_path) {
     if (g_sd_ctx) {
         free_sd_ctx(g_sd_ctx);
         g_sd_ctx = nullptr;
@@ -39,11 +41,26 @@ int32_t sd_init(const char * model_path, int32_t threads) {
 
     params.model_path = model_path;
     params.n_threads  = (int) threads;
-
-    // Reasonable defaults (same intent as your JNI wrapper)
     params.enable_mmap = true;
+    params.vae_path         = (vae_path && vae_path[0])         ? vae_path         : nullptr;
+    params.t5xxl_path       = (t5xxl_path && t5xxl_path[0])     ? t5xxl_path       : nullptr;
+    params.clip_vision_path = (clip_vision_path && clip_vision_path[0]) ? clip_vision_path : nullptr;
 
     g_sd_ctx = new_sd_ctx(&params);
+
+    if (!g_sd_ctx) {
+        // Retry as a standalone diffusion model (DiT models like Wan, LTX-Video)
+        sd_ctx_params_t params2;
+        sd_ctx_params_init(&params2);
+        params2.diffusion_model_path = model_path;
+        params2.n_threads  = (int) threads;
+        params2.enable_mmap = true;
+        params2.vae_path         = (vae_path && vae_path[0])         ? vae_path         : nullptr;
+        params2.t5xxl_path       = (t5xxl_path && t5xxl_path[0])     ? t5xxl_path       : nullptr;
+        params2.clip_vision_path = (clip_vision_path && clip_vision_path[0]) ? clip_vision_path : nullptr;
+        g_sd_ctx = new_sd_ctx(&params2);
+    }
+
     if (!g_sd_ctx) {
         std::fprintf(stderr, "sd_init: FAILED to create sd context for '%s'\n", model_path);
         return 0;
@@ -117,16 +134,15 @@ uint8_t * sd_txt2img_rgba(
     gen.sample_params.sample_steps = (int) steps;
     gen.sample_params.guidance.txt_cfg = (float) cfg_scale;
 
-    sd_image_t * images_out = nullptr;
-    int num_images = 0;
-    bool ok = generate_image(g_sd_ctx, &gen, &images_out, &num_images);
-    if (!ok || num_images == 0 || !images_out || !images_out[0].data ||
-            images_out[0].width == 0 || images_out[0].height == 0) {
+    sd_image_generation_result_t * img_result = nullptr;
+    bool ok = generate_image(g_sd_ctx, &gen, &img_result);
+    if (!ok || !img_result || img_result->count == 0 || !img_result->items[0].image.data ||
+            img_result->items[0].image.width == 0 || img_result->items[0].image.height == 0) {
         std::fprintf(stderr, "sd_txt2img_rgba: generate_image failed\n");
-        free_sd_images(images_out, num_images);
+        free_sd_image_generation_result(img_result);
         return nullptr;
     }
-    sd_image_t * img = &images_out[0];
+    sd_image_t * img = &img_result->items[0].image;
 
     const int w = (int) img->width;
     const int h = (int) img->height;
@@ -142,11 +158,11 @@ uint8_t * sd_txt2img_rgba(
         rgba_from_gray(img->data, pixelCount, rgba);
     } else {
         std::fprintf(stderr, "sd_txt2img_rgba: unknown channel count=%d\n", ch);
-        free_sd_images(images_out, num_images);
+        free_sd_image_generation_result(img_result);
         return nullptr;
     }
 
-    free_sd_images(images_out, num_images);
+    free_sd_image_generation_result(img_result);
 
     uint8_t * out = (uint8_t *) std::malloc(rgba.size());
     if (!out) return nullptr;
@@ -216,18 +232,17 @@ uint8_t * sd_img2img_rgba(
     gen.init_image.height  = (uint32_t) init_image_h;
     gen.init_image.channel = 4;
 
-    sd_image_t * images_out = nullptr;
-    int num_images = 0;
-    bool ok = generate_image(g_sd_ctx, &gen, &images_out, &num_images);
+    sd_image_generation_result_t * img_result = nullptr;
+    bool ok = generate_image(g_sd_ctx, &gen, &img_result);
     std::free(initCopy);
 
-    if (!ok || num_images == 0 || !images_out || !images_out[0].data ||
-            images_out[0].width == 0 || images_out[0].height == 0) {
+    if (!ok || !img_result || img_result->count == 0 || !img_result->items[0].image.data ||
+            img_result->items[0].image.width == 0 || img_result->items[0].image.height == 0) {
         std::fprintf(stderr, "sd_img2img_rgba: generate_image failed\n");
-        free_sd_images(images_out, num_images);
+        free_sd_image_generation_result(img_result);
         return nullptr;
     }
-    sd_image_t * img = &images_out[0];
+    sd_image_t * img = &img_result->items[0].image;
 
     const int w = (int) img->width;
     const int h = (int) img->height;
@@ -243,11 +258,11 @@ uint8_t * sd_img2img_rgba(
         rgba_from_gray(img->data, outPixelCount, rgba);
     } else {
         std::fprintf(stderr, "sd_img2img_rgba: unknown channel count=%d\n", ch);
-        free_sd_images(images_out, num_images);
+        free_sd_image_generation_result(img_result);
         return nullptr;
     }
 
-    free_sd_images(images_out, num_images);
+    free_sd_image_generation_result(img_result);
 
     uint8_t * out = (uint8_t *) std::malloc(rgba.size());
     if (!out) return nullptr;
@@ -303,23 +318,21 @@ uint8_t * sd_txt2video_frames(
     gen.seed = seed;
     gen.sample_params.guidance.txt_cfg = cfg_scale;
 
-    sd_image_t * frames_out = nullptr;
-    int num_frames = 0;
-    int actual_fps = (int) fps;
-    bool ok = generate_video(g_sd_ctx, &gen, &frames_out, &num_frames, nullptr, &actual_fps);
-    if (!ok || num_frames == 0 || !frames_out) {
-        free_sd_images(frames_out, num_frames);
+    sd_video_generation_result_t * vid_result = nullptr;
+    bool ok = generate_video(g_sd_ctx, &gen, &vid_result);
+    if (!ok || !vid_result || vid_result->frame_count == 0 || !vid_result->frames) {
+        free_sd_video_generation_result(vid_result);
         return nullptr;
     }
 
-    const int w = (int) frames_out[0].width;
-    const int h = (int) frames_out[0].height;
+    const int w = (int) vid_result->frames[0].width;
+    const int h = (int) vid_result->frames[0].height;
     const int frameBytes = w * h * 4;
-    const size_t totalSize = 16 + (size_t) num_frames * frameBytes;
+    const size_t totalSize = 16 + (size_t) vid_result->frame_count * frameBytes;
 
     uint8_t * out = (uint8_t *) std::malloc(totalSize);
     if (!out) {
-        free_sd_images(frames_out, num_frames);
+        free_sd_video_generation_result(vid_result);
         return nullptr;
     }
 
@@ -329,14 +342,14 @@ uint8_t * sd_txt2video_frames(
         buf[2] = (uint8_t)((v >> 16) & 0xFF);
         buf[3] = (uint8_t)((v >> 24) & 0xFF);
     };
-    write_le_i32(out + 0,  (int32_t) num_frames);
+    write_le_i32(out + 0,  (int32_t) vid_result->frame_count);
     write_le_i32(out + 4,  (int32_t) w);
     write_le_i32(out + 8,  (int32_t) h);
-    write_le_i32(out + 12, (int32_t) actual_fps);
+    write_le_i32(out + 12, (int32_t) vid_result->fps);
 
     std::vector<uint8_t> rgba;
-    for (int i = 0; i < num_frames; i++) {
-        sd_image_t * img = &frames_out[i];
+    for (int i = 0; i < vid_result->frame_count; i++) {
+        sd_image_t * img = &vid_result->frames[i];
         const int ch = (int) img->channel;
         const int pixelCount = w * h;
         if (ch == 4) {
@@ -347,13 +360,13 @@ uint8_t * sd_txt2video_frames(
             rgba_from_gray(img->data, pixelCount, rgba);
         } else {
             std::free(out);
-            free_sd_images(frames_out, num_frames);
+            free_sd_video_generation_result(vid_result);
             return nullptr;
         }
         std::memcpy(out + 16 + i * frameBytes, rgba.data(), (size_t) frameBytes);
     }
 
-    free_sd_images(frames_out, num_frames);
+    free_sd_video_generation_result(vid_result);
     if (out_total_size) *out_total_size = (int32_t) totalSize;
     return out;
 }

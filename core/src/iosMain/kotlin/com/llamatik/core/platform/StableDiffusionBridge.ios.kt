@@ -31,17 +31,15 @@ actual object StableDiffusionBridge {
         return modelFileName
     }
 
-    actual fun initModel(modelPath: String, threads: Int): Boolean {
+    actual fun initModel(
+        modelPath: String, threads: Int,
+        vaePath: String?, t5xxlPath: String?, clipVisionPath: String?,
+    ): Boolean {
         release()
-
-        val ok = sd_init(modelPath, threads) != 0
+        val ok = sd_init(modelPath, threads, vaePath ?: "", t5xxlPath ?: "", clipVisionPath ?: "") != 0
         isInitialized = ok
-
-        if (!ok) {
-            NSLog("[StableDiffusionBridge] sd_init FAILED path=$modelPath")
-        } else {
-            NSLog("[StableDiffusionBridge] sd_init OK")
-        }
+        if (!ok) NSLog("[StableDiffusionBridge] sd_init FAILED path=$modelPath")
+        else NSLog("[StableDiffusionBridge] sd_init OK")
         return ok
     }
 

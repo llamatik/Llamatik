@@ -18,7 +18,13 @@ expect object StableDiffusionBridge {
      * @param modelPath Absolute path to a .safetensors/.ckpt/.gguf model.
      * @param threads Number of CPU threads to use. Use -1 for default.
      */
-    fun initModel(modelPath: String, threads: Int = -1): Boolean
+    fun initModel(
+        modelPath: String,
+        threads: Int = -1,
+        vaePath: String? = null,
+        t5xxlPath: String? = null,
+        clipVisionPath: String? = null,
+    ): Boolean
 
     /**
      * Generates a single RGBA image (width * height * 4 bytes).

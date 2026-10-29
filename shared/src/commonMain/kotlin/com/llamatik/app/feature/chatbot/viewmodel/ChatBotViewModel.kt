@@ -70,6 +70,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.json.Json
@@ -261,6 +262,46 @@ class ChatBotViewModel(
         return migrated
     }
 
+    private fun resolveCompanionPath(model: LlamaModel, role: String): String? {
+        val key = "${model.name}_$role"
+        val rawPath = getModelsUseCase.getSavedModelPath(key).takeIf { it.isNotEmpty() }
+            ?: return null
+        if (PlatformInfo.isWasm) return rawPath
+        val migrated = migrateModelPathIfNeeded(modelNameOrFileName = key, savedPath = rawPath)
+        if (migrated.isBlank()) return null
+        if (migrated != rawPath) runCatching { getModelsUseCase.saveModelPath(key, migrated) }
+        return migrated
+    }
+
+    private fun downloadCompanionIfNeeded(model: LlamaModel, role: String, url: String?) {
+        if (url.isNullOrBlank()) return
+        val key = "${model.name}_$role"
+        if (getModelsUseCase.getSavedModelPath(key).isNotEmpty()) return
+        val existingJob = downloadJobs[url]
+        if (existingJob?.isActive == true) return
+
+        val job = screenModelScope.launch(AppDispatchersIO) {
+            updateDownload(url) { it.copy(inProgress = true, progress = 0, done = false, error = null) }
+            val companionModel = model.copy(name = key, url = url, sizeMb = 0)
+            modelDownloadOrchestrator.download(companionModel).collect { ev ->
+                when (ev) {
+                    is DownloadEvent.Progress ->
+                        updateDownload(url) { it.copy(inProgress = true, progress = ev.percent) }
+                    is DownloadEvent.Completed -> {
+                        val rawPath = persistedPathForDownloadedModel(companionModel, ev.localPath)
+                        val persistedPath = migrateModelPathIfNeeded(key, rawPath)
+                        getModelsUseCase.saveModelPath(key, persistedPath)
+                        updateDownload(url) { it.copy(inProgress = false, progress = 100, done = true, error = null) }
+                        Logger.d("StableDiffusion - companion $role downloaded to $persistedPath")
+                    }
+                    is DownloadEvent.Failed ->
+                        updateDownload(url) { it.copy(inProgress = false, error = ev.message, done = false) }
+                }
+            }
+        }
+        downloadJobs[url] = job
+    }
+
     fun onStarted(
         navigator: Navigator? = null,
         embedFilePath: String? = null,
@@ -318,7 +359,12 @@ class ChatBotViewModel(
                     for (model in models) {
                         val path = resolveAndMigratePath(model) ?: continue
                         Logger.d("StableDiffusion - Init: ${model.name} at $path")
-                        val loaded = StableDiffusionBridge.initModel(path)
+                        val vaePath = resolveCompanionPath(model, "vae")
+                        val t5xxlPath = resolveCompanionPath(model, "t5xxl")
+                        val clipVisionPath = resolveCompanionPath(model, "clip_vision")
+                        val loaded = withTimeoutOrNull(300_000L) {
+                            StableDiffusionBridge.initModel(path, vaePath = vaePath, t5xxlPath = t5xxlPath, clipVisionPath = clipVisionPath)
+                        } ?: false
                         if (loaded) {
                             _state.value = _state.value.copy(
                                 selectedStableDiffusionModelName = model.name,
@@ -328,7 +374,7 @@ class ChatBotViewModel(
                             _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoaded)
                             break
                         } else {
-                            Logger.e { "StableDiffusion - failed to load model ${model.name}" }
+                            Logger.e { "StableDiffusion - failed or timed out loading ${model.name}" }
                         }
                     }
                     val normalized = models.map { m ->
@@ -760,10 +806,18 @@ class ChatBotViewModel(
 
     fun onStableDiffusionModelSelected(model: LlamaModel) {
         screenModelScope.launch(AppDispatchersIO) {
-            val path = resolveAndMigratePath(model) ?: return@launch
+            val path = resolveAndMigratePath(model) ?: run {
+                _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoadError)
+                return@launch
+            }
 
             Logger.d("StableDiffusion - selecting model ${model.name} at $path")
-            val loaded = StableDiffusionBridge.initModel(path)
+            val vaePath = resolveCompanionPath(model, "vae")
+            val t5xxlPath = resolveCompanionPath(model, "t5xxl")
+            val clipVisionPath = resolveCompanionPath(model, "clip_vision")
+            val loaded = withTimeoutOrNull(300_000L) {
+                StableDiffusionBridge.initModel(path, vaePath = vaePath, t5xxlPath = t5xxlPath, clipVisionPath = clipVisionPath)
+            } ?: false
             if (loaded) {
                 _state.value = _state.value.copy(
                     selectedStableDiffusionModelName = model.name,
@@ -772,6 +826,7 @@ class ChatBotViewModel(
                 )
                 _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoaded)
             } else {
+                Logger.e { "StableDiffusion - failed or timed out loading ${model.name}" }
                 _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoadError)
             }
         }
@@ -1389,7 +1444,13 @@ class ChatBotViewModel(
                         // Auto-initialize SD model if none is loaded yet
                         val isSdModel = _state.value.stableDiffusionModels.any { it.url == url }
                         if (isSdModel && !_state.value.isStableDiffusionModelLoaded && persistedPath.isNotBlank()) {
-                            val loaded = StableDiffusionBridge.initModel(persistedPath)
+                            val sdModel = _state.value.stableDiffusionModels.firstOrNull { it.url == url } ?: model
+                            val vaePath = resolveCompanionPath(sdModel, "vae")
+                            val t5xxlPath = resolveCompanionPath(sdModel, "t5xxl")
+                            val clipVisionPath = resolveCompanionPath(sdModel, "clip_vision")
+                            val loaded = withTimeoutOrNull(300_000L) {
+                                StableDiffusionBridge.initModel(persistedPath, vaePath = vaePath, t5xxlPath = t5xxlPath, clipVisionPath = clipVisionPath)
+                            } ?: false
                             if (loaded) {
                                 _state.value = _state.value.copy(
                                     selectedStableDiffusionModelName = model.name,
@@ -1400,6 +1461,14 @@ class ChatBotViewModel(
                             } else {
                                 _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoadError)
                             }
+                        }
+
+                        // Download SD companion files if needed
+                        val sdModelForCompanions = _state.value.stableDiffusionModels.firstOrNull { it.url == url }
+                        sdModelForCompanions?.let { m ->
+                            downloadCompanionIfNeeded(m, "vae", m.vaeUrl)
+                            downloadCompanionIfNeeded(m, "t5xxl", m.t5xxlUrl)
+                            downloadCompanionIfNeeded(m, "clip_vision", m.clipVisionUrl)
                         }
 
                         // If this is a VLM model with an mmproj companion, download the mmproj too
@@ -1531,7 +1600,12 @@ class ChatBotViewModel(
                 }
             }
             ModelCategory.StableDiffusion -> {
-                val loaded = StableDiffusionBridge.initModel(path)
+                val vaePath = resolveCompanionPath(model, "vae")
+                val t5xxlPath = resolveCompanionPath(model, "t5xxl")
+                val clipVisionPath = resolveCompanionPath(model, "clip_vision")
+                val loaded = withTimeoutOrNull(300_000L) {
+                    StableDiffusionBridge.initModel(path, vaePath = vaePath, t5xxlPath = t5xxlPath, clipVisionPath = clipVisionPath)
+                } ?: false
                 if (loaded) {
                     _state.update { s -> s.copy(
                         selectedStableDiffusionModelName = model.name,

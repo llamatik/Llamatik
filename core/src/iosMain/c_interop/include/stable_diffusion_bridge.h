@@ -7,7 +7,9 @@ extern "C" {
 #endif
 
 // Returns 1 on success, 0 on failure.
-int32_t sd_init(const char * model_path, int32_t threads);
+int32_t sd_init(const char * model_path, int32_t threads,
+                const char * vae_path, const char * t5xxl_path,
+                const char * clip_vision_path);
 
 // Returns malloc'ed RGBA bytes (size in out_size_bytes). Free with sd_free_bytes().
 uint8_t * sd_txt2img_rgba(

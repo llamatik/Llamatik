@@ -328,22 +328,18 @@ class ModelsRepository(private val service: ServiceClient) {
                 sdCapability = SdCapability.Image,
                 mobileSuitability = 3,
             ),
-            // ── Video generation ──────────────────────────────────────────────
+            // ── Video generation (requires VAE + T5 text encoder companion files) ─────
             LlamaModel(
                 name = "Wan 2.1 T2V 1.3B Q4_0",
                 sizeMb = 866,
                 url = "https://huggingface.co/samuelchristlie/Wan2.1-T2V-1.3B-GGUF/resolve/main/Wan2.1-T2V-1.3B-Q4_0.gguf?download=true",
                 template = Plain,
                 sdCapability = SdCapability.Video,
-                mobileSuitability = 4,
-            ),
-            LlamaModel(
-                name = "LTX-Video Q4_0",
-                sizeMb = 1260,
-                url = "https://huggingface.co/city96/LTX-Video-gguf/resolve/main/ltx-video-2b-v0.9.1-Q4_0.gguf?download=true",
-                template = Plain,
-                sdCapability = SdCapability.Video,
                 mobileSuitability = 3,
+                vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
+                vaeSizeMb = 430,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_0.gguf?download=true",
+                t5xxlSizeMb = 2400,
             ),
             LlamaModel(
                 name = "Wan 2.2 TI2V 5B Q4_0",
@@ -352,6 +348,10 @@ class ModelsRepository(private val service: ServiceClient) {
                 template = Plain,
                 sdCapability = SdCapability.ImageAndVideo,
                 mobileSuitability = 2,
+                vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors?download=true",
+                vaeSizeMb = 430,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_0.gguf?download=true",
+                t5xxlSizeMb = 2400,
             ),
             LlamaModel(
                 name = "Wan 2.1 I2V 14B 480P Q4_0",
@@ -360,6 +360,12 @@ class ModelsRepository(private val service: ServiceClient) {
                 template = Plain,
                 sdCapability = SdCapability.Video,
                 mobileSuitability = 1,
+                vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
+                vaeSizeMb = 430,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_0.gguf?download=true",
+                t5xxlSizeMb = 2400,
+                clipVisionUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors?download=true",
+                clipVisionSizeMb = 600,
             ),
         )
     }
