@@ -251,7 +251,9 @@ class ChatBotViewModel(
             savedPath = rawPath
         )
 
-        if (migrated.isNotBlank() && migrated != rawPath) {
+        if (migrated.isBlank()) return null
+
+        if (migrated != rawPath) {
             runCatching { getModelsUseCase.saveModelPath(mmprojKey, migrated) }
         }
 
@@ -1195,6 +1197,21 @@ class ChatBotViewModel(
                             }
                         } else if (isGenerateModel && _state.value.isInitialSetup) {
                             _state.value = _state.value.copy(isInitialSetup = false)
+                        }
+
+                        // Auto-initialize STT model if none is loaded yet
+                        val isSttModel = _state.value.sttModels.any { it.url == url }
+                        if (isSttModel && !_state.value.isSttModelLoaded && persistedPath.isNotBlank()) {
+                            val loaded = WhisperBridge.initModel(persistedPath)
+                            if (loaded) {
+                                _state.value = _state.value.copy(
+                                    selectedSttModelName = model.name,
+                                    isSttModelLoaded = true
+                                )
+                                _sideEffects.trySend(ChatBotSideEffects.OnSttModelLoaded)
+                            } else {
+                                _sideEffects.trySend(ChatBotSideEffects.OnSttModelLoadError)
+                            }
                         }
 
                         // If this is a VLM model with an mmproj companion, download the mmproj too
