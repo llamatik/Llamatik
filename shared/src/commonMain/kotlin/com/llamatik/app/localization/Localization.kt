@@ -162,6 +162,11 @@ interface Localization {
     val imageGenerationError: String
     val allCachedModelsRemoved: String
     val settings: String
+    val agentMode: String
+    val agentModeDescription: String
+    val agentModeInfoTitle: String
+    val agentModeInfoMessage: String
+    val gotIt: String
     val removeAllDownloadedModels: String
     val clearCachedModelsDialogTitle: String
     val clearCachedModelsDialogMessage: String

@@ -1,6 +1,7 @@
 package com.llamatik.app.feature.debugmenu.viewmodel
 
 import cafe.adriel.voyager.core.model.ScreenModel
+import com.llamatik.app.feature.agent.AgentFeatureFlags
 import com.llamatik.app.feature.debugmenu.repositories.GlobalAppSettingsRepository
 import com.llamatik.app.localization.AvailableLanguages
 import com.llamatik.app.platform.Environment
@@ -11,14 +12,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 
 class DebugMenuViewModel(
-    private val globalAppSettingsRepository: GlobalAppSettingsRepository
+    private val globalAppSettingsRepository: GlobalAppSettingsRepository,
+    private val agentFeatureFlags: AgentFeatureFlags,
 ) : ScreenModel {
     private val _state = MutableStateFlow(
         DebugMenuState(
             currentEnvironment = globalAppSettingsRepository.getCurrentEnvironment(),
             currentLanguage = globalAppSettingsRepository.getCurrentLanguage(),
             isMockedContentChecked = globalAppSettingsRepository.isMockedContentEnabled(),
-            isMockedUserChecked = globalAppSettingsRepository.isMockedUserEnabled()
+            isMockedUserChecked = globalAppSettingsRepository.isMockedUserEnabled(),
+            isAgentEnabled = agentFeatureFlags.isAgentEnabled(),
         )
     )
     val state = _state.asStateFlow()
@@ -39,13 +42,19 @@ class DebugMenuViewModel(
         _state.value = _state.value.copy(isMockedContentChecked = checked)
         globalAppSettingsRepository.setMockedContentCheckStatus(checked)
     }
+
+    fun onAgentEnabledChanged(enabled: Boolean) {
+        _state.value = _state.value.copy(isAgentEnabled = enabled)
+        agentFeatureFlags.setAgentEnabled(enabled)
+    }
 }
 
 data class DebugMenuState(
     val currentEnvironment: Environment,
     val currentLanguage: AvailableLanguages,
     val isMockedContentChecked: Boolean,
-    val isMockedUserChecked: Boolean
+    val isMockedUserChecked: Boolean,
+    val isAgentEnabled: Boolean = false,
 )
 
 sealed class DebugMenuSideEffects {

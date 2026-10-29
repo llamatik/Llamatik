@@ -179,6 +179,11 @@ internal object CatalanLocalization : Localization {
     override val allCachedModelsRemoved = "Models eliminats"
 
     override val settings = "Configuració"
+    override val agentMode = "Mode Agent"
+    override val agentModeDescription = "Permet a la IA realitzar accions al vostre dispositiu"
+    override val agentModeInfoTitle = "Mode Agent — Experimental"
+    override val agentModeInfoMessage = "Quan està activat, la IA pot realitzar accions al dispositiu com establir recordatoris, obrir aplicacions, enviar notificacions i més.\n\nAquesta funció és experimental. Les respostes poden ser poc fiables i les accions no sempre es poden desfer. Useu-la amb precaució, especialment amb models petits."
+    override val gotIt = "Entès"
     override val removeAllDownloadedModels = "Eliminar models"
     override val clearCachedModelsDialogTitle = "Eliminar tot?"
     override val clearCachedModelsDialogMessage = "Això eliminarà tots els models."
