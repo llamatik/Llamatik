@@ -42,6 +42,7 @@ import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.Password
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Person
@@ -49,9 +50,11 @@ import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.PersonAddAlt
 import androidx.compose.material.icons.rounded.PersonPin
 import androidx.compose.material.icons.rounded.Pets
+import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Psychology
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.RssFeed
+import androidx.compose.material.icons.rounded.SaveAlt
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Share
@@ -135,6 +138,9 @@ object LlamatikIcons {
     val Folder = Icons.Rounded.Folder
     val CreateNewFolder = Icons.Rounded.CreateNewFolder
     val MoreVert = Icons.Rounded.MoreVert
+    val Video = Icons.Rounded.Movie
+    val PlayCircle = Icons.Rounded.PlayCircle
+    val Save = Icons.Rounded.SaveAlt
 }
 
 /**

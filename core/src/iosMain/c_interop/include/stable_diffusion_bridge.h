@@ -45,6 +45,27 @@ uint8_t * sd_img2img_rgba(
 void sd_free_bytes(uint8_t * p);
 void sd_release(void);
 
+// Returns 1 if the loaded model supports video generation, 0 otherwise.
+int32_t sd_supports_video_generation(void);
+
+// Returns a malloc'd packed buffer:
+//   Header (16 bytes LE): [frameCount int32][width int32][height int32][fps int32]
+//   Payload: frameCount * (width * height * 4) RGBA bytes.
+// Sets *out_total_size to the total buffer size in bytes.
+// Free the returned pointer with sd_free_video_frames().
+uint8_t * sd_txt2video_frames(
+        const char * prompt,
+        const char * negative_prompt,
+        int32_t width,
+        int32_t height,
+        int32_t video_frames,
+        int32_t fps,
+        float cfg_scale,
+        int64_t seed,
+        int32_t * out_total_size
+);
+void sd_free_video_frames(uint8_t * p);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

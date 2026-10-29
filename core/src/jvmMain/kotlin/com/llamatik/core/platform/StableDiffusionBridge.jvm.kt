@@ -44,6 +44,19 @@ actual object StableDiffusionBridge {
 
     actual external fun release()
 
+    actual external fun supportsVideoGeneration(): Boolean
+
+    actual external fun txt2video(
+        prompt: String,
+        negativePrompt: String?,
+        width: Int,
+        height: Int,
+        videoFrames: Int,
+        fps: Int,
+        cfgScale: Float,
+        seed: Long,
+    ): ByteArray
+
     private fun loadNativeFromResources() {
         val os = System.getProperty("os.name").lowercase()
         val platform = when {

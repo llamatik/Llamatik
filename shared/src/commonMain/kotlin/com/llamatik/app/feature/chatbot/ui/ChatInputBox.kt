@@ -92,6 +92,12 @@ fun ChatInputBox(
         }
     }
 
+    LaunchedEffect(state.isVideoGenerationSupported) {
+        if (!state.isVideoGenerationSupported && state.generationMode == GenerationMode.VIDEO) {
+            viewModel.setGenerationMode(GenerationMode.TEXT)
+        }
+    }
+
 
     Box(
         modifier = Modifier
@@ -122,6 +128,7 @@ fun ChatInputBox(
                                         GenerationMode.IMAGE -> viewModel.onImagePromptSendDirect(message)
                                         GenerationMode.IMAGE_TO_IMAGE -> viewModel.onImg2ImgSend(message)
                                         GenerationMode.VISION -> viewModel.onMessageSendDirect(message)
+                                        GenerationMode.VIDEO -> viewModel.onVideoPromptSendDirect(message)
                                     }
                                     showSuggestions.value = false
                                 }
@@ -403,6 +410,7 @@ fun ChatInputBox(
                                             GenerationMode.IMAGE -> viewModel.onImagePromptSendDirect(message)
                                             GenerationMode.IMAGE_TO_IMAGE -> viewModel.onImg2ImgSend(message)
                                             GenerationMode.VISION -> viewModel.onVisionMessageSend(message)
+                                            GenerationMode.VIDEO -> viewModel.onVideoPromptSendDirect(message)
                                         }
                                         showSuggestions.value = false
                                         keyboardController?.hide()
@@ -524,6 +532,33 @@ fun ChatInputBox(
                                 }
                             }
 
+                            if (state.isVideoGenerationSupported) {
+                                val isInVideoMode = state.generationMode == GenerationMode.VIDEO
+                                IconButton(
+                                    onClick = {
+                                        val next = if (isInVideoMode) GenerationMode.TEXT else GenerationMode.VIDEO
+                                        viewModel.setGenerationMode(next)
+                                    },
+                                    enabled = !isGenerating && !isTranscribing,
+                                    modifier = Modifier
+                                        .padding(end = 6.dp)
+                                        .size(BUTTON_SIZE.dp)
+                                        .clip(RoundedCornerShape(ROUNDED_CORNER_SIZE.dp))
+                                        .background(
+                                            if (isInVideoMode) MaterialTheme.colorScheme.primaryContainer
+                                            else MaterialTheme.colorScheme.surfaceVariant
+                                        )
+                                ) {
+                                    Icon(
+                                        imageVector = LlamatikIcons.Video,
+                                        contentDescription = localization.videoGeneration,
+                                        tint = if (isInVideoMode) MaterialTheme.colorScheme.onPrimaryContainer
+                                        else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Spacer(modifier = Modifier.size(6.dp))
+                            }
+
                             if (state.isVlmModelLoaded) {
                                 val hasImage = state.pendingVisionImageBytes != null
                                 IconButton(
@@ -615,6 +650,7 @@ fun ChatInputBox(
                                                 GenerationMode.IMAGE -> viewModel.onImagePromptSendDirect(message)
                                                 GenerationMode.IMAGE_TO_IMAGE -> viewModel.onImg2ImgSend(message)
                                                 GenerationMode.VISION -> viewModel.onVisionMessageSend(message)
+                                                GenerationMode.VIDEO -> viewModel.onVideoPromptSendDirect(message)
                                             }
                                             showSuggestions.value = false
                                             keyboardController?.hide()

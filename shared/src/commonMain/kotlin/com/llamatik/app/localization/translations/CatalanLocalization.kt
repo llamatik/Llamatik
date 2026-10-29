@@ -176,6 +176,12 @@ internal object CatalanLocalization : Localization {
     override val visionModeEnabledButNoModelLoadedError = "👁️ Mode visió sense model VLM carregat. Obriu Models i seleccioneu un model de visió."
     override val imageGenerationFailedError = "Error generant imatge."
     override val imageGenerationError = "Error d'imatge"
+    override val videoGeneration = "Vídeo"
+    override val videoGenerationFailedError = "🎬 Error en generar el vídeo."
+    override val videoGenerationError = "Error de generació de vídeo"
+    override val saveVideoToGallery = "Desar a la galeria"
+    override val videoSavedToGallery = "Vídeo desat a la galeria."
+    override val videoSaveError = "Error en desar el vídeo."
     override val allCachedModelsRemoved = "Models eliminats"
 
     override val settings = "Configuració"

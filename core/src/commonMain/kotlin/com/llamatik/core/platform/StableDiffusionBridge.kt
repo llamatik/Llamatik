@@ -57,4 +57,28 @@ expect object StableDiffusionBridge {
     ): ByteArray
 
     fun release()
+
+    /**
+     * Returns true if the currently loaded model supports video generation.
+     * Must be called after [initModel].
+     */
+    fun supportsVideoGeneration(): Boolean
+
+    /**
+     * Generates video frames from a text prompt.
+     *
+     * @return Packed byte array: 16-byte LE header [frameCount, width, height, fps]
+     *         followed by frameCount * (width * height * 4) RGBA bytes.
+     *         Empty array on failure.
+     */
+    fun txt2video(
+        prompt: String,
+        negativePrompt: String? = null,
+        width: Int = 512,
+        height: Int = 512,
+        videoFrames: Int = 16,
+        fps: Int = 8,
+        cfgScale: Float = 7.0f,
+        seed: Long = -1L,
+    ): ByteArray
 }

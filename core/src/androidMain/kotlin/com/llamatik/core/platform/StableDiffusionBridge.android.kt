@@ -35,4 +35,17 @@ actual object StableDiffusionBridge {
     ): ByteArray
 
     actual external fun release()
+
+    actual external fun supportsVideoGeneration(): Boolean
+
+    actual external fun txt2video(
+        prompt: String,
+        negativePrompt: String?,
+        width: Int,
+        height: Int,
+        videoFrames: Int,
+        fps: Int,
+        cfgScale: Float,
+        seed: Long,
+    ): ByteArray
 }

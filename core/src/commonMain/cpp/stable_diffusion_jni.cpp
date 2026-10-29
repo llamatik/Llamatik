@@ -267,3 +267,100 @@ free_sd_ctx(g_sd_ctx);
 g_sd_ctx = nullptr;
 }
 }
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_llamatik_core_platform_StableDiffusionBridge_supportsVideoGeneration(
+        JNIEnv *, jobject
+) {
+    if (!g_sd_ctx) return JNI_FALSE;
+    return sd_ctx_supports_video_generation(g_sd_ctx) ? JNI_TRUE : JNI_FALSE;
+}
+
+// Returns a packed byte array: [frameCount int32 LE][width int32 LE][height int32 LE][fps int32 LE]
+// followed by frameCount * (width * height * 4) bytes of RGBA data.
+// Returns an empty array on failure.
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_com_llamatik_core_platform_StableDiffusionBridge_txt2video(
+        JNIEnv * env,
+        jobject,
+        jstring prompt,
+        jstring negativePrompt,
+        jint width,
+        jint height,
+        jint videoFrames,
+        jint fps,
+        jfloat cfgScale,
+        jlong seed
+) {
+    if (!g_sd_ctx) return env->NewByteArray(0);
+
+    const std::string p = jstring_to_utf8(env, prompt);
+    const std::string n = jstring_to_utf8(env, negativePrompt);
+    if (p.empty()) return env->NewByteArray(0);
+
+    sd_vid_gen_params_t gen;
+    sd_vid_gen_params_init(&gen);
+    gen.prompt = p.c_str();
+    gen.negative_prompt = n.c_str();
+    gen.width = (int) width;
+    gen.height = (int) height;
+    gen.video_frames = (int) videoFrames;
+    gen.fps = (int) fps;
+    gen.seed = (int64_t) seed;
+    gen.sample_params.guidance.txt_cfg = (float) cfgScale;
+
+    sd_image_t * frames_out = nullptr;
+    int num_frames = 0;
+    int actual_fps = (int) fps;
+    bool ok = generate_video(g_sd_ctx, &gen, &frames_out, &num_frames, nullptr, &actual_fps);
+    if (!ok || num_frames == 0 || !frames_out) {
+        free_sd_images(frames_out, num_frames);
+        return env->NewByteArray(0);
+    }
+
+    const int w = (int) frames_out[0].width;
+    const int h = (int) frames_out[0].height;
+    const int frameBytes = w * h * 4;
+    const size_t totalSize = 16 + (size_t) num_frames * frameBytes;
+
+    jbyteArray out = env->NewByteArray((jsize) totalSize);
+    if (!out) {
+        free_sd_images(frames_out, num_frames);
+        return env->NewByteArray(0);
+    }
+
+    auto write_le_i32 = [](uint8_t * buf, int32_t v) {
+        buf[0] = (uint8_t)(v & 0xFF);
+        buf[1] = (uint8_t)((v >> 8) & 0xFF);
+        buf[2] = (uint8_t)((v >> 16) & 0xFF);
+        buf[3] = (uint8_t)((v >> 24) & 0xFF);
+    };
+    uint8_t header[16];
+    write_le_i32(header + 0,  (int32_t) num_frames);
+    write_le_i32(header + 4,  (int32_t) w);
+    write_le_i32(header + 8,  (int32_t) h);
+    write_le_i32(header + 12, (int32_t) actual_fps);
+    env->SetByteArrayRegion(out, 0, 16, (const jbyte *) header);
+
+    std::vector<uint8_t> rgba;
+    for (int i = 0; i < num_frames; i++) {
+        sd_image_t * img = &frames_out[i];
+        const int ch = (int) img->channel;
+        const int pixelCount = w * h;
+        if (ch == 4) {
+            rgba.assign(img->data, img->data + (size_t) pixelCount * 4);
+        } else if (ch == 3) {
+            rgba_from_rgb(img->data, pixelCount, rgba);
+        } else if (ch == 1) {
+            rgba_from_gray(img->data, pixelCount, rgba);
+        } else {
+            free_sd_images(frames_out, num_frames);
+            return env->NewByteArray(0);
+        }
+        env->SetByteArrayRegion(out, (jsize)(16 + i * frameBytes), (jsize) frameBytes,
+                                (const jbyte *) rgba.data());
+    }
+
+    free_sd_images(frames_out, num_frames);
+    return out;
+}

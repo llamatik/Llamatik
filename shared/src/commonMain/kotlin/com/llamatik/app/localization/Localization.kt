@@ -160,6 +160,12 @@ interface Localization {
     val visionModeEnabledButNoModelLoadedError: String
     val imageGenerationFailedError: String
     val imageGenerationError: String
+    val videoGeneration: String
+    val videoGenerationFailedError: String
+    val videoGenerationError: String
+    val saveVideoToGallery: String
+    val videoSavedToGallery: String
+    val videoSaveError: String
     val allCachedModelsRemoved: String
     val settings: String
     val agentMode: String

@@ -42,6 +42,7 @@ import com.llamatik.app.platform.AppStorage
 import com.llamatik.app.platform.LlamatikTempFile
 import com.llamatik.app.platform.PlatformInfo
 import com.llamatik.app.platform.RootNavigatorRepository
+import com.llamatik.app.platform.VideoSaver
 import com.llamatik.app.platform.decodeImageBytesToRgba
 import com.llamatik.app.platform.extractPdfText
 import com.llamatik.app.platform.migrateModelPathIfNeeded
@@ -88,7 +89,7 @@ Be clear, honest, and concise. Always reply in the same language the user is wri
 """
 
 private const val PDF_RAG_STORE_PATH = "rag/pdf_rag_store.json"
-enum class GenerationMode { TEXT, IMAGE, IMAGE_TO_IMAGE, VISION }
+enum class GenerationMode { TEXT, IMAGE, IMAGE_TO_IMAGE, VISION, VIDEO }
 const val COSINE_THRESHOLD = 0.15
 
 class ChatBotViewModel(
@@ -730,7 +731,7 @@ class ChatBotViewModel(
     fun setGenerationMode(mode: GenerationMode) {
         _state.value = _state.value.copy(
             generationMode = mode,
-            pendingImg2ImgBytes = if (mode == GenerationMode.TEXT || mode == GenerationMode.VISION) null
+            pendingImg2ImgBytes = if (mode == GenerationMode.TEXT || mode == GenerationMode.VISION || mode == GenerationMode.VIDEO) null
             else _state.value.pendingImg2ImgBytes
         )
     }
@@ -744,7 +745,8 @@ class ChatBotViewModel(
             if (loaded) {
                 _state.value = _state.value.copy(
                     selectedStableDiffusionModelName = model.name,
-                    isStableDiffusionModelLoaded = true
+                    isStableDiffusionModelLoaded = true,
+                    isVideoGenerationSupported = StableDiffusionBridge.supportsVideoGeneration()
                 )
                 _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoaded)
             } else {
@@ -1059,6 +1061,150 @@ class ChatBotViewModel(
         }
     }
 
+    fun onVideoPromptSendDirect(prompt: String) {
+        if (_state.value.isGenerating) {
+            Logger.d { "LlamaVM - onVideoPromptSendDirect ignored because generation is already active" }
+            return
+        }
+
+        val input = prompt.trim()
+        if (input.isBlank()) return
+
+        screenModelScope.launch {
+            if (!_state.value.isTemporaryChat && currentChatId == null) {
+                currentChatId = kotlin.random.Random.nextLong().toString()
+            }
+
+            _conversation.value += ChatUiModel.Message(input, ChatUiModel.Author.me)
+            _sideEffects.trySend(ChatBotSideEffects.OnMessageLoading)
+            _sideEffects.trySend(ChatBotSideEffects.ScrollToBottom)
+            _state.value = _state.value.copy(isGenerating = true)
+
+            withContext(AppDispatchersIO) {
+                try {
+                    persistCurrentConversationIfNeeded()
+
+                    _conversation.value += ChatUiModel.Message("", ChatUiModel.Author.bot)
+
+                    if (!_state.value.isStableDiffusionModelLoaded) {
+                        updateLastBotMessage(localization.imageModeEnabledButNoModelLoadedError)
+                        _state.value = _state.value.copy(isGenerating = false)
+                        _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                        return@withContext
+                    }
+
+                    val packedBytes = StableDiffusionBridge.txt2video(
+                        prompt = input,
+                        negativePrompt = "",
+                        width = 512,
+                        height = 512,
+                        videoFrames = 16,
+                        fps = 8,
+                        seed = -1L,
+                    )
+
+                    if (packedBytes.isEmpty()) {
+                        updateLastBotMessage(localization.videoGenerationFailedError)
+                    } else {
+                        val packet = parseVideoPacket(packedBytes)
+                        if (packet == null) {
+                            updateLastBotMessage(localization.videoGenerationFailedError)
+                        } else {
+                            updateLastBotVideoFrames(packet.frames, packet.width, packet.height, packet.fps)
+                        }
+                    }
+
+                    persistCurrentConversationIfNeeded()
+                } catch (t: Throwable) {
+                    Logger.e(t.message ?: localization.videoGenerationError)
+                    updateLastBotMessage("🎬 Error: ${t.message ?: "unknown"}")
+                } finally {
+                    _state.value = _state.value.copy(isGenerating = false)
+                    _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                    _sideEffects.trySend(ChatBotSideEffects.ScrollToBottom)
+                }
+            }
+        }
+    }
+
+    fun onVideoSelected(message: ChatUiModel.Message) {
+        if (!message.hasVideo) return
+        _state.value = _state.value.copy(
+            selectedVideoForPlayback = VideoData(
+                frames = message.videoFrames!!,
+                width = message.videoWidth ?: 512,
+                height = message.videoHeight ?: 512,
+                fps = message.videoFps ?: 8,
+            )
+        )
+    }
+
+    fun clearSelectedVideo() {
+        _state.value = _state.value.copy(selectedVideoForPlayback = null)
+    }
+
+    fun onSaveVideo(frames: List<ByteArray>, width: Int, height: Int, fps: Int) {
+        screenModelScope.launch(AppDispatchersIO) {
+            val success = VideoSaver.saveVideo(frames, width, height, fps)
+            if (success) {
+                _sideEffects.trySend(ChatBotSideEffects.OnVideoSaved(localization.videoSavedToGallery))
+            } else {
+                _sideEffects.trySend(ChatBotSideEffects.OnVideoSaveFailed(localization.videoSaveError))
+            }
+        }
+    }
+
+    private data class VideoPacket(
+        val frames: List<ByteArray>,
+        val width: Int,
+        val height: Int,
+        val fps: Int,
+    )
+
+    private fun parseVideoPacket(packed: ByteArray): VideoPacket? {
+        if (packed.size < 16) return null
+        fun readInt(offset: Int): Int =
+            (packed[offset].toInt() and 0xFF) or
+            ((packed[offset + 1].toInt() and 0xFF) shl 8) or
+            ((packed[offset + 2].toInt() and 0xFF) shl 16) or
+            ((packed[offset + 3].toInt() and 0xFF) shl 24)
+        val frameCount = readInt(0)
+        val width = readInt(4)
+        val height = readInt(8)
+        val fps = readInt(12)
+        val frameSize = width * height * 4
+        if (frameCount <= 0 || width <= 0 || height <= 0 ||
+            packed.size < 16 + frameCount.toLong() * frameSize) return null
+        val frames = (0 until frameCount).map { i ->
+            val offset = 16 + i * frameSize
+            packed.copyOfRange(offset, offset + frameSize)
+        }
+        return VideoPacket(frames, width, height, fps)
+    }
+
+    private fun updateLastBotVideoFrames(frames: List<ByteArray>, width: Int, height: Int, fps: Int) {
+        val messages = _conversation.value
+        if (messages.isEmpty()) return
+        val lastIndex = messages.lastIndex
+        val last = messages[lastIndex]
+        if (last.author == ChatUiModel.Author.bot) {
+            _conversation.value = messages.toMutableList().apply {
+                this[lastIndex] = last.copy(
+                    text = "",
+                    imagePng = null,
+                    imageFileName = null,
+                    imageRgba = null,
+                    imageWidth = null,
+                    imageHeight = null,
+                    videoFrames = frames,
+                    videoWidth = width,
+                    videoHeight = height,
+                    videoFps = fps,
+                )
+            }
+        }
+    }
+
     private fun updateLastBotMessage(text: String) {
         val messages = _conversation.value
         if (messages.isEmpty()) return
@@ -1073,6 +1219,10 @@ class ChatBotViewModel(
                     imageRgba = null,
                     imageWidth = null,
                     imageHeight = null,
+                    videoFrames = null,
+                    videoWidth = null,
+                    videoHeight = null,
+                    videoFps = null,
                 )
             }
         }
@@ -1345,7 +1495,11 @@ class ChatBotViewModel(
             ModelCategory.StableDiffusion -> {
                 val loaded = StableDiffusionBridge.initModel(path)
                 if (loaded) {
-                    _state.update { s -> s.copy(selectedStableDiffusionModelName = model.name, isStableDiffusionModelLoaded = true) }
+                    _state.update { s -> s.copy(
+                        selectedStableDiffusionModelName = model.name,
+                        isStableDiffusionModelLoaded = true,
+                        isVideoGenerationSupported = StableDiffusionBridge.supportsVideoGeneration()
+                    ) }
                     _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoaded)
                 } else {
                     _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoadError)
@@ -1470,6 +1624,7 @@ class ChatBotViewModel(
                     isSttModelLoaded = if (_state.value.selectedSttModelName == model.name) false else _state.value.isSttModelLoaded,
                     selectedStableDiffusionModelName = if (_state.value.selectedStableDiffusionModelName == model.name) null else _state.value.selectedStableDiffusionModelName,
                     isStableDiffusionModelLoaded = if (_state.value.selectedStableDiffusionModelName == model.name) false else _state.value.isStableDiffusionModelLoaded,
+                    isVideoGenerationSupported = if (_state.value.selectedStableDiffusionModelName == model.name) false else _state.value.isVideoGenerationSupported,
                     selectedVlmModelName = if (_state.value.selectedVlmModelName == model.name) null else _state.value.selectedVlmModelName,
                     isVlmModelLoaded = if (_state.value.selectedVlmModelName == model.name) false else _state.value.isVlmModelLoaded,
                 )
@@ -1537,6 +1692,7 @@ class ChatBotViewModel(
                         isGenerateModelLoaded = false,
                         isSttModelLoaded = false,
                         isStableDiffusionModelLoaded = false,
+                        isVideoGenerationSupported = false,
                         isVlmModelLoaded = false,
                         ragPdfFileName = null,
                         isRagIndexing = false,
@@ -2448,9 +2604,14 @@ data class ChatUiModel(
         val imageRgba: ByteArray? = null,
         val imageWidth: Int? = null,
         val imageHeight: Int? = null,
+        val videoFrames: List<ByteArray>? = null,
+        val videoWidth: Int? = null,
+        val videoHeight: Int? = null,
+        val videoFps: Int? = null,
     ) {
         val isFromMe: Boolean get() = author.id == MY_ID
         val hasImage: Boolean get() = imagePng != null || imageRgba != null
+        val hasVideo: Boolean get() = !videoFrames.isNullOrEmpty()
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -2474,6 +2635,10 @@ data class ChatUiModel(
             if (imageWidth != other.imageWidth) return false
             if (imageHeight != other.imageHeight) return false
             if (imageFileName != other.imageFileName) return false
+            if (videoFrames !== other.videoFrames) return false
+            if (videoWidth != other.videoWidth) return false
+            if (videoHeight != other.videoHeight) return false
+            if (videoFps != other.videoFps) return false
 
             return true
         }
@@ -2486,6 +2651,10 @@ data class ChatUiModel(
             result = 31 * result + (imageRgba?.contentHashCode() ?: 0)
             result = 31 * result + (imageWidth ?: 0)
             result = 31 * result + (imageHeight ?: 0)
+            result = 31 * result + (videoFrames?.size ?: 0)
+            result = 31 * result + (videoWidth ?: 0)
+            result = 31 * result + (videoHeight ?: 0)
+            result = 31 * result + (videoFps ?: 0)
             return result
         }
     }
@@ -2521,6 +2690,7 @@ data class ChatBotState(
     val isGenerateModelLoading: Boolean = false,
     val isSttModelLoaded: Boolean = false,
     val isStableDiffusionModelLoaded: Boolean = false,
+    val isVideoGenerationSupported: Boolean = false,
     val isVlmModelLoaded: Boolean = false,
     val selectedEmbedModelName: String? = null,
     val selectedGenerateModelName: String? = null,
@@ -2538,11 +2708,19 @@ data class ChatBotState(
     val pendingVisionImageBytes: ByteArray? = null,
     val pendingImg2ImgBytes: ByteArray? = null,
     val img2ImgStrength: Float = 0.75f,
+    val selectedVideoForPlayback: VideoData? = null,
 
     val ragPdfFileName: String? = null,
     val isRagIndexing: Boolean = false,
     val ragIndexingProgress: Int = 0,
     val ragChunksCount: Int = 0,
+)
+
+data class VideoData(
+    val frames: List<ByteArray>,
+    val width: Int,
+    val height: Int,
+    val fps: Int,
 )
 
 sealed class ChatBotSideEffects {
@@ -2567,4 +2745,6 @@ sealed class ChatBotSideEffects {
     data class OnCacheCleared(val message: String) : ChatBotSideEffects()
     data class OnCacheClearFailed(val message: String) : ChatBotSideEffects()
     data class OnToolCallDetected(val toolId: String, val rawJson: String) : ChatBotSideEffects()
+    data class OnVideoSaved(val message: String) : ChatBotSideEffects()
+    data class OnVideoSaveFailed(val message: String) : ChatBotSideEffects()
 }
