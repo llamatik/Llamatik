@@ -145,12 +145,21 @@ class ModelCatalogScreen(private val type: ModelCatalogType) : Screen {
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 models.forEach { model ->
+                    val companionUrls = listOfNotNull(model.vaeUrl, model.t5xxlUrl, model.clipVisionUrl)
+                    val isAnyCompanionDownloading = companionUrls.any { downloadingMap[it] == true }
+                    val companionProgress = if (companionUrls.isEmpty()) 1f else
+                        companionUrls.map { progressMap[it] ?: 0f }.average().toFloat()
+                    val companionsReady = companionUrls.isEmpty() || model.name in state.sdCompanionsReady
                     ModelRow(
                         model = model,
                         isCurrent = (model.name == selectedName),
                         isDownloading = downloadingMap[model.url] == true,
                         progress = progressMap[model.url] ?: 0f,
                         isSelecting = (model.name == loadingModelName.value),
+                        companionsReady = companionsReady,
+                        isAnyCompanionDownloading = isAnyCompanionDownloading,
+                        companionProgress = companionProgress,
+                        onDownloadCompanionsClicked = { m -> viewModel.onDownloadCompanions(m) },
                         onModelSelectedClicked = { m ->
                             loadingModelName.value = m.name
                             when (type) {
@@ -161,6 +170,7 @@ class ModelCatalogScreen(private val type: ModelCatalogType) : Screen {
                                 ModelCatalogType.Vlm -> viewModel.onVlmModelSelected(m)
                             }
                         },
+                        onUnloadModelClicked = { m -> viewModel.onUnloadModel(m, catalogCategory) },
                         onDownloadModelClicked = { m ->
                             notificationPermissionRequester.requestAndRun(
                                 onGranted = { viewModel.onDownloadModel(m) }

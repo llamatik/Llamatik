@@ -268,7 +268,10 @@ class ChatBotViewModel(
             ?: return null
         if (PlatformInfo.isWasm) return rawPath
         val migrated = migrateModelPathIfNeeded(modelNameOrFileName = key, savedPath = rawPath)
-        if (migrated.isBlank()) return null
+        if (migrated.isBlank()) {
+            runCatching { getModelsUseCase.deleteModelPath(key) }
+            return null
+        }
         if (migrated != rawPath) runCatching { getModelsUseCase.saveModelPath(key, migrated) }
         return migrated
     }
@@ -283,23 +286,70 @@ class ChatBotViewModel(
         val job = screenModelScope.launch(AppDispatchersIO) {
             updateDownload(url) { it.copy(inProgress = true, progress = 0, done = false, error = null) }
             val companionModel = model.copy(name = key, url = url, sizeMb = 0)
-            modelDownloadOrchestrator.download(companionModel).collect { ev ->
-                when (ev) {
-                    is DownloadEvent.Progress ->
-                        updateDownload(url) { it.copy(inProgress = true, progress = ev.percent) }
-                    is DownloadEvent.Completed -> {
-                        val rawPath = persistedPathForDownloadedModel(companionModel, ev.localPath)
-                        val persistedPath = migrateModelPathIfNeeded(key, rawPath)
-                        getModelsUseCase.saveModelPath(key, persistedPath)
-                        updateDownload(url) { it.copy(inProgress = false, progress = 100, done = true, error = null) }
-                        Logger.d("StableDiffusion - companion $role downloaded to $persistedPath")
+            runCatching {
+                modelDownloadOrchestrator.download(companionModel).collect { ev ->
+                    when (ev) {
+                        is DownloadEvent.Progress ->
+                            updateDownload(url) { it.copy(inProgress = true, progress = ev.percent) }
+                        is DownloadEvent.Completed -> {
+                            val rawPath = persistedPathForDownloadedModel(companionModel, ev.localPath)
+                            val persistedPath = migrateModelPathIfNeeded(key, rawPath)
+                            if (persistedPath.isBlank()) {
+                                Logger.e { "StableDiffusion - companion $role file too small, treating as failed" }
+                                updateDownload(url) { it.copy(inProgress = false, error = "Downloaded file is invalid", done = false) }
+                            } else {
+                                getModelsUseCase.saveModelPath(key, persistedPath)
+                                updateDownload(url) { it.copy(inProgress = false, progress = 100, done = true, error = null) }
+                                Logger.d("StableDiffusion - companion $role downloaded to $persistedPath")
+                                retryInitSdModelIfReady(model)
+                            }
+                        }
+                        is DownloadEvent.Failed ->
+                            updateDownload(url) { it.copy(inProgress = false, error = ev.message, done = false) }
                     }
-                    is DownloadEvent.Failed ->
-                        updateDownload(url) { it.copy(inProgress = false, error = ev.message, done = false) }
                 }
+            }.onFailure { e ->
+                Logger.e { "StableDiffusion - companion $role download error: ${e.message}" }
+                updateDownload(url) { it.copy(inProgress = false, error = e.message, done = false) }
             }
         }
         downloadJobs[url] = job
+    }
+
+    private fun allCompanionsReady(model: LlamaModel): Boolean {
+        if (!model.vaeUrl.isNullOrEmpty() && resolveCompanionPath(model, "vae") == null) return false
+        if (!model.t5xxlUrl.isNullOrEmpty() && resolveCompanionPath(model, "t5xxl") == null) return false
+        if (!model.clipVisionUrl.isNullOrEmpty() && resolveCompanionPath(model, "clip_vision") == null) return false
+        return true
+    }
+
+    private fun retryInitSdModelIfReady(model: LlamaModel) {
+        val primaryPath = resolveAndMigratePath(model) ?: return
+        if (!allCompanionsReady(model)) return
+        // Mark this model's companions as fully ready in state
+        _state.value = _state.value.copy(sdCompanionsReady = _state.value.sdCompanionsReady + model.name)
+        val currentSelected = _state.value.selectedStableDiffusionModelName
+        if (currentSelected != null && currentSelected != model.name) return
+
+        val vaePath = if (model.vaeUrl.isNullOrEmpty()) null else resolveCompanionPath(model, "vae")
+        val t5xxlPath = if (model.t5xxlUrl.isNullOrEmpty()) null else resolveCompanionPath(model, "t5xxl")
+        val clipVisionPath = if (model.clipVisionUrl.isNullOrEmpty()) null else resolveCompanionPath(model, "clip_vision")
+
+        screenModelScope.launch(AppDispatchersIO) {
+            val loaded = withTimeoutOrNull(300_000L) {
+                StableDiffusionBridge.initModel(primaryPath, vaePath = vaePath, t5xxlPath = t5xxlPath, clipVisionPath = clipVisionPath)
+            } ?: false
+            if (loaded) {
+                _state.value = _state.value.copy(
+                    selectedStableDiffusionModelName = model.name,
+                    isStableDiffusionModelLoaded = true,
+                    isVideoGenerationSupported = StableDiffusionBridge.supportsVideoGeneration()
+                )
+                _sideEffects.trySend(ChatBotSideEffects.OnStableDiffusionModelLoaded)
+            } else {
+                Logger.e { "StableDiffusion - failed to init ${model.name} with companions" }
+            }
+        }
     }
 
     fun onStarted(
@@ -381,7 +431,14 @@ class ChatBotViewModel(
                         val path = resolveAndMigratePath(m)
                         if (!path.isNullOrBlank()) m.copy(localPath = path, fileName = path) else m
                     }
-                    _state.value = _state.value.copy(stableDiffusionModels = normalized)
+                    val companionsReadyNames = normalized
+                        .filter { m -> !m.localPath.isNullOrEmpty() && allCompanionsReady(m) }
+                        .map { it.name }
+                        .toSet()
+                    _state.value = _state.value.copy(
+                        stableDiffusionModels = normalized,
+                        sdCompanionsReady = companionsReadyNames,
+                    )
                 }
                 .onFailure { error -> Logger.e(error.message ?: "Unknown error") }
 
@@ -1170,6 +1227,27 @@ class ChatBotViewModel(
                         return@withContext
                     }
 
+                    // Check if required companion files are ready for the selected video model
+                    val sdModelName = _state.value.selectedStableDiffusionModelName
+                    val sdModel = _state.value.stableDiffusionModels.firstOrNull { it.name == sdModelName }
+                    if (sdModel != null && !allCompanionsReady(sdModel)) {
+                        val missing = buildList {
+                            if (!sdModel.vaeUrl.isNullOrEmpty() && resolveCompanionPath(sdModel, "vae") == null)
+                                add("VAE (${sdModel.vaeSizeMb} MB)")
+                            if (!sdModel.t5xxlUrl.isNullOrEmpty() && resolveCompanionPath(sdModel, "t5xxl") == null)
+                                add("T5 text encoder (${sdModel.t5xxlSizeMb} MB)")
+                            if (!sdModel.clipVisionUrl.isNullOrEmpty() && resolveCompanionPath(sdModel, "clip_vision") == null)
+                                add("CLIP vision (${sdModel.clipVisionSizeMb} MB)")
+                        }
+                        downloadCompanionIfNeeded(sdModel, "vae", sdModel.vaeUrl)
+                        downloadCompanionIfNeeded(sdModel, "t5xxl", sdModel.t5xxlUrl)
+                        downloadCompanionIfNeeded(sdModel, "clip_vision", sdModel.clipVisionUrl)
+                        updateLastBotMessage("🎬 Video generation requires companion files that haven't been downloaded yet: ${missing.joinToString(", ")}. Downloading now — video will be available once complete.")
+                        _state.value = _state.value.copy(isGenerating = false)
+                        _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                        return@withContext
+                    }
+
                     val packedBytes = StableDiffusionBridge.txt2video(
                         prompt = input,
                         negativePrompt = "",
@@ -1463,7 +1541,7 @@ class ChatBotViewModel(
                             }
                         }
 
-                        // Download SD companion files if needed
+                        // Download SD companion files; also re-init with full companions once all arrive
                         val sdModelForCompanions = _state.value.stableDiffusionModels.firstOrNull { it.url == url }
                         sdModelForCompanions?.let { m ->
                             downloadCompanionIfNeeded(m, "vae", m.vaeUrl)
@@ -1504,6 +1582,12 @@ class ChatBotViewModel(
         updateDownload(url) {
             it.copy(inProgress = false, done = false, progress = 0, error = "Cancelled")
         }
+    }
+
+    fun onDownloadCompanions(model: LlamaModel) {
+        downloadCompanionIfNeeded(model, "vae", model.vaeUrl)
+        downloadCompanionIfNeeded(model, "t5xxl", model.t5xxlUrl)
+        downloadCompanionIfNeeded(model, "clip_vision", model.clipVisionUrl)
     }
 
     fun onDownloadFromUrl(url: String, name: String, category: ModelCategory) {
@@ -1742,6 +1826,46 @@ class ChatBotViewModel(
                 )
             } catch (t: Throwable) {
                 Logger.e(t) { "LlamaVM - error deleting model ${model.name}" }
+            }
+        }
+    }
+
+    fun onUnloadModel(model: LlamaModel, category: ModelCategory) {
+        screenModelScope.launch(AppDispatchersIO) {
+            Logger.d("LlamaVM - unloading model ${model.name}")
+            runCatching {
+                when (category) {
+                    ModelCategory.Generate -> LlamaBridge.shutdown()
+                    ModelCategory.Embed -> LlamaBridge.shutdown()
+                    ModelCategory.Stt -> WhisperBridge.release()
+                    ModelCategory.StableDiffusion -> StableDiffusionBridge.release()
+                    ModelCategory.Vlm -> MultimodalBridge.release()
+                }
+            }
+            _state.update { s ->
+                when (category) {
+                    ModelCategory.Generate -> s.copy(
+                        selectedGenerateModelName = if (s.selectedGenerateModelName == model.name) null else s.selectedGenerateModelName,
+                        isGenerateModelLoaded = if (s.selectedGenerateModelName == model.name) false else s.isGenerateModelLoaded,
+                    )
+                    ModelCategory.Embed -> s.copy(
+                        selectedEmbedModelName = if (s.selectedEmbedModelName == model.name) null else s.selectedEmbedModelName,
+                        isEmbedModelLoaded = if (s.selectedEmbedModelName == model.name) false else s.isEmbedModelLoaded,
+                    )
+                    ModelCategory.Stt -> s.copy(
+                        selectedSttModelName = if (s.selectedSttModelName == model.name) null else s.selectedSttModelName,
+                        isSttModelLoaded = if (s.selectedSttModelName == model.name) false else s.isSttModelLoaded,
+                    )
+                    ModelCategory.StableDiffusion -> s.copy(
+                        selectedStableDiffusionModelName = if (s.selectedStableDiffusionModelName == model.name) null else s.selectedStableDiffusionModelName,
+                        isStableDiffusionModelLoaded = if (s.selectedStableDiffusionModelName == model.name) false else s.isStableDiffusionModelLoaded,
+                        isVideoGenerationSupported = if (s.selectedStableDiffusionModelName == model.name) false else s.isVideoGenerationSupported,
+                    )
+                    ModelCategory.Vlm -> s.copy(
+                        selectedVlmModelName = if (s.selectedVlmModelName == model.name) null else s.selectedVlmModelName,
+                        isVlmModelLoaded = if (s.selectedVlmModelName == model.name) false else s.isVlmModelLoaded,
+                    )
+                }
             }
         }
     }
@@ -2796,6 +2920,8 @@ data class ChatBotState(
     val generateModels: List<LlamaModel> = emptyList(),
     val sttModels: List<LlamaModel> = emptyList(),
     val stableDiffusionModels: List<LlamaModel> = emptyList(),
+    // Names of SD models where all required companion files have been downloaded
+    val sdCompanionsReady: Set<String> = emptySet(),
     val vlmModels: List<LlamaModel> = emptyList(),
     val isEmbedModelLoaded: Boolean = false,
     val isGenerateModelLoaded: Boolean = false,

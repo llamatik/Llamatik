@@ -1,9 +1,12 @@
 package com.llamatik.app.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,9 +54,16 @@ class ModelChoiceOnboardingScreen : Screen {
         }
 
         LlamatikTheme {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.TopCenter,
+            ) {
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 600.dp)
+                    .fillMaxHeight()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.Center,
@@ -130,6 +140,7 @@ class ModelChoiceOnboardingScreen : Screen {
                     )
                 }
             }
+            } // Box TopCenter
         }
     }
 }

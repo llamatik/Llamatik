@@ -21,6 +21,12 @@
 
 static sd_ctx_t * g_sd_ctx = nullptr;
 
+// Cached model paths — used to skip unnecessary free/reload when the same files are requested.
+static std::string g_sd_model_path;
+static std::string g_sd_vae_path;
+static std::string g_sd_t5xxl_path;
+static std::string g_sd_clip_vision_path;
+
 static std::string jstring_to_utf8(JNIEnv * env, jstring s) {
     if (!s) return "";
     const char * c = env->GetStringUTFChars(s, nullptr);
@@ -39,31 +45,46 @@ Java_com_llamatik_core_platform_StableDiffusionBridge_initModelNative(
         jstring t5xxlPath,
         jstring clipVisionPath
 ) {
+    const std::string path       = jstring_to_utf8(env, modelPath);
+    const std::string vae        = jstring_to_utf8(env, vaePath);
+    const std::string t5xxl      = jstring_to_utf8(env, t5xxlPath);
+    const std::string clipVision = jstring_to_utf8(env, clipVisionPath);
+    if (path.empty()) return JNI_FALSE;
+
+    // Skip free/reload if the exact same model files are already loaded.
+    // Repeated init with the same model fragments the heap and exhausts Metal
+    // memory, eventually causing ggml_new_tensor_impl to assert when T5 tries
+    // to reserve its compute workspace.
+    if (g_sd_ctx
+            && path       == g_sd_model_path
+            && vae        == g_sd_vae_path
+            && t5xxl      == g_sd_t5xxl_path
+            && clipVision == g_sd_clip_vision_path) {
+        return JNI_TRUE;
+    }
+
     if (g_sd_ctx) {
         free_sd_ctx(g_sd_ctx);
         g_sd_ctx = nullptr;
     }
 
-    const std::string path     = jstring_to_utf8(env, modelPath);
-    const std::string vae      = jstring_to_utf8(env, vaePath);
-    const std::string t5xxl    = jstring_to_utf8(env, t5xxlPath);
-    const std::string clipVision = jstring_to_utf8(env, clipVisionPath);
-    if (path.empty()) return JNI_FALSE;
+    // DiT-only models (Wan, LTX-Video, HunyuanVideo) always come with companion files
+    // (VAE, T5xxl, etc.) and must be loaded via diffusion_model_path so their tensors
+    // receive the "model.diffusion_model." prefix that WanRunner/LTXRunner expects.
+    // Full checkpoints (SD1.x, SDXL, SVD) have no companion files and use model_path.
+    const bool has_companion_files = !vae.empty() || !t5xxl.empty() || !clipVision.empty();
 
-    sd_ctx_params_t params;
-    sd_ctx_params_init(&params);
-
-    params.model_path       = path.c_str();
-    params.n_threads        = (int) threads;
-    params.enable_mmap      = true;
-    params.vae_path         = vae.empty()         ? nullptr : vae.c_str();
-    params.t5xxl_path       = t5xxl.empty()       ? nullptr : t5xxl.c_str();
-    params.clip_vision_path = clipVision.empty()   ? nullptr : clipVision.c_str();
-
-    g_sd_ctx = new_sd_ctx(&params);
+    if (!has_companion_files) {
+        sd_ctx_params_t params;
+        sd_ctx_params_init(&params);
+        params.model_path       = path.c_str();
+        params.n_threads        = (int) threads;
+        params.enable_mmap      = true;
+        g_sd_ctx = new_sd_ctx(&params);
+    }
 
     if (!g_sd_ctx) {
-        // Retry as a standalone diffusion model (DiT models like Wan, LTX-Video)
+        // Load as a standalone diffusion model (DiT models like Wan, LTX-Video)
         sd_ctx_params_t params2;
         sd_ctx_params_init(&params2);
         params2.diffusion_model_path = path.c_str();
@@ -73,6 +94,13 @@ Java_com_llamatik_core_platform_StableDiffusionBridge_initModelNative(
         params2.t5xxl_path       = t5xxl.empty()       ? nullptr : t5xxl.c_str();
         params2.clip_vision_path = clipVision.empty()   ? nullptr : clipVision.c_str();
         g_sd_ctx = new_sd_ctx(&params2);
+    }
+
+    if (g_sd_ctx) {
+        g_sd_model_path       = path;
+        g_sd_vae_path         = vae;
+        g_sd_t5xxl_path       = t5xxl;
+        g_sd_clip_vision_path = clipVision;
     }
 
     return g_sd_ctx ? JNI_TRUE : JNI_FALSE;
@@ -278,12 +306,16 @@ Java_com_llamatik_core_platform_StableDiffusionBridge_img2img(
 extern "C" JNIEXPORT void JNICALL
 Java_com_llamatik_core_platform_StableDiffusionBridge_release(
         JNIEnv *,
-jobject
+        jobject
 ) {
-if (g_sd_ctx) {
-free_sd_ctx(g_sd_ctx);
-g_sd_ctx = nullptr;
-}
+    if (g_sd_ctx) {
+        free_sd_ctx(g_sd_ctx);
+        g_sd_ctx = nullptr;
+    }
+    g_sd_model_path.clear();
+    g_sd_vae_path.clear();
+    g_sd_t5xxl_path.clear();
+    g_sd_clip_vision_path.clear();
 }
 
 extern "C" JNIEXPORT jboolean JNICALL

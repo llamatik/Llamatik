@@ -19,6 +19,7 @@ import com.russhwolf.settings.Settings
 import io.ktor.client.call.body
 import io.ktor.client.request.prepareGet
 import io.ktor.http.contentLength
+import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.CancellationException
@@ -85,6 +86,9 @@ class ModelsRepository(private val service: ServiceClient) {
 
         try {
             service.httpClient.prepareGet(url).execute { httpResponse ->
+                if (!httpResponse.status.isSuccess()) {
+                    throw IllegalStateException("HTTP ${httpResponse.status.value} downloading $url")
+                }
                 val channel: ByteReadChannel = httpResponse.body()
                 val totalBytes = httpResponse.contentLength() ?: -1L
                 var downloaded = 0L
@@ -337,9 +341,9 @@ class ModelsRepository(private val service: ServiceClient) {
                 sdCapability = SdCapability.Video,
                 mobileSuitability = 3,
                 vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
-                vaeSizeMb = 430,
-                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_0.gguf?download=true",
-                t5xxlSizeMb = 2400,
+                vaeSizeMb = 243,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_K_M.gguf?download=true",
+                t5xxlSizeMb = 3487,
             ),
             LlamaModel(
                 name = "Wan 2.2 TI2V 5B Q4_0",
@@ -350,8 +354,8 @@ class ModelsRepository(private val service: ServiceClient) {
                 mobileSuitability = 2,
                 vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors?download=true",
                 vaeSizeMb = 430,
-                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_0.gguf?download=true",
-                t5xxlSizeMb = 2400,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_K_M.gguf?download=true",
+                t5xxlSizeMb = 3487,
             ),
             LlamaModel(
                 name = "Wan 2.1 I2V 14B 480P Q4_0",
@@ -361,9 +365,9 @@ class ModelsRepository(private val service: ServiceClient) {
                 sdCapability = SdCapability.Video,
                 mobileSuitability = 1,
                 vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
-                vaeSizeMb = 430,
-                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_0.gguf?download=true",
-                t5xxlSizeMb = 2400,
+                vaeSizeMb = 243,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_K_M.gguf?download=true",
+                t5xxlSizeMb = 3487,
                 clipVisionUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors?download=true",
                 clipVisionSizeMb = 600,
             ),

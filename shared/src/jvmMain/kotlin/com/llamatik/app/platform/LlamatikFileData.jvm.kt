@@ -127,6 +127,25 @@ actual class LlamatikTempFile actual constructor(fileName: String) {
     }
 }
 
+private const val MIN_VALID_MODEL_SIZE = 1024L * 1024L // 1 MB
+
+// Returns true if the file starts with GGUF magic or safetensors magic.
+// Rejects HTTP error bodies (e.g. 15-byte 404 responses) and other junk.
+private fun hasValidModelMagic(file: File): Boolean {
+    if (file.length() < 9) return false
+    val magic = ByteArray(9)
+    return try {
+        FileInputStream(file).use { fis -> fis.read(magic) == 9 } &&
+            // GGUF: "GGUF" at offset 0
+            (magic[0] == 'G'.code.toByte() && magic[1] == 'G'.code.toByte() &&
+             magic[2] == 'U'.code.toByte() && magic[3] == 'F'.code.toByte() ||
+             // safetensors: uint64 header-length at offset 0, then '{' at offset 8
+             magic[8] == '{'.code.toByte())
+    } catch (_: Exception) {
+        false
+    }
+}
+
 actual fun migrateModelPathIfNeeded(
     modelNameOrFileName: String,
     savedPath: String
@@ -134,7 +153,9 @@ actual fun migrateModelPathIfNeeded(
     if (savedPath.isBlank()) return savedPath
 
     val saved = File(savedPath)
-    if (!saved.exists()) return savedPath
+    if (!saved.exists()) return ""
+    if (saved.length() < MIN_VALID_MODEL_SIZE) return ""
+    if (!hasValidModelMagic(saved)) return ""
 
     val persistentDir = modelsDirJvm().absolutePath
 

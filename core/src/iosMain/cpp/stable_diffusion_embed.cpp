@@ -20,44 +20,70 @@
 
 static sd_ctx_t * g_sd_ctx = nullptr;
 
+// Cached model paths — used to skip unnecessary free/reload when the same files are requested.
+static std::string g_sd_model_path;
+static std::string g_sd_vae_path;
+static std::string g_sd_t5xxl_path;
+static std::string g_sd_clip_vision_path;
+
 extern "C" {
 
 // Returns 1 on success, 0 on failure.
 int32_t sd_init(const char * model_path, int32_t threads,
                 const char * vae_path, const char * t5xxl_path,
                 const char * clip_vision_path) {
-    if (g_sd_ctx) {
-        free_sd_ctx(g_sd_ctx);
-        g_sd_ctx = nullptr;
-    }
-
     if (!model_path || model_path[0] == '\0') {
         std::fprintf(stderr, "sd_init: model_path is null/empty\n");
         return 0;
     }
 
-    sd_ctx_params_t params;
-    sd_ctx_params_init(&params);
+    const std::string path       = model_path;
+    const std::string vae        = vae_path         ? vae_path         : "";
+    const std::string t5xxl      = t5xxl_path       ? t5xxl_path       : "";
+    const std::string clipVision = clip_vision_path ? clip_vision_path : "";
 
-    params.model_path = model_path;
-    params.n_threads  = (int) threads;
-    params.enable_mmap = true;
-    params.vae_path         = (vae_path && vae_path[0])         ? vae_path         : nullptr;
-    params.t5xxl_path       = (t5xxl_path && t5xxl_path[0])     ? t5xxl_path       : nullptr;
-    params.clip_vision_path = (clip_vision_path && clip_vision_path[0]) ? clip_vision_path : nullptr;
+    // Skip free/reload if the exact same model files are already loaded.
+    // Repeated init with the same model fragments the heap and exhausts Metal
+    // memory, eventually causing ggml_new_tensor_impl to assert when T5 tries
+    // to reserve its compute workspace.
+    if (g_sd_ctx
+            && path       == g_sd_model_path
+            && vae        == g_sd_vae_path
+            && t5xxl      == g_sd_t5xxl_path
+            && clipVision == g_sd_clip_vision_path) {
+        return 1;
+    }
 
-    g_sd_ctx = new_sd_ctx(&params);
+    if (g_sd_ctx) {
+        free_sd_ctx(g_sd_ctx);
+        g_sd_ctx = nullptr;
+    }
+
+    // DiT-only models (Wan, LTX-Video, HunyuanVideo) always come with companion files
+    // (VAE, T5xxl, etc.) and must be loaded via diffusion_model_path so their tensors
+    // receive the "model.diffusion_model." prefix that WanRunner/LTXRunner expects.
+    // Full checkpoints (SD1.x, SDXL, SVD) have no companion files and use model_path.
+    const bool has_companion_files = !vae.empty() || !t5xxl.empty() || !clipVision.empty();
+
+    if (!has_companion_files) {
+        sd_ctx_params_t params;
+        sd_ctx_params_init(&params);
+        params.model_path       = model_path;
+        params.n_threads        = (int) threads;
+        params.enable_mmap      = true;
+        g_sd_ctx = new_sd_ctx(&params);
+    }
 
     if (!g_sd_ctx) {
-        // Retry as a standalone diffusion model (DiT models like Wan, LTX-Video)
+        // Load as a standalone diffusion model (DiT models like Wan, LTX-Video)
         sd_ctx_params_t params2;
         sd_ctx_params_init(&params2);
         params2.diffusion_model_path = model_path;
         params2.n_threads  = (int) threads;
         params2.enable_mmap = true;
-        params2.vae_path         = (vae_path && vae_path[0])         ? vae_path         : nullptr;
-        params2.t5xxl_path       = (t5xxl_path && t5xxl_path[0])     ? t5xxl_path       : nullptr;
-        params2.clip_vision_path = (clip_vision_path && clip_vision_path[0]) ? clip_vision_path : nullptr;
+        params2.vae_path         = vae.empty()       ? nullptr : vae.c_str();
+        params2.t5xxl_path       = t5xxl.empty()     ? nullptr : t5xxl.c_str();
+        params2.clip_vision_path = clipVision.empty() ? nullptr : clipVision.c_str();
         g_sd_ctx = new_sd_ctx(&params2);
     }
 
@@ -65,6 +91,11 @@ int32_t sd_init(const char * model_path, int32_t threads,
         std::fprintf(stderr, "sd_init: FAILED to create sd context for '%s'\n", model_path);
         return 0;
     }
+
+    g_sd_model_path       = path;
+    g_sd_vae_path         = vae;
+    g_sd_t5xxl_path       = t5xxl;
+    g_sd_clip_vision_path = clipVision;
 
     return 1;
 }
@@ -284,6 +315,10 @@ void sd_release(void) {
         free_sd_ctx(g_sd_ctx);
         g_sd_ctx = nullptr;
     }
+    g_sd_model_path.clear();
+    g_sd_vae_path.clear();
+    g_sd_t5xxl_path.clear();
+    g_sd_clip_vision_path.clear();
 }
 
 int32_t sd_supports_video_generation(void) {

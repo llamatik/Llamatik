@@ -1,9 +1,13 @@
 package com.llamatik.app.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -12,6 +16,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
@@ -52,23 +58,36 @@ fun MainScreenView() {
         val rootNavigatorRepository = setupRootNavigator(rootNavigator, LocalTabNavigator.current)
         val rootSnackbarHostStateRepository = setupRootSnackbarHostState(snackbarHostState)
 
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            snackbarHost = { SnackbarHost(rootSnackbarHostStateRepository.snackbarHostState) },
-            bottomBar = {
-                LLamatikNavigationBar {
-                    TabNavigationItem(ChatBotTab, rootNavigatorRepository)
-                    TabNavigationItem(ChatHistoryTab, rootNavigatorRepository)
-                    //TabNavigationItem(CompanionTab, rootNavigatorRepository)
-                    TabNavigationItem(SettingsTab, rootNavigatorRepository)
-                }
-            },
-        ) { paddingValues ->
-            Box(modifier = androidx.compose.ui.Modifier.padding(paddingValues)) {
-                SlideTransition(LocalNavigator.currentOrThrow) { screen ->
-                    screen.Content()
+        Box(
+            modifier = androidx.compose.ui.Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            Box(
+                modifier = androidx.compose.ui.Modifier
+                    .widthIn(max = 600.dp)
+                    .fillMaxHeight(),
+            ) {
+                Scaffold(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                    snackbarHost = { SnackbarHost(rootSnackbarHostStateRepository.snackbarHostState) },
+                    bottomBar = {
+                        LLamatikNavigationBar {
+                            TabNavigationItem(ChatBotTab, rootNavigatorRepository)
+                            TabNavigationItem(ChatHistoryTab, rootNavigatorRepository)
+                            //TabNavigationItem(CompanionTab, rootNavigatorRepository)
+                            TabNavigationItem(SettingsTab, rootNavigatorRepository)
+                        }
+                    },
+                ) { paddingValues ->
+                    Box(modifier = androidx.compose.ui.Modifier.padding(paddingValues)) {
+                        SlideTransition(LocalNavigator.currentOrThrow) { screen ->
+                            screen.Content()
+                        }
+                    }
                 }
             }
         }

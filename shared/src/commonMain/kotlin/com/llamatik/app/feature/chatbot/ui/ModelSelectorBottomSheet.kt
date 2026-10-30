@@ -104,8 +104,13 @@ fun ModelRow(
     isDownloading: Boolean,
     progress: Float,
     isSelecting: Boolean,
+    companionsReady: Boolean = true,
+    isAnyCompanionDownloading: Boolean = false,
+    companionProgress: Float = 0f,
     onModelSelectedClicked: (LlamaModel) -> Unit,
     onDownloadModelClicked: (LlamaModel) -> Unit,
+    onDownloadCompanionsClicked: (LlamaModel) -> Unit = {},
+    onUnloadModelClicked: (LlamaModel) -> Unit = {},
     onDeleteModelClicked: (LlamaModel) -> Unit,
     onCancelDownloadClicked: (LlamaModel) -> Unit,
 ) {
@@ -180,8 +185,28 @@ fun ModelRow(
 
             if (hasLocalFile) {
                 if (isCurrent) {
-                    FilledTonalButton(onClick = { /* no-op */ }, enabled = false) {
-                        Text(localization.current)
+                    FilledTonalButton(onClick = { onUnloadModelClicked(model) }) {
+                        Text("Unload")
+                    }
+                } else if (isAnyCompanionDownloading) {
+                    Column(horizontalAlignment = Alignment.End) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text("Downloading companions…", style = Typography.get().labelSmall)
+                        }
+                        Spacer(Modifier.height(6.dp))
+                        LinearProgressIndicator(
+                            progress = { companionProgress },
+                            modifier = Modifier
+                                .width(140.dp)
+                                .progressSemantics()
+                        )
+                    }
+                } else if (!companionsReady) {
+                    Button(onClick = { onDownloadCompanionsClicked(model) }) {
+                        Text("Download companion files", style = Typography.get().labelSmall)
                     }
                 } else {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
