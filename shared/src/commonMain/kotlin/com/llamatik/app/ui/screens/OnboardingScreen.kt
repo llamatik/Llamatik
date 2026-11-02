@@ -229,7 +229,6 @@ class OnboardingScreen : Screen {
                     if (idx < TOTAL_PAGES - 1) Spacer(modifier = Modifier.width(6.dp))
                 }
             }
-        }
         } // Column widthIn
         } // Box TopCenter
         } // LlamatikTheme
