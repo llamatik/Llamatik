@@ -69,6 +69,10 @@ class AgentPlanner(
     }
 
     private fun parsePlan(raw: String): PlannerResult {
+        // Only treat as a JSON plan if the response starts with '{'.
+        // Models sometimes output text before a JSON block; that's conversational output.
+        if (!raw.trimStart().startsWith("{")) return PlannerResult.ConversationalResponse(raw.trim())
+
         val jsonBlock = extractFirstJsonBlock(raw)
             ?: return PlannerResult.ConversationalResponse(raw.trim())
 

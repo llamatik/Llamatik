@@ -9,6 +9,8 @@ jobs:
   build-native:
     name: Build native JNI (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:

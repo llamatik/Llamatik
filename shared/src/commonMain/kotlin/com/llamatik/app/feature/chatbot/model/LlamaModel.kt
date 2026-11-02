@@ -10,6 +10,12 @@ enum class ModelSource {
     CustomUrlDownload,
 }
 
+enum class SdCapability {
+    Image,
+    Video,
+    ImageAndVideo,
+}
+
 data class LlamaModel(
     val name: String,
     val url: String,
@@ -29,7 +35,19 @@ data class LlamaModel(
     val quantization: String? = null,
     val importedContextLength: Int? = null,
     val createdAtEpochMs: Long? = null,
+    // SD-specific: what this model can generate (null = not an SD model or unknown)
+    val sdCapability: SdCapability? = null,
+    // Mobile suitability rating 1–4 stars (null = not rated / not applicable)
+    val mobileSuitability: Int? = null,
+    // SD companion files for video models (VAE, T5 text encoder, CLIP vision)
+    val vaeUrl: String? = null,
+    val vaeSizeMb: Int = 0,
+    val t5xxlUrl: String? = null,
+    val t5xxlSizeMb: Int = 0,
+    val clipVisionUrl: String? = null,
+    val clipVisionSizeMb: Int = 0,
 )
 
 val LlamaModel.isVlm: Boolean get() = mmprojUrl != null
 val LlamaModel.isUserImported: Boolean get() = source == ModelSource.UserImported
+val LlamaModel.totalSizeMb: Int get() = sizeMb + mmprojSizeMb + vaeSizeMb + t5xxlSizeMb + clipVisionSizeMb

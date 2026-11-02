@@ -17,6 +17,8 @@ import platform.Foundation.NSDataBase64EncodingEndLineWithLineFeed
 import platform.Foundation.NSDataBase64EncodingOptions
 import platform.Foundation.NSFileHandle
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileSize
+import platform.Foundation.NSNumber
 import platform.Foundation.NSString
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
@@ -26,6 +28,7 @@ import platform.Foundation.NSUserDomainMask
 import platform.Foundation.base64EncodedStringWithOptions
 import platform.Foundation.closeFile
 import platform.Foundation.create
+import platform.Foundation.fileHandleForReadingAtPath
 import platform.Foundation.fileHandleForWritingAtPath
 import platform.Foundation.seekToEndOfFile
 import platform.Foundation.truncateFileAtOffset
@@ -285,6 +288,25 @@ actual class LlamatikTempFile actual constructor(fileName: String) {
     }
 }
 
+private const val MIN_VALID_MODEL_SIZE = 1024L * 1024L // 1 MB
+
+// Returns true if the file starts with GGUF magic or safetensors magic.
+// Rejects HTTP error bodies (e.g. 15-byte 404 responses) and other junk.
+@OptIn(ExperimentalForeignApi::class)
+private fun hasValidModelMagicIos(path: String): Boolean {
+    val handle = NSFileHandle.fileHandleForReadingAtPath(path) ?: return false
+    val data = handle.readDataOfLength(9uL)
+    handle.closeFile()
+    if (data.length < 9uL) return false
+    val bytes = nsDataToByteArray(data)
+    // GGUF: "GGUF" at offset 0
+    if (bytes[0] == 'G'.code.toByte() && bytes[1] == 'G'.code.toByte() &&
+        bytes[2] == 'U'.code.toByte() && bytes[3] == 'F'.code.toByte()) return true
+    // safetensors: uint64 header-length at offset 0, then '{' at offset 8
+    if (bytes[8] == '{'.code.toByte()) return true
+    return false
+}
+
 @OptIn(ExperimentalForeignApi::class)
 actual fun migrateModelPathIfNeeded(
     modelNameOrFileName: String,
@@ -294,7 +316,12 @@ actual fun migrateModelPathIfNeeded(
 
     val fm = NSFileManager.defaultManager
 
-    if (!fm.fileExistsAtPath(savedPath)) return savedPath
+    if (!fm.fileExistsAtPath(savedPath)) return ""
+
+    val attrs = fm.attributesOfItemAtPath(savedPath, null)
+    val fileSize = (attrs?.get(NSFileSize) as? NSNumber)?.longLongValue ?: 0L
+    if (fileSize < MIN_VALID_MODEL_SIZE) return ""
+    if (!hasValidModelMagicIos(savedPath)) return ""
 
     val persistentDir = modelsDirIos().path ?: return savedPath
 

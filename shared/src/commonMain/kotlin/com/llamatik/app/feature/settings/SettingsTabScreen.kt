@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,12 +16,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -29,6 +32,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -92,6 +96,7 @@ class SettingsTabScreen : Screen {
         val localization = getCurrentLocalization()
         val state by viewModel.state.collectAsState()
         val showLanguagePicker = remember { mutableStateOf(false) }
+        val showAgentModeInfo = remember { mutableStateOf(false) }
 
         if (state.currentLanguage != getCurrentLanguage()) {
             SetLanguage(state.currentLanguage)
@@ -121,81 +126,150 @@ class SettingsTabScreen : Screen {
             ) { paddingValues ->
                 Column(
                     modifier = Modifier
+                        .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(bottom = 46.dp)
                         .background(MaterialTheme.colorScheme.background)
-                        .verticalScroll(rememberScrollState())
                 ) {
-                    if (onOpenModels != null) {
+                    // Scrollable settings rows
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        if (onOpenModels != null) {
+                            Spacer(Modifier.size(16.dp))
+                            SettingsRow(
+                                icon = LlamatikIcons.Models,
+                                label = localization.modelsTitle,
+                                buttonLabel = localization.configure,
+                                onClick = onOpenModels
+                            )
+                        }
+
+                        if (onOpenModelSettings != null) {
+                            Spacer(Modifier.size(16.dp))
+                            SettingsRow(
+                                icon = LlamatikIcons.Tune,
+                                label = localization.generationSettings,
+                                buttonLabel = localization.configure,
+                                onClick = onOpenModelSettings
+                            )
+                        }
+
                         Spacer(Modifier.size(16.dp))
-                        SettingsRow(
-                            icon = LlamatikIcons.Models,
-                            label = localization.modelsTitle,
-                            buttonLabel = localization.configure,
-                            onClick = onOpenModels
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = LlamatikIcons.Language,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Column {
+                                    Text(text = localization.language, style = Typography.get().bodyMedium)
+                                    Text(
+                                        text = state.currentLanguage.displayName,
+                                        style = Typography.get().labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    )
+                                }
+                            }
+
+                            Button(onClick = { showLanguagePicker.value = true }) {
+                                Text(text = localization.change)
+                            }
+                        }
+
+                        if (onShowOnboarding != null) {
+                            Spacer(Modifier.size(16.dp))
+                            SettingsRow(
+                                icon = LlamatikIcons.Boarding,
+                                label = localization.onboarding,
+                                buttonLabel = localization.open,
+                                onClick = onShowOnboarding
+                            )
+                        }
+
+                        if (onAbout != null) {
+                            Spacer(Modifier.size(16.dp))
+                            SettingsRow(
+                                icon = LlamatikIcons.About,
+                                label = localization.about,
+                                buttonLabel = localization.open,
+                                onClick = onAbout
+                            )
+                        }
                     }
 
-                    if (onOpenModelSettings != null) {
-                        Spacer(Modifier.size(16.dp))
-                        SettingsRow(
-                            icon = LlamatikIcons.Tune,
-                            label = localization.generationSettings,
-                            buttonLabel = localization.configure,
-                            onClick = onOpenModelSettings
-                        )
-                    }
-
-                    Spacer(Modifier.size(16.dp))
+                    // Agent Mode — pinned to the bottom of the screen
+                    HorizontalDivider()
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.weight(1f)
                         ) {
                             Icon(
-                                imageVector = LlamatikIcons.Language,
+                                imageVector = LlamatikIcons.Tools,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(24.dp)
                             )
                             Column {
-                                Text(text = localization.language, style = Typography.get().bodyMedium)
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Text(text = localization.agentMode, style = Typography.get().bodyMedium)
+                                    IconButton(
+                                        onClick = { showAgentModeInfo.value = true },
+                                        modifier = Modifier.size(20.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = LlamatikIcons.Info,
+                                            contentDescription = localization.agentModeInfoTitle,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
                                 Text(
-                                    text = state.currentLanguage.displayName,
+                                    text = localization.agentModeDescription,
                                     style = Typography.get().labelMedium,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
                             }
                         }
-
-                        Button(onClick = { showLanguagePicker.value = true }) {
-                            Text(text = localization.change)
-                        }
-                    }
-
-                    if (onShowOnboarding != null) {
-                        Spacer(Modifier.size(16.dp))
-                        SettingsRow(
-                            icon = LlamatikIcons.Boarding,
-                            label = localization.onboarding,
-                            buttonLabel = localization.open,
-                            onClick = onShowOnboarding
+                        Switch(
+                            checked = state.isAgentEnabled,
+                            onCheckedChange = { viewModel.onAgentEnabledChanged(it) },
+                            thumbContent = if (state.isAgentEnabled) {
+                                {
+                                    Icon(
+                                        imageVector = LlamatikIcons.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            } else {
+                                null
+                            }
                         )
                     }
-
-                    if (onAbout != null) {
-                        Spacer(Modifier.size(16.dp))
-                        SettingsRow(
-                            icon = LlamatikIcons.About,
-                            label = localization.about,
-                            buttonLabel = localization.open,
-                            onClick = onAbout
-                        )
-                    }
+                    Spacer(Modifier.size(46.dp))
                 }
             }
         }
@@ -252,6 +326,19 @@ class SettingsTabScreen : Screen {
                     }
                 }
             }
+        }
+
+        if (showAgentModeInfo.value) {
+            AlertDialog(
+                onDismissRequest = { showAgentModeInfo.value = false },
+                title = { Text(localization.agentModeInfoTitle) },
+                text = { Text(localization.agentModeInfoMessage) },
+                confirmButton = {
+                    TextButton(onClick = { showAgentModeInfo.value = false }) {
+                        Text(localization.gotIt)
+                    }
+                }
+            )
         }
     }
 

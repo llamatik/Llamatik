@@ -19,6 +19,7 @@
   <img src="https://img.shields.io/badge/LLM-llama.cpp-orange" alt="llama.cpp badge"/>
   <img src="https://img.shields.io/badge/STT-whisper.cpp-blue" alt="whisper.cpp badge"/>
   <img src="https://img.shields.io/badge/Image-stablediffusion.cpp-purple" alt="stablediffusion badge"/>
+  <img src="https://img.shields.io/badge/Video-stable--diffusion.cpp-red" alt="video badge"/>
   <img src="https://img.shields.io/badge/License-MIT-lightgrey" alt="license badge"/>
   <a href="https://plugins.jetbrains.com/plugin/31304"><img src="https://img.shields.io/jetbrains/plugin/v/31304" alt="jetbrains plugin badge"/></a>
 </p>
@@ -106,7 +107,7 @@ A production-ready agentic runtime for host-app integration:
 - 🔬 **Inference Library** (`com.llamatik:core`) — direct Kotlin bindings to the best open-source native inference engines:
   - 🧠 **LLMs** via `llama.cpp`
   - 🎙 **Speech-to-Text** via `whisper.cpp`
-  - 🎨 **Image Generation** via `stable-diffusion.cpp`
+  - 🎨 **Image & Video Generation** via `stable-diffusion.cpp`
 
 Fully **on-device**, optionally remote — all behind a **unified Kotlin API**.
 
@@ -168,6 +169,7 @@ Designed for **privacy-first**, **offline-capable**, and **cross-platform** AI a
 - ✅ Text-to-image (`txt2img`) and image-to-image (`img2img`)
 - ✅ On-device, fully offline
 - ✅ Configurable steps, CFG scale, seed, and `img2img` strength
+- ✅ **Text-to-video** (`txt2video`) — generate short video clips from text prompts; runtime capability check via `supportsVideoGeneration()`
 
 ### 🔐 On-device & Private
 - ✅ Fully offline by default — no network required
@@ -259,7 +261,7 @@ The dependency chain is strictly layered — each module only depends on modules
 |---|---|---|
 | llama.cpp | [v0.7.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.7.0) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
 | whisper.cpp | [v1.9.5](https://github.com/ggml-org/whisper.cpp/releases/tag/v1.9.5) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
-| stable-diffusion.cpp | [master-975-95b3090](https://github.com/leejet/stable-diffusion.cpp/releases/tag/master-975-95b3090) | Git tag (no semver) |
+| stable-diffusion.cpp | [master-1024-77b72a2](https://github.com/leejet/stable-diffusion.cpp/releases/tag/master-1024-77b72a2) | Git tag (no semver) |
 
 > **Note:** Both llama.cpp and whisper.cpp now follow **semantic versioning**. Previously llama.cpp used build-number tags (e.g. `b4812`). Llamatik tracks these semver releases directly, so you can rely on stable API guarantees across patch and minor upgrades of the underlying libraries.
 
@@ -777,7 +779,13 @@ object StableDiffusionBridge {
      * Loads the Stable Diffusion model.
      * @param threads CPU threads to use; -1 lets the backend decide.
      */
-    fun initModel(modelPath: String, threads: Int = -1): Boolean
+    fun initModel(
+        modelPath: String,
+        threads: Int = -1,
+        vaePath: String? = null,
+        t5xxlPath: String? = null,
+        clipVisionPath: String? = null,
+    ): Boolean
 
     /**
      * Text-to-image generation. Returns raw RGBA pixels (width * height * 4 bytes).
@@ -814,6 +822,25 @@ object StableDiffusionBridge {
 
     /** Releases native resources. */
     fun release()
+
+    /** Returns true if the loaded model supports video generation. */
+    fun supportsVideoGeneration(): Boolean
+
+    /**
+     * Generates video frames. Returns a packed byte array:
+     * 16-byte LE header [frameCount, width, height, fps] + frameCount*(width*height*4) RGBA bytes.
+     * Empty array on failure.
+     */
+    fun txt2video(
+        prompt: String,
+        negativePrompt: String? = null,
+        width: Int = 512,
+        height: Int = 512,
+        videoFrames: Int = 16,
+        fps: Int = 8,
+        cfgScale: Float = 7.0f,
+        seed: Long = -1L,
+    ): ByteArray
 }
 ```
 
@@ -851,6 +878,26 @@ val rgba = StableDiffusionBridge.img2img(
     strength = 0.75f,
     seed = 42L,
 )
+```
+
+#### txt2video example
+
+```kotlin
+// Check if video generation is supported by the loaded model
+if (StableDiffusionBridge.supportsVideoGeneration()) {
+    val raw = StableDiffusionBridge.txt2video(
+        prompt = "A llama walking through a futuristic city",
+        negativePrompt = "blurry, low quality",
+        width = 512,
+        height = 512,
+        videoFrames = 16,
+        fps = 8,
+        cfgScale = 7.0f,
+        seed = 42L,
+    )
+    // raw starts with a 16-byte LE header: frameCount, width, height, fps
+    // followed by frameCount * width * height * 4 RGBA bytes
+}
 ```
 
 ### 👁️ Vision / Multimodal (MultimodalBridge)

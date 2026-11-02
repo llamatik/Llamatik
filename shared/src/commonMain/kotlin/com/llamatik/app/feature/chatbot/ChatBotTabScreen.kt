@@ -242,6 +242,14 @@ class ChatBotTabScreen : Screen {
                         dialogMessage.value = effect.message
                         isDialogOpen.value = true
                     }
+                    is ChatBotSideEffects.OnVideoSaved -> {
+                        dialogMessage.value = effect.message
+                        isDialogOpen.value = true
+                    }
+                    is ChatBotSideEffects.OnVideoSaveFailed -> {
+                        dialogMessage.value = effect.message
+                        isDialogOpen.value = true
+                    }
                     is ChatBotSideEffects.OnToolCallDetected -> {}  // companion only
                 }
             }
@@ -442,6 +450,16 @@ class ChatBotTabScreen : Screen {
                             onStop = {
                                 speakingMessageKey.value = null
                                 viewModel.onStopSpeaking()
+                            },
+                            onVideoClick = { message ->
+                                viewModel.onVideoSelected(message)
+                            },
+                            onSaveVideo = { message ->
+                                val frames = message.videoFrames ?: return@ChatItem
+                                val w = message.videoWidth ?: return@ChatItem
+                                val h = message.videoHeight ?: return@ChatItem
+                                val fps = message.videoFps ?: return@ChatItem
+                                viewModel.onSaveVideo(frames, w, h, fps)
                             }
                         )
                     }
@@ -521,7 +539,10 @@ class ChatBotTabScreen : Screen {
         isSpeaking: Boolean,
         onSpeak: (String) -> Unit,
         onStop: () -> Unit,
+        onVideoClick: (ChatUiModel.Message) -> Unit = {},
+        onSaveVideo: (ChatUiModel.Message) -> Unit = {},
     ) {
+        val navigator = LocalNavigator.currentOrThrow
         val clipboard = LocalClipboardManager.current
 
         // Encoded images (PNG/JPEG/WEBP/PPM) – kept for future/back-compat.
@@ -535,6 +556,14 @@ class ChatBotTabScreen : Screen {
             val w = message.imageWidth ?: return@remember null
             val h = message.imageHeight ?: return@remember null
             rgbaToImageBitmap(w, h, rgba)
+        }
+
+        // First frame of a generated video as thumbnail.
+        val videoThumbnail = remember(message.videoFrames, message.videoWidth, message.videoHeight) {
+            val frames = message.videoFrames ?: return@remember null
+            val w = message.videoWidth ?: return@remember null
+            val h = message.videoHeight ?: return@remember null
+            if (frames.isEmpty()) null else rgbaToImageBitmap(w, h, frames[0])
         }
 
         Column(
@@ -567,7 +596,48 @@ class ChatBotTabScreen : Screen {
                     )
                     .padding(16.dp)
             ) {
-                if (message.hasImage) {
+                if (message.hasVideo) {
+                    Box(
+                        modifier = Modifier
+                            .widthIn(max = CHAT_BUBBLE_MAX_WIDTH_DP.dp)
+                            .height(260.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable {
+                                onVideoClick(message)
+                                navigator.push(VideoPlayerScreen())
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (videoThumbnail != null) {
+                            Image(
+                                bitmap = videoThumbnail,
+                                contentDescription = "Generated video",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.matchParentSize()
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(RoundedCornerShape(28.dp))
+                                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.7f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = LlamatikIcons.PlayCircle,
+                                contentDescription = localization.videoGeneration,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
+                    }
+                } else if (message.hasImage) {
                     val bitmapToShow = rgbaImageBitmap ?: encodedImageBitmap
                     if (bitmapToShow != null) {
                         Image(
@@ -621,6 +691,18 @@ class ChatBotTabScreen : Screen {
                         Icon(
                             imageVector = if (isSpeaking) LlamatikIcons.Stop else LlamatikIcons.Sound,
                             contentDescription = if (isSpeaking) localization.stop else localization.speak
+                        )
+                    }
+                }
+
+                if (message.hasVideo) {
+                    IconButton(
+                        onClick = { onSaveVideo(message) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = LlamatikIcons.Save,
+                            contentDescription = localization.saveVideoToGallery
                         )
                     }
                 }

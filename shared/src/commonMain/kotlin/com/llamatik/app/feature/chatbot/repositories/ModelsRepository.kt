@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.llamatik.app.feature.chatbot.model.LlamaModel
 import com.llamatik.app.feature.chatbot.model.ModelCategory
 import com.llamatik.app.feature.chatbot.model.ModelSource
+import com.llamatik.app.feature.chatbot.model.SdCapability
 import com.llamatik.app.feature.chatbot.utils.Gemma3
 import com.llamatik.app.feature.chatbot.utils.Llama3Instruct
 import com.llamatik.app.feature.chatbot.utils.Plain
@@ -18,6 +19,7 @@ import com.russhwolf.settings.Settings
 import io.ktor.client.call.body
 import io.ktor.client.request.prepareGet
 import io.ktor.http.contentLength
+import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.CancellationException
@@ -84,6 +86,9 @@ class ModelsRepository(private val service: ServiceClient) {
 
         try {
             service.httpClient.prepareGet(url).execute { httpResponse ->
+                if (!httpResponse.status.isSuccess()) {
+                    throw IllegalStateException("HTTP ${httpResponse.status.value} downloading $url")
+                }
                 val channel: ByteReadChannel = httpResponse.body()
                 val totalBytes = httpResponse.contentLength() ?: -1L
                 var downloaded = 0L
@@ -294,19 +299,77 @@ class ModelsRepository(private val service: ServiceClient) {
 
     fun getDefaultStableDiffusionModels(): List<LlamaModel> {
         return listOf(
+            // ── Image generation ──────────────────────────────────────────────
             LlamaModel(
                 name = "Stable Diffusion v1.5 Q4_0",
                 sizeMb = 1750,
                 url = "https://huggingface.co/gpustack/stable-diffusion-v1-5-GGUF/resolve/main/stable-diffusion-v1-5-Q4_0.gguf?download=true",
                 template = Plain,
-                systemPrompt = localization.defaultSystemPrompt.trimIndent()
+                sdCapability = SdCapability.Image,
+                mobileSuitability = 4,
             ),
             LlamaModel(
                 name = "SD Turbo v2.1 Q4_0",
                 sizeMb = 2190,
                 url = "https://huggingface.co/gpustack/stable-diffusion-v2-1-turbo-GGUF/resolve/main/stable-diffusion-v2-1-turbo_Q4_0.gguf?download=true",
                 template = Plain,
-                systemPrompt = localization.defaultSystemPrompt.trimIndent()
+                sdCapability = SdCapability.Image,
+                mobileSuitability = 3,
+            ),
+            LlamaModel(
+                name = "DreamShaper 8 LCM Q4_0",
+                sizeMb = 1600,
+                url = "https://huggingface.co/haven-ai-companion/dreamshaper8-lcm-gguf/resolve/main/DreamShaper8_LCM_q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Image,
+                mobileSuitability = 4,
+            ),
+            LlamaModel(
+                name = "DreamShaper XL v2 Turbo Q4_K_S",
+                sizeMb = 2800,
+                url = "https://huggingface.co/off-grid-ai/dreamshaper-xl-v2-turbo-GGUF/resolve/main/dreamshaper-xl-v2-turbo-Q4_K_S.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Image,
+                mobileSuitability = 3,
+            ),
+            // ── Video generation (requires VAE + T5 text encoder companion files) ─────
+            LlamaModel(
+                name = "Wan 2.1 T2V 1.3B Q4_0",
+                sizeMb = 866,
+                url = "https://huggingface.co/samuelchristlie/Wan2.1-T2V-1.3B-GGUF/resolve/main/Wan2.1-T2V-1.3B-Q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Video,
+                mobileSuitability = 3,
+                vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
+                vaeSizeMb = 243,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_K_M.gguf?download=true",
+                t5xxlSizeMb = 3487,
+            ),
+            LlamaModel(
+                name = "Wan 2.2 TI2V 5B Q4_0",
+                sizeMb = 3030,
+                url = "https://huggingface.co/QuantStack/Wan2.2-TI2V-5B-GGUF/resolve/main/Wan2.2-TI2V-5B-Q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.ImageAndVideo,
+                mobileSuitability = 2,
+                vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors?download=true",
+                vaeSizeMb = 430,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_K_M.gguf?download=true",
+                t5xxlSizeMb = 3487,
+            ),
+            LlamaModel(
+                name = "Wan 2.1 I2V 14B 480P Q4_0",
+                sizeMb = 10200,
+                url = "https://huggingface.co/city96/Wan2.1-I2V-14B-480P-gguf/resolve/main/wan2.1-i2v-14b-480p-Q4_0.gguf?download=true",
+                template = Plain,
+                sdCapability = SdCapability.Video,
+                mobileSuitability = 1,
+                vaeUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true",
+                vaeSizeMb = 243,
+                t5xxlUrl = "https://huggingface.co/city96/umt5-xxl-encoder-gguf/resolve/main/umt5-xxl-encoder-Q4_K_M.gguf?download=true",
+                t5xxlSizeMb = 3487,
+                clipVisionUrl = "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors?download=true",
+                clipVisionSizeMb = 600,
             ),
         )
     }

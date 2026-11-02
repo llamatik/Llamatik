@@ -3,10 +3,13 @@
 package com.llamatik.core.platform
 
 import com.llamatik.core.platform.sd.sd_free_bytes
+import com.llamatik.core.platform.sd.sd_free_video_frames
 import com.llamatik.core.platform.sd.sd_img2img_rgba
 import com.llamatik.core.platform.sd.sd_init
 import com.llamatik.core.platform.sd.sd_release
+import com.llamatik.core.platform.sd.sd_supports_video_generation
 import com.llamatik.core.platform.sd.sd_txt2img_rgba
+import com.llamatik.core.platform.sd.sd_txt2video_frames
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.addressOf
@@ -28,17 +31,15 @@ actual object StableDiffusionBridge {
         return modelFileName
     }
 
-    actual fun initModel(modelPath: String, threads: Int): Boolean {
+    actual fun initModel(
+        modelPath: String, threads: Int,
+        vaePath: String?, t5xxlPath: String?, clipVisionPath: String?,
+    ): Boolean {
         release()
-
-        val ok = sd_init(modelPath, threads) != 0
+        val ok = sd_init(modelPath, threads, vaePath ?: "", t5xxlPath ?: "", clipVisionPath ?: "") != 0
         isInitialized = ok
-
-        if (!ok) {
-            NSLog("[StableDiffusionBridge] sd_init FAILED path=$modelPath")
-        } else {
-            NSLog("[StableDiffusionBridge] sd_init OK")
-        }
+        if (!ok) NSLog("[StableDiffusionBridge] sd_init FAILED path=$modelPath")
+        else NSLog("[StableDiffusionBridge] sd_init OK")
         return ok
     }
 
@@ -145,5 +146,50 @@ actual object StableDiffusionBridge {
             sd_release()
         }
         isInitialized = false
+    }
+
+    actual fun supportsVideoGeneration(): Boolean {
+        if (!isInitialized) return false
+        return sd_supports_video_generation() != 0
+    }
+
+    actual fun txt2video(
+        prompt: String,
+        negativePrompt: String?,
+        width: Int,
+        height: Int,
+        videoFrames: Int,
+        fps: Int,
+        cfgScale: Float,
+        seed: Long,
+    ): ByteArray {
+        if (!isInitialized) return ByteArray(0)
+        if (prompt.isBlank()) return ByteArray(0)
+
+        return memScoped {
+            val outSize = alloc<IntVar>()
+
+            val bytesPtr = sd_txt2video_frames(
+                prompt = prompt,
+                negative_prompt = (negativePrompt ?: ""),
+                width = width,
+                height = height,
+                video_frames = videoFrames,
+                fps = fps,
+                cfg_scale = cfgScale,
+                seed = seed,
+                out_total_size = outSize.ptr
+            ) ?: return@memScoped ByteArray(0)
+
+            val size = outSize.value
+            if (size <= 0) {
+                sd_free_video_frames(bytesPtr)
+                return@memScoped ByteArray(0)
+            }
+
+            val out = bytesPtr.readBytes(size)
+            sd_free_video_frames(bytesPtr)
+            out
+        }
     }
 }

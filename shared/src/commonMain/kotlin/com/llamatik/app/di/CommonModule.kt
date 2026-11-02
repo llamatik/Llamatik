@@ -80,7 +80,7 @@ val commonModule = module {
     }
 
     factory {
-        DebugMenuViewModel(get())
+        DebugMenuViewModel(get(), get())
     }
 
     factory { (url: String) ->

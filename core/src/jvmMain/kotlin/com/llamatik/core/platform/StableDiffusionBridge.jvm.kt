@@ -16,7 +16,15 @@ actual object StableDiffusionBridge {
         return if (Files.exists(p)) p.toAbsolutePath().toString() else modelFileName
     }
 
-    actual external fun initModel(modelPath: String, threads: Int): Boolean
+    actual fun initModel(
+        modelPath: String, threads: Int,
+        vaePath: String?, t5xxlPath: String?, clipVisionPath: String?,
+    ): Boolean = initModelNative(modelPath, threads, vaePath, t5xxlPath, clipVisionPath)
+
+    private external fun initModelNative(
+        modelPath: String, threads: Int,
+        vaePath: String?, t5xxlPath: String?, clipVisionPath: String?,
+    ): Boolean
 
     actual external fun txt2img(
         prompt: String,
@@ -43,6 +51,19 @@ actual object StableDiffusionBridge {
     ): ByteArray
 
     actual external fun release()
+
+    actual external fun supportsVideoGeneration(): Boolean
+
+    actual external fun txt2video(
+        prompt: String,
+        negativePrompt: String?,
+        width: Int,
+        height: Int,
+        videoFrames: Int,
+        fps: Int,
+        cfgScale: Float,
+        seed: Long,
+    ): ByteArray
 
     private fun loadNativeFromResources() {
         val os = System.getProperty("os.name").lowercase()
