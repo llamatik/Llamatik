@@ -57,7 +57,7 @@ jobs:
       - name: Setup Emscripten (emsdk)
         uses: mymindstorm/setup-emsdk@v14
         with:
-          emsdk-version: latest
+          version: latest
 
       - name: Build Llamatik WASM artifacts
         run: |

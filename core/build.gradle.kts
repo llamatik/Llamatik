@@ -693,6 +693,7 @@ kotlin {
 extensions.configure<LibraryExtension> {
     namespace = "com.llamatik"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+    ndkVersion = "29.0.14206865"
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
