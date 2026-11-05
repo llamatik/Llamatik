@@ -61,9 +61,6 @@ NOT COVERED BY THIS LICENSE
 The following assets present in the same directories are governed by their
 own third-party licenses and are NOT proprietary Llamatik assets:
 
-  - Storyset illustrations (*_pana.xml, *_bro.xml, *_cuate.xml, *_amico.xml,
-    *_rafiki.xml) — © Freepik Company S.L., licensed under the Storyset Free
-    License (attribution required). See NOTICE for details.
   - compose-multiplatform.xml — © JetBrains s.r.o., Apache License 2.0.
   - Store badges: google-play-button.png, app-store-button.png — trademarks
     of Google LLC and Apple Inc. respectively, used under their brand
