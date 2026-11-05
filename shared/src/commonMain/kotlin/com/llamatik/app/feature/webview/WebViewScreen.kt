@@ -124,43 +124,11 @@ class WebViewScreen(
                     }
                 }
             ) {
-                /*
-                if (isLoading.value) {
-                    EmptyLayout(
-                        localization = localization,
-                        title = "Loading...",
-                        description = "Please wait until the document is downloaded",
-                        imageResource = Res.drawable.air_support_bro
-                    ) {}
-                }
-
-                 */
-
                 WebViewLayout(
                     htmlContent = "https://digitalcombatsimulator.com",
                     isLoading = { isLoading.value = !it },
                     onUrlClicked = { url -> {} }
                 )
-
-
-                /*
-                if (isLoading.value) {
-                    EmptyLayout(
-                        localization = localization,
-                        title = "Loading...",
-                        description = "Please wait until the document is downloaded",
-                        imageResource = Res.drawable.air_support_bro
-                    ) {}
-                } else {
-                    if (state.url != null) {
-                        state.pdfData?.let { pdfData ->
-                            PdfReader(modifier = Modifier.fillMaxSize(), pdfData)
-                        }
-                    } else {
-                        EmptyLayout(localization = localization) {}
-                    }
-                }
-                 */
             }
         }
     }

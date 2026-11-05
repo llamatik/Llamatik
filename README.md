@@ -1069,8 +1069,22 @@ On Android `arm64-v8a`, the CPU backend is built for several ARM feature levels 
 
 ## 📜 License
 
-This project is licensed under the MIT License.<br>
-See [LICENSE](./LICENSE) for details.
+This project uses a dual-license model:
+
+| Component | License |
+|---|---|
+| Source code (Kotlin, Swift, C++, CMake, Gradle scripts) | [MIT License](./LICENSE) |
+| Visual assets — logos, icons, illustrations, screenshots | [Proprietary](./LICENSE-assets) |
+
+The source code is freely usable under the MIT License. The **Llamatik name and
+logo are proprietary marks** owned by Ferran Pons and are not covered by the MIT
+License. See [LICENSE-assets](./LICENSE-assets) for the full terms that apply to
+all graphic files under `assets/`, `composeApp/src/commonMain/composeResources/drawable/`,
+and `homepage/public/`.
+
+Third-party native libraries bundled in the compiled artifact (llama.cpp,
+whisper.cpp, stable-diffusion.cpp, ggml) are all MIT-licensed. See
+[NOTICE](./NOTICE) for their copyright attributions.
 
 ---
 

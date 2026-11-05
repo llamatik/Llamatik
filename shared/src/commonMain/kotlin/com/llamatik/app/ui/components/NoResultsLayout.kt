@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.llamatik.app.localization.Localization
-import com.llamatik.app.resources.Res
-import com.llamatik.app.resources.plane_crash_bro
 import com.llamatik.app.ui.theme.Typography
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.vectorResource
@@ -54,11 +52,13 @@ fun EmptyLayout(
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.outline
         )
-        Image(
-            imageVector = vectorResource(imageResource ?: Res.drawable.plane_crash_bro),
-            contentDescription = description,
-            modifier = Modifier.size(260.dp)
-        )
+        imageResource?.let {
+            Image(
+                imageVector = vectorResource(it),
+                contentDescription = description,
+                modifier = Modifier.size(260.dp)
+            )
+        }
         actionLabel?.let {
             Spacer(modifier = Modifier.size(10.dp))
             Button(

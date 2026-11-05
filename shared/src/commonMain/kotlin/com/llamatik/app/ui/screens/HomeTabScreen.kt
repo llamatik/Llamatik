@@ -52,7 +52,6 @@ import com.llamatik.app.localization.getCurrentLanguage
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.resources.Res
 import com.llamatik.app.resources.a_pair_of_llamas_in_a_field_with_clouds_and_mounta
-import com.llamatik.app.resources.air_support_bro
 import com.llamatik.app.ui.components.EmptyLayout
 import com.llamatik.app.ui.components.LlamatikDialog
 import com.llamatik.app.ui.components.NewsCardSmall
@@ -90,7 +89,7 @@ class HomeTabScreen : Screen {
                     localization = localization,
                     title = localization.loading,
                     description = "",
-                    imageResource = Res.drawable.air_support_bro
+                    imageResource = null
                 ) {}
             } else {
                 HomeScreenView(viewModel, isDialogOpen, localization)

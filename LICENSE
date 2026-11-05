@@ -19,3 +19,20 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+-------------------------------------------------------------------------------
+ASSET EXCEPTION
+
+The custom Llamatik brand assets in this repository — including logos, app
+icons, splash graphics, onboarding images, screenshots, and social/marketing
+graphics (see LICENSE-assets for the full enumerated list) — are NOT covered
+by the MIT License above. They are proprietary and owned by Ferran Pons, and
+are governed separately by the LICENSE-assets file at the root of this
+repository.
+
+The Compose Multiplatform logo (compose-multiplatform.xml) is also NOT
+covered by the MIT License; it remains under its own license as documented
+in the NOTICE file.
+
+The "Llamatik" name and logo are proprietary marks owned by Ferran Pons.
+-------------------------------------------------------------------------------

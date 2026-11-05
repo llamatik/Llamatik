@@ -1,0 +1,88 @@
+Llamatik — Proprietary Asset License
+
+Copyright 2025 Ferran Pons. All Rights Reserved.
+
+The following custom visual assets — including logos, icons, splash graphics,
+and onboarding illustrations created for the Llamatik brand — are proprietary
+and protected by copyright. They are NOT covered by the MIT License that
+governs the source code of this project.
+
+COVERED ASSETS
+
+The proprietary designation applies to the Llamatik brand assets listed below,
+wherever they appear in the repository (assets/, shared/, composeApp/, homepage/):
+
+  Logos and brand marks
+    llamatik_logo.png
+    llamatik_icon_logo.png
+    llamatik-logo.png
+    llamatik-logo-transparent.png
+    llamatik-new-logo.png
+    llamatik-new-logo.svg
+    llamatik-icon-logo.png
+    mklogo.xml
+
+  App icons (all densities and variants)
+    ic_launcher.xml / ic_launcher.webp
+    ic_launcher_round.xml / ic_launcher_round.webp
+    ic_launcher_foreground.xml / ic_launcher_foreground.webp
+    ic_launcher_background.xml
+    ic_launcher-playstore.png
+    Llamatik.iconset/ (all sizes)
+
+  Splash and onboarding
+    bg_splash.xml
+    onboarding_head_1.png … onboarding_head_6.png
+    a_pair_of_llamas_in_a_field_with_clouds_and_mounta.xml
+
+  Social and marketing graphics
+    llamatik_ios_icon.png (and _any_appearance, _dark, _tinted variants)
+    llamatik_linkedin_header.png
+    llamatik_linkedin_header_thin.png
+    llamatik-github-social-preview.png
+    llamatik-github-social-preview_reduced.png
+    llamatik_logo_versions.png
+    feature_graphic_llamatik.png
+
+  Favicons and web brand assets
+    favicon.ico / fav.ico
+    favicon-16x16.png / favicon-32x32.png
+    apple-touch-icon.png
+    android-chrome-192x192.png / android-chrome-512x512.png
+
+  Store screenshots
+    assets/androidScreenshots/
+    assets/iosScreenshots/
+
+The "Llamatik" name and logo are proprietary marks owned by Ferran Pons.
+
+NOT COVERED BY THIS LICENSE
+
+The following assets present in the same directories are governed by their
+own third-party licenses and are NOT proprietary Llamatik assets:
+
+  - compose-multiplatform.xml — © JetBrains s.r.o., Apache License 2.0.
+  - Store badges: google-play-button.png, app-store-button.png — trademarks
+    of Google LLC and Apple Inc. respectively, used under their brand
+    guidelines.
+
+PERMITTED USE
+
+You may use the proprietary Llamatik brand assets solely to identify the
+Llamatik product when referring to it (e.g. in a blog post, review, or
+compatibility notice), provided you do not alter them and you include a
+caption or attribution crediting Ferran Pons / Llamatik.
+
+PROHIBITED USE
+
+Without explicit prior written permission from the copyright owner, you may NOT:
+- Copy, reproduce, or redistribute these assets in any form
+- Use these assets in any product, service, or derivative work
+- Modify, adapt, or create derivative works based on these assets
+- Use these assets or the "Llamatik" name in any manner that implies
+  endorsement by Ferran Pons or Llamatik
+- Remove or alter any copyright or trademark notices
+
+CONTACT
+
+For licensing inquiries or permission requests: info@llamatik.com
