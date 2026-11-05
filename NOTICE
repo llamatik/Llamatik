@@ -1,8 +1,8 @@
 Llamatik
 Copyright 2025 Ferran Pons
 
-This product includes software developed by third parties. Their licenses
-and copyright notices are reproduced below.
+This product includes software and assets developed by third parties.
+Their licenses and copyright notices are reproduced below.
 
 -------------------------------------------------------------------------------
 llama.cpp
@@ -24,4 +24,18 @@ ggml
 https://github.com/ggml-org/ggml
 Copyright 2023-2026 The ggml authors
 Licensed under the MIT License
+-------------------------------------------------------------------------------
+Storyset illustrations
+https://storyset.com
+Copyright Freepik Company S.L.
+Licensed under the Storyset Free License (attribution required).
+Files: all drawable assets whose names end in _pana, _bro, _cuate, _amico,
+or _rafiki (e.g. ethnic_friendship_pana.xml, world_amico.xml, etc.)
+Attribution: Illustrations by Storyset (https://storyset.com)
+-------------------------------------------------------------------------------
+Compose Multiplatform logo
+compose-multiplatform.xml
+Copyright JetBrains s.r.o.
+Licensed under the Apache License 2.0
+https://www.apache.org/licenses/LICENSE-2.0
 -------------------------------------------------------------------------------
