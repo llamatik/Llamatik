@@ -1,0 +1,27 @@
+Llamatik
+Copyright 2025 Ferran Pons
+
+This product includes software developed by third parties. Their licenses
+and copyright notices are reproduced below.
+
+-------------------------------------------------------------------------------
+llama.cpp
+https://github.com/ggml-org/llama.cpp
+Copyright 2023-2026 The ggml authors
+Licensed under the MIT License
+-------------------------------------------------------------------------------
+whisper.cpp
+https://github.com/ggml-org/whisper.cpp
+Copyright 2023-2026 The ggml authors
+Licensed under the MIT License
+-------------------------------------------------------------------------------
+stable-diffusion.cpp
+https://github.com/leejet/stable-diffusion.cpp
+Copyright 2023 leejet
+Licensed under the MIT License
+-------------------------------------------------------------------------------
+ggml
+https://github.com/ggml-org/ggml
+Copyright 2023-2026 The ggml authors
+Licensed under the MIT License
+-------------------------------------------------------------------------------

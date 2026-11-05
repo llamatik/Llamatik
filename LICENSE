@@ -19,3 +19,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+-------------------------------------------------------------------------------
+ASSET EXCEPTION
+
+The visual assets in this repository — including logos, icons, illustrations,
+screenshots, and other graphic files located under assets/,
+composeApp/src/commonMain/composeResources/drawable/, homepage/public/, and
+homepage/static/ — are NOT covered by the MIT License above.
+
+These assets are proprietary and owned by Ferran Pons. They are governed
+separately by the LICENSE-assets file at the root of this repository.
+
+The "Llamatik" name and logo are proprietary marks owned by Ferran Pons.
+-------------------------------------------------------------------------------
