@@ -60,6 +60,24 @@ set(LLAMA_BUILD_COMMON ON CACHE BOOL "" FORCE)
 set(LLAMA_CURL OFF CACHE BOOL "" FORCE)
 set(GGML_OPENMP OFF CACHE BOOL "" FORCE)
 
+# Build a portable JNI binary that works on all x86_64 CPUs, not just the build
+# machine's microarchitecture. By default ggml sets GGML_NATIVE=ON, which passes
+# -march=native to the compiler. GitHub Actions ubuntu-latest runners use Intel
+# Xeon CPUs that support AVX-512, so the resulting libllama_jni.so contains
+# AVX-512 instructions (e.g. vpternlogd zmm) that execute during ggml_cpu_init —
+# before any model loads — and crash with SIGILL on CPUs without AVX-512 support
+# (e.g. Intel Tiger Lake i7-1255U, which only has AVX/AVX2).
+#
+# With GGML_NATIVE=OFF, ggml sets INS_ENB=ON instead, which selects explicit
+# compile flags for SSE4.2, AVX, AVX2, FMA, and F16C — a safe x86_64 baseline.
+# AVX-512 variants remain OFF (their ggml defaults).
+#
+# Override for a locally-optimised build:
+#   ./gradlew :core:jvmJar -Pllamatik.cmake.args="-DGGML_NATIVE=ON"
+if(NOT DEFINED GGML_NATIVE)
+    set(GGML_NATIVE OFF CACHE BOOL "ggml: optimize the build for the current system (OFF = portable)" FORCE)
+endif()
+
 add_subdirectory("${LLAMA_CPP_DIR}" "${CMAKE_BINARY_DIR}/llama-wrapper-build")
 
 if(WIN32 AND TARGET ggml-base)
