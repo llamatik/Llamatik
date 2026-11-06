@@ -155,12 +155,15 @@ actual fun migrateModelPathIfNeeded(
     val saved = File(savedPath)
     if (!saved.exists()) return ""
     if (saved.length() < MIN_VALID_MODEL_SIZE) return ""
-    if (!hasValidModelMagic(saved)) return ""
 
     val persistentDir = modelsDirJvm().absolutePath
 
-    // Already in persistent models dir
+    // Already in persistent models dir — trust it; skip magic check so that
+    // GGML/Whisper .bin files (which lack GGUF magic) aren't rejected.
     if (saved.absolutePath.startsWith(persistentDir)) return savedPath
+
+    // Not in persistent dir — validate magic before migrating.
+    if (!hasValidModelMagic(saved)) return ""
 
     val dest = stableModelFileJvm(modelNameOrFileName)
     dest.parentFile?.mkdirs()
