@@ -43,13 +43,13 @@ class ServerConnectionRepository(private val settings: Settings) {
             Logger.w { "ServerConnectionRepository - $host:$port not reachable" }
             return null
         }
-        val caps = client.getCapabilities()
+        val status = client.getModelsStatus()
         val capabilities = ServerCapabilities(
-            hasText = caps.text,
-            hasImage = caps.image,
-            hasVision = caps.vision,
-            hasVideo = caps.video,
-            hasAudio = caps.audio,
+            hasText  = status?.generation?.loaded ?: false,
+            hasImage = status?.stableDiffusion?.loaded ?: false,
+            hasVideo = status?.stableDiffusion?.supportsVideo ?: false,
+            hasVision = status?.multimodal?.loaded ?: false,
+            hasAudio = status?.whisper?.loaded ?: false,
         )
         val server = ConnectedServer(host = host, port = port, name = name, capabilities = capabilities)
         _activeServer.value = server
@@ -98,6 +98,30 @@ class ServerConnectionRepository(private val settings: Settings) {
     fun makeClientForActiveServer(): LlamatikServerClient? {
         val server = _activeServer.value ?: return null
         return LlamatikServerClient(LlamatikServerConfig(server.host, server.port))
+    }
+
+    /**
+     * Re-queries the active server for its current loaded models and updates the
+     * stored [ConnectedServer.capabilities]. Call this whenever you need fresh
+     * capability data without fully reconnecting (e.g. the server loaded a new
+     * model after the initial connection was established).
+     *
+     * Returns the updated [ConnectedServer], or null if there is no active server.
+     */
+    suspend fun refreshCapabilities(): ConnectedServer? {
+        val current = _activeServer.value ?: return null
+        val client = LlamatikServerClient(LlamatikServerConfig(current.host, current.port))
+        val status = client.getModelsStatus() ?: return current // keep existing caps on error
+        val capabilities = ServerCapabilities(
+            hasText   = status.generation.loaded,
+            hasImage  = status.stableDiffusion.loaded,
+            hasVideo  = status.stableDiffusion.supportsVideo ?: false,
+            hasVision = status.multimodal.loaded,
+            hasAudio  = status.whisper.loaded,
+        )
+        val updated = current.copy(capabilities = capabilities)
+        _activeServer.value = updated
+        return updated
     }
 
     private fun persistActiveServer(server: ConnectedServer) {

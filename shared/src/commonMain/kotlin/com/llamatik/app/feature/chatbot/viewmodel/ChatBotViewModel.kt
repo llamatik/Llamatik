@@ -34,6 +34,7 @@ import com.llamatik.app.feature.news.NewsFeedScreen
 import com.llamatik.app.feature.news.repositories.FeedItem
 import com.llamatik.app.feature.news.usecases.GetAllNewsUseCase
 import com.llamatik.app.feature.reviews.ReviewRequestManager
+import com.llamatik.app.feature.server.ServerConnectionRepository
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.localization.getLanguageCode
 import com.llamatik.app.localization.getLanguageName
@@ -54,7 +55,6 @@ import com.llamatik.core.platform.LlamaSession
 import com.llamatik.core.platform.MultimodalBridge
 import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
-import com.llamatik.app.feature.server.ServerConnectionRepository
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
 import com.russhwolf.settings.Settings
 import io.github.vinceglb.filekit.FileKit
@@ -2339,9 +2339,33 @@ class ChatBotViewModel(
                     }
 
                     // --- Server routing ---
+                    // Always fetch live status so we route correctly even when the server
+                    // loaded a model after the initial connection (or when the first
+                    // connection happened while HTTP was blocked).
                     val serverClient = serverConnectionRepository?.makeClientForActiveServer()
-                    val serverCaps = serverConnectionRepository?.activeServer?.value?.capabilities
-                    if (serverClient != null && serverCaps?.hasText == true) {
+                    val liveServerStatus = serverClient?.let {
+                        runCatching { it.getModelsStatus() }.getOrNull()
+                    }
+                    Logger.d("ChatBotViewModel") {
+                        "Server routing check — client=${serverClient != null}" +
+                        ", statusFetched=${liveServerStatus != null}" +
+                        ", generation.loaded=${liveServerStatus?.generation?.loaded}" +
+                        ", server=${serverConnectionRepository?.activeServer?.value?.let { "${it.host}:${it.port}" }}"
+                    }
+                    if (liveServerStatus != null) {
+                        // Refresh stored capabilities so the UI chips stay current.
+                        serverConnectionRepository?.refreshCapabilities()
+                    }
+                    if (serverClient != null && liveServerStatus == null) {
+                        // Status fetch failed (network error or parse error) — tell user, fall through.
+                        Logger.w("ChatBotViewModel") { "Server status unreachable — falling back to local" }
+                        _sideEffects.trySend(ChatBotSideEffects.OnServerRoutingSkipped(ServerRoutingSkipReason.UNREACHABLE))
+                    } else if (serverClient != null && liveServerStatus?.generation?.loaded == false) {
+                        // Server is reachable but has no generation model loaded.
+                        Logger.w("ChatBotViewModel") { "Server has no generation model loaded — falling back to local" }
+                        _sideEffects.trySend(ChatBotSideEffects.OnServerRoutingSkipped(ServerRoutingSkipReason.NO_MODEL))
+                    }
+                    if (serverClient != null && liveServerStatus?.generation?.loaded == true) {
                         val systemPrompt = currentSystemPrompt()
                         val contextBlock = ""
                         var serverSucceeded = false
@@ -3047,4 +3071,13 @@ sealed class ChatBotSideEffects {
     data class OnVideoSaved(val message: String) : ChatBotSideEffects()
     data class OnVideoSaveFailed(val message: String) : ChatBotSideEffects()
     data class OnServerGenerationFailed(val prompt: String, val mode: GenerationMode) : ChatBotSideEffects()
+    /** Emitted when a server is connected but generation was silently routed locally. */
+    data class OnServerRoutingSkipped(val reason: ServerRoutingSkipReason) : ChatBotSideEffects()
+}
+
+enum class ServerRoutingSkipReason {
+    /** The server responded but has no generation model loaded yet. */
+    NO_MODEL,
+    /** The server could not be reached or its status response could not be parsed. */
+    UNREACHABLE,
 }

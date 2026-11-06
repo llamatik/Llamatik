@@ -19,10 +19,10 @@ import com.llamatik.network.client.dto.InitModelResponse
 import com.llamatik.network.client.dto.InitMtpRequest
 import com.llamatik.network.client.dto.ModelChatTemplateResponse
 import com.llamatik.network.client.dto.ModelFinetuneTypeResponse
+import com.llamatik.network.client.dto.ModelsStatusResponse
 import com.llamatik.network.client.dto.MultimodalInitRequest
 import com.llamatik.network.client.dto.OkResponse
 import com.llamatik.network.client.dto.SessionResult
-import com.llamatik.network.client.dto.ServerCapabilitiesResponse
 import com.llamatik.network.client.dto.SseEventDto
 import com.llamatik.network.client.dto.StableDiffusionInitRequest
 import com.llamatik.network.client.dto.SupportsVideoResponse
@@ -36,12 +36,10 @@ import com.llamatik.network.client.dto.WhisperInitRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.contentType
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
-import io.ktor.http.ContentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.ByteReadChannel
@@ -62,20 +60,17 @@ class LlamatikServerClient(
 
     suspend fun initModel(modelPath: String): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/generation/init") {
-            contentType(ContentType.Application.Json)
             setBody(InitModelRequest(modelPath))
         }.body<InitModelResponse>().ok
     }.getOrElse { e -> Logger.e(e) { "initModel failed" }; false }
 
     suspend fun generate(prompt: String): String =
         httpClient.post("${config.baseUrl}/generation/generate") {
-            contentType(ContentType.Application.Json)
             setBody(GenerateRequest(prompt))
         }.body<GenerateResponse>().text
 
     fun streamGenerate(prompt: String): Flow<String> = channelFlow {
         val ch = httpClient.post("${config.baseUrl}/generation/stream") {
-            contentType(ContentType.Application.Json)
             setBody(GenerateRequest(prompt))
         }.bodyAsChannel()
         parseSse(ch)
@@ -87,7 +82,6 @@ class LlamatikServerClient(
         userPrompt: String,
     ): Flow<String> = channelFlow {
         val ch = httpClient.post("${config.baseUrl}/generation/streamWithContext") {
-            contentType(ContentType.Application.Json)
             setBody(GenerateWithContextRequest(systemPrompt, contextBlock, userPrompt))
         }.bodyAsChannel()
         parseSse(ch)
@@ -95,7 +89,6 @@ class LlamatikServerClient(
 
     fun streamContinue(prompt: String): Flow<String> = channelFlow {
         val ch = httpClient.post("${config.baseUrl}/generation/continueStream") {
-            contentType(ContentType.Application.Json)
             setBody(GenerateContinueRequest(prompt))
         }.bodyAsChannel()
         parseSse(ch)
@@ -103,7 +96,6 @@ class LlamatikServerClient(
 
     fun streamGenerateJson(prompt: String, jsonSchema: String? = null): Flow<String> = channelFlow {
         val ch = httpClient.post("${config.baseUrl}/generation/jsonStream") {
-            contentType(ContentType.Application.Json)
             setBody(GenerateJsonRequest(prompt, jsonSchema))
         }.bodyAsChannel()
         parseSse(ch)
@@ -116,7 +108,6 @@ class LlamatikServerClient(
         jsonSchema: String? = null,
     ): Flow<String> = channelFlow {
         val ch = httpClient.post("${config.baseUrl}/generation/jsonStreamWithContext") {
-            contentType(ContentType.Application.Json)
             setBody(GenerateJsonWithContextRequest(systemPrompt, contextBlock, userPrompt, jsonSchema))
         }.bodyAsChannel()
         parseSse(ch)
@@ -124,7 +115,6 @@ class LlamatikServerClient(
 
     suspend fun updateParams(params: UpdateParamsRequest): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/generation/params") {
-            contentType(ContentType.Application.Json)
             setBody(params)
         }.body<OkResponse>().ok
     }.getOrElse { false }
@@ -143,7 +133,6 @@ class LlamatikServerClient(
 
     suspend fun initMtp(modelPath: String, draftLen: Int = 3): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/generation/mtp/init") {
-            contentType(ContentType.Application.Json)
             setBody(InitMtpRequest(modelPath, draftLen))
         }.body<InitModelResponse>().ok
     }.getOrElse { false }
@@ -167,7 +156,6 @@ class LlamatikServerClient(
         addAssistantPrefix: Boolean = true,
     ): String? = runCatching {
         httpClient.post("${config.baseUrl}/generation/model/applyChatTemplate") {
-            contentType(ContentType.Application.Json)
             setBody(ApplyChatTemplateRequest(messages, addAssistantPrefix))
         }.body<ApplyChatTemplateResponse>().prompt
     }.getOrNull()
@@ -176,14 +164,12 @@ class LlamatikServerClient(
 
     suspend fun initEmbedModel(modelPath: String): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/embeddings/init") {
-            contentType(ContentType.Application.Json)
             setBody(InitModelRequest(modelPath))
         }.body<InitModelResponse>().ok
     }.getOrElse { false }
 
     suspend fun embed(input: String): List<Float> =
         httpClient.post("${config.baseUrl}/embeddings/embed") {
-            contentType(ContentType.Application.Json)
             setBody(EmbedRequest(input))
         }.body<EmbedResponse>().embedding
 
@@ -191,14 +177,12 @@ class LlamatikServerClient(
 
     suspend fun initMultimodal(modelPath: String, mmprojPath: String): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/multimodal/init") {
-            contentType(ContentType.Application.Json)
             setBody(MultimodalInitRequest(modelPath, mmprojPath))
         }.body<InitModelResponse>().ok
     }.getOrElse { false }
 
     fun streamAnalyzeImage(imageBase64: String, prompt: String): Flow<String> = channelFlow {
         val ch = httpClient.post("${config.baseUrl}/multimodal/analyzeStream") {
-            contentType(ContentType.Application.Json)
             setBody(AnalyzeImageRequest(imageBase64, prompt))
         }.bodyAsChannel()
         parseSse(ch)
@@ -212,7 +196,6 @@ class LlamatikServerClient(
 
     suspend fun initWhisper(modelPath: String): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/whisper/init") {
-            contentType(ContentType.Application.Json)
             setBody(WhisperInitRequest(modelPath))
         }.body<InitModelResponse>().ok
     }.getOrElse { false }
@@ -222,7 +205,6 @@ class LlamatikServerClient(
         language: String? = null,
         initialPrompt: String? = null,
     ): String = httpClient.post("${config.baseUrl}/whisper/transcribe") {
-        contentType(ContentType.Application.Json)
         setBody(TranscribeRequest(wavPath, language, initialPrompt))
     }.body<TranscribeResponse>().text
 
@@ -233,7 +215,6 @@ class LlamatikServerClient(
         translate: Boolean = false,
         diarize: Boolean = false,
     ): String = httpClient.post("${config.baseUrl}/whisper/transcribeSegments") {
-        contentType(ContentType.Application.Json)
         setBody(TranscribeSegmentsRequest(wavPath, language, initialPrompt, translate, diarize))
     }.body<TranscribeSegmentsResponse>().json
 
@@ -241,14 +222,12 @@ class LlamatikServerClient(
 
     suspend fun initStableDiffusion(modelPath: String, threads: Int = -1): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/stablediffusion/init") {
-            contentType(ContentType.Application.Json)
             setBody(StableDiffusionInitRequest(modelPath, threads))
         }.body<InitModelResponse>().ok
     }.getOrElse { false }
 
     suspend fun txt2img(request: Txt2ImgRequest): String =
         httpClient.post("${config.baseUrl}/stablediffusion/txt2img") {
-            contentType(ContentType.Application.Json)
             setBody(request)
         }.body<ImageResponse>().imageBase64
 
@@ -263,36 +242,14 @@ class LlamatikServerClient(
     }.getOrElse { false }
 
     /**
-     * Probe the server's loaded services using real endpoints.
-     *
-     * - Text:  GET /v1/generation/model/finetuneType  → 200 means a text model is loaded
-     * - Image: GET /v1/stablediffusion/supportsVideo  → 200 means SD is loaded (hasImage = true)
-     * - Video: same endpoint, reads the boolean field
-     * - Vision / Audio: no probe GET endpoint on the server; always false until the server
-     *   exposes GET /v1/multimodal/status and GET /v1/whisper/status
+     * Returns a snapshot of every inference bridge from `GET /v1/models`.
+     * Null if the server is unreachable or returns an error.
      */
-    suspend fun getCapabilities(): ServerCapabilitiesResponse {
-        val hasText = runCatching {
-            httpClient.get("${config.baseUrl}/generation/model/finetuneType").status.isSuccess()
-        }.getOrElse { false }
+    suspend fun getModelsStatus(): ModelsStatusResponse? = runCatching {
+        httpClient.get("${config.baseUrl}/models").body<ModelsStatusResponse>()
+    }.getOrNull()
 
-        val sdResponse = runCatching {
-            httpClient.get("${config.baseUrl}/stablediffusion/supportsVideo")
-                .let { resp ->
-                    if (resp.status.isSuccess()) resp.body<SupportsVideoResponse>() else null
-                }
-        }.getOrNull()
-
-        return ServerCapabilitiesResponse(
-            text = hasText,
-            image = sdResponse != null,
-            video = sdResponse?.supportsVideo ?: false,
-            vision = false,
-            audio = false,
-        )
-    }
-
-    /** Check whether the loaded Stable Diffusion model supports video generation. */
+    /** Convenience shortcut: check whether the loaded SD model supports video. */
     suspend fun supportsVideoGeneration(): Boolean = runCatching {
         httpClient.get("${config.baseUrl}/stablediffusion/supportsVideo")
             .body<SupportsVideoResponse>().supportsVideo
@@ -322,7 +279,7 @@ class LlamatikServerClient(
                 }
             }
         } finally {
-            byteChannel.cancel()
+            byteChannel.cancel(null)
         }
     }
 

@@ -279,6 +279,8 @@ interface Localization {
     val serverFallbackDismiss: String get() = "Cancel"
     val serverGeneratingOnServer: String get() = "Generating on server…"
     val serverConnectionSettings: String get() = "Server"
+    val serverNoModelLoaded: String get() = "Server connected but no text model loaded — generating locally"
+    val serverUnreachableForGeneration: String get() = "Could not reach server — generating locally"
 }
 
 enum class AvailableLanguages {

@@ -27,6 +27,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -65,6 +68,7 @@ import com.llamatik.app.feature.chatbot.viewmodel.ChatBotSideEffects
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotState
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotViewModel
 import com.llamatik.app.feature.chatbot.viewmodel.ChatUiModel
+import com.llamatik.app.feature.chatbot.viewmodel.ServerRoutingSkipReason
 import com.llamatik.app.feature.chathistory.PendingSessionRepository
 import com.llamatik.app.feature.models.ModelsTabScreen
 import com.llamatik.app.localization.Localization
@@ -109,6 +113,7 @@ class ChatBotTabScreen : Screen {
         val isDialogOpen = remember { mutableStateOf(false) }
         val dialogMessage = remember { mutableStateOf("") }
         val serverFallbackEffect = remember { mutableStateOf<ChatBotSideEffects.OnServerGenerationFailed?>(null) }
+        val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(Unit) {
             viewModel.showOnboardingIfNeeded()
@@ -141,6 +146,7 @@ class ChatBotTabScreen : Screen {
             isDialogOpen = isDialogOpen,
             dialogMessage = dialogMessage,
             serverFallbackEffect = serverFallbackEffect,
+            snackbarHostState = snackbarHostState,
         )
 
         LlamatikTheme {
@@ -152,6 +158,12 @@ class ChatBotTabScreen : Screen {
                     isLoading,
                     state,
                     showSuggestions,
+                )
+
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    snackbar = { data -> Snackbar(snackbarData = data) },
                 )
 
                 if (state.isInitialSetup) {
@@ -236,7 +248,9 @@ class ChatBotTabScreen : Screen {
         isDialogOpen: MutableState<Boolean>,
         dialogMessage: MutableState<String>,
         serverFallbackEffect: MutableState<ChatBotSideEffects.OnServerGenerationFailed?>,
+        snackbarHostState: SnackbarHostState,
     ) {
+        val localization = getCurrentLocalization()
         LaunchedEffect(viewModel) {
             viewModel.sideEffects.collect { effect ->
                 when (effect) {
@@ -280,6 +294,13 @@ class ChatBotTabScreen : Screen {
                     is ChatBotSideEffects.OnServerGenerationFailed -> {
                         isLoading.value = false
                         serverFallbackEffect.value = effect
+                    }
+                    is ChatBotSideEffects.OnServerRoutingSkipped -> {
+                        val msg = when (effect.reason) {
+                            ServerRoutingSkipReason.NO_MODEL -> localization.serverNoModelLoaded
+                            ServerRoutingSkipReason.UNREACHABLE -> localization.serverUnreachableForGeneration
+                        }
+                        snackbarHostState.showSnackbar(msg)
                     }
                 }
             }

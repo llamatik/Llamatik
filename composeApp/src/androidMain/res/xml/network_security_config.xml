@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Allow plain HTTP for the Llamatik local-server feature.
+    The Llamatik server is a LAN-only service (no HTTPS); users connect to
+    private-network IPs/hostnames they choose. CIDR ranges are not supported
+    in <domain> elements, so cleartext is permitted globally here — but the
+    server itself is only ever reachable on a trusted local network.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>
