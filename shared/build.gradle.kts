@@ -56,6 +56,7 @@ kotlin {
             api(project(":core"))
             api(project(":sdk"))
             implementation(project(":sdk-agent"))
+            implementation(project(":network"))
 
             implementation(compose.ui)
             implementation(compose.foundation)

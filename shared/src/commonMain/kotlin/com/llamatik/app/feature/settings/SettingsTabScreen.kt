@@ -51,6 +51,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.llamatik.app.feature.debugmenu.viewmodel.DebugMenuViewModel
 import com.llamatik.app.feature.models.ModelsTabScreen
+import com.llamatik.app.feature.server.ServerSettingsScreen
 import com.llamatik.app.localization.AvailableLanguages
 import com.llamatik.app.localization.SetLanguage
 import com.llamatik.app.localization.displayName
@@ -79,6 +80,7 @@ class SettingsTabScreen : Screen {
                 onOpenModelSettings = { navigator.push(GenerationSettingsScreen()) },
                 onShowOnboarding = { navigator.push(OnboardingScreen()) },
                 onAbout = { navigator.push(AboutScreen()) },
+                onOpenServerSettings = { navigator.push(ServerSettingsScreen()) },
             )
         }
     }
@@ -92,6 +94,7 @@ class SettingsTabScreen : Screen {
         onOpenModels: (() -> Unit)? = null,
         onShowOnboarding: (() -> Unit)? = null,
         onAbout: (() -> Unit)? = null,
+        onOpenServerSettings: (() -> Unit)? = null,
     ) {
         val localization = getCurrentLocalization()
         val state by viewModel.state.collectAsState()
@@ -153,6 +156,16 @@ class SettingsTabScreen : Screen {
                                 label = localization.generationSettings,
                                 buttonLabel = localization.configure,
                                 onClick = onOpenModelSettings
+                            )
+                        }
+
+                        if (onOpenServerSettings != null) {
+                            Spacer(Modifier.size(16.dp))
+                            SettingsRow(
+                                icon = LlamatikIcons.Server,
+                                label = localization.serverConnectionSettings,
+                                buttonLabel = localization.configure,
+                                onClick = onOpenServerSettings
                             )
                         }
 

@@ -253,6 +253,32 @@ interface Localization {
     val aboutImageEngine: String get() = "Image Generation"
     val aboutCorePkg: String get() = "Native inference bindings"
     val aboutSdkPkg: String get() = "AI SDK · Agent Framework · Assistant"
+
+    // Server connection
+    val serverSettingsTitle: String get() = "Server Connection"
+    val serverConnected: String get() = "Connected"
+    val serverDisconnect: String get() = "Disconnect"
+    val serverConnect: String get() = "Connect"
+    val serverConnecting: String get() = "Connecting…"
+    val serverDiscoverSection: String get() = "Discover on Network"
+    val serverDiscoverDescription: String get() = "Scan your local network for Llamatik servers"
+    val serverDiscovering: String get() = "Scanning for servers…"
+    val serverScan: String get() = "Scan"
+    val serverNoNodesFound: String get() = "No servers found yet"
+    val serverManualSection: String get() = "Add Manually"
+    val serverHostLabel: String get() = "IP Address"
+    val serverPortLabel: String get() = "Port"
+    val serverNameLabel: String get() = "Name (optional)"
+    val serverSavedSection: String get() = "Saved Servers"
+    val serverCapabilitiesLabel: String get() = "Available capabilities"
+    val serverCapabilityVision: String get() = "Vision"
+    val serverCapabilityAudio: String get() = "Audio"
+    val serverFallbackTitle: String get() = "Server Unavailable"
+    val serverFallbackMessage: String get() = "The server did not respond. Would you like to generate locally instead?"
+    val serverFallbackConfirm: String get() = "Use Local"
+    val serverFallbackDismiss: String get() = "Cancel"
+    val serverGeneratingOnServer: String get() = "Generating on server…"
+    val serverConnectionSettings: String get() = "Server"
 }
 
 enum class AvailableLanguages {

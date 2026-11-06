@@ -22,8 +22,10 @@ import com.llamatik.network.client.dto.ModelFinetuneTypeResponse
 import com.llamatik.network.client.dto.MultimodalInitRequest
 import com.llamatik.network.client.dto.OkResponse
 import com.llamatik.network.client.dto.SessionResult
+import com.llamatik.network.client.dto.ServerCapabilitiesResponse
 import com.llamatik.network.client.dto.SseEventDto
 import com.llamatik.network.client.dto.StableDiffusionInitRequest
+import com.llamatik.network.client.dto.SupportsVideoResponse
 import com.llamatik.network.client.dto.TranscribeRequest
 import com.llamatik.network.client.dto.TranscribeResponse
 import com.llamatik.network.client.dto.TranscribeSegmentsRequest
@@ -254,10 +256,46 @@ class LlamatikServerClient(
         httpClient.post("${config.baseUrl}/stablediffusion/release").body<OkResponse>().ok
     }.getOrElse { false }
 
-    // --- Health ---
+    // --- Health & Capabilities ---
 
     suspend fun isReachable(): Boolean = runCatching {
         httpClient.get("http://${config.host}:${config.port}/").status.isSuccess()
+    }.getOrElse { false }
+
+    /**
+     * Probe the server's loaded services using real endpoints.
+     *
+     * - Text:  GET /v1/generation/model/finetuneType  → 200 means a text model is loaded
+     * - Image: GET /v1/stablediffusion/supportsVideo  → 200 means SD is loaded (hasImage = true)
+     * - Video: same endpoint, reads the boolean field
+     * - Vision / Audio: no probe GET endpoint on the server; always false until the server
+     *   exposes GET /v1/multimodal/status and GET /v1/whisper/status
+     */
+    suspend fun getCapabilities(): ServerCapabilitiesResponse {
+        val hasText = runCatching {
+            httpClient.get("${config.baseUrl}/generation/model/finetuneType").status.isSuccess()
+        }.getOrElse { false }
+
+        val sdResponse = runCatching {
+            httpClient.get("${config.baseUrl}/stablediffusion/supportsVideo")
+                .let { resp ->
+                    if (resp.status.isSuccess()) resp.body<SupportsVideoResponse>() else null
+                }
+        }.getOrNull()
+
+        return ServerCapabilitiesResponse(
+            text = hasText,
+            image = sdResponse != null,
+            video = sdResponse?.supportsVideo ?: false,
+            vision = false,
+            audio = false,
+        )
+    }
+
+    /** Check whether the loaded Stable Diffusion model supports video generation. */
+    suspend fun supportsVideoGeneration(): Boolean = runCatching {
+        httpClient.get("${config.baseUrl}/stablediffusion/supportsVideo")
+            .body<SupportsVideoResponse>().supportsVideo
     }.getOrElse { false }
 
     // --- SSE parser ---

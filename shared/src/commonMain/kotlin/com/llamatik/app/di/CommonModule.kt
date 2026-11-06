@@ -31,6 +31,8 @@ import com.llamatik.app.feature.news.viewmodel.NewsFeedViewModel
 import com.llamatik.app.feature.reviews.ReviewRequestManager
 import com.llamatik.app.feature.reviews.ReviewService
 import com.llamatik.app.feature.reviews.createReviewService
+import com.llamatik.app.feature.server.ServerConnectionRepository
+import com.llamatik.app.feature.server.viewmodel.ServerSettingsViewModel
 import com.llamatik.app.feature.webview.viewmodel.WebViewModel
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.platform.AppDispatchersIO
@@ -99,6 +101,7 @@ val commonModule = module {
             ttsEngine = get(),
             chatAgentCoordinator = get(),
             rootNavigatorRepository = get(),
+            serverConnectionRepository = get(),
         )
     }
 
@@ -125,6 +128,8 @@ val commonModule = module {
     }
 
     singleOf(::GlobalAppSettingsRepository)
+    singleOf(::ServerConnectionRepository)
+    factoryOf(::ServerSettingsViewModel)
     factoryOf(::GetAllNewsUseCase)
 
     singleOf(::NewsRepository)

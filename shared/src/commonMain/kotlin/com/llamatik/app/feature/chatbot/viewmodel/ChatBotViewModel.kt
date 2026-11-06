@@ -54,6 +54,7 @@ import com.llamatik.core.platform.LlamaSession
 import com.llamatik.core.platform.MultimodalBridge
 import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
+import com.llamatik.app.feature.server.ServerConnectionRepository
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
 import com.russhwolf.settings.Settings
 import io.github.vinceglb.filekit.FileKit
@@ -105,6 +106,7 @@ class ChatBotViewModel(
     val chatAgentCoordinator: ChatAgentCoordinator? = null,
     val systemPromptOverride: String? = null,
     private val rootNavigatorRepository: RootNavigatorRepository? = null,
+    private val serverConnectionRepository: ServerConnectionRepository? = null,
 ) : ScreenModel {
     val localization = getCurrentLocalization()
 
@@ -2336,6 +2338,65 @@ class ChatBotViewModel(
                         return m != null
                     }
 
+                    // --- Server routing ---
+                    val serverClient = serverConnectionRepository?.makeClientForActiveServer()
+                    val serverCaps = serverConnectionRepository?.activeServer?.value?.capabilities
+                    if (serverClient != null && serverCaps?.hasText == true) {
+                        val systemPrompt = currentSystemPrompt()
+                        val contextBlock = ""
+                        var serverSucceeded = false
+                        try {
+                            withTimeoutOrNull(30_000L) {
+                                serverClient.streamGenerateWithContext(
+                                    systemPrompt = systemPrompt,
+                                    contextBlock = contextBlock,
+                                    userPrompt = input,
+                                ).collect { chunk ->
+                                    if (activeRequestId != requestId) return@collect
+                                    acc.append(chunk)
+                                    _conversation.value = _conversation.value.dropLast(1) +
+                                        ChatUiModel.Message(acc.toString(), ChatUiModel.Author.bot)
+                                    _sideEffects.trySend(ChatBotSideEffects.ScrollToBottom)
+                                }
+                                serverSucceeded = true
+                                kvCacheValid = false
+                                activeRequestId = null
+                                _conversation.value = _conversation.value.dropLast(1) +
+                                    ChatUiModel.Message(acc.toString(), ChatUiModel.Author.bot)
+                                _state.value = _state.value.copy(isGenerating = false)
+                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                            } ?: run {
+                                // Timeout — restore conversation and offer local fallback
+                                if (_conversation.value.size >= 2) {
+                                    _conversation.value = _conversation.value.dropLast(2)
+                                }
+                                activeRequestId = null
+                                _sideEffects.trySend(
+                                    ChatBotSideEffects.OnServerGenerationFailed(input, GenerationMode.TEXT)
+                                )
+                                _state.value = _state.value.copy(isGenerating = false)
+                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                            }
+                            return@withContext
+                        } catch (e: Exception) {
+                            Logger.e(e) { "Server generation failed, offering local fallback" }
+                            if (!serverSucceeded) {
+                                acc.clear()
+                                activeRequestId = null
+                                if (_conversation.value.size >= 2) {
+                                    _conversation.value = _conversation.value.dropLast(2)
+                                }
+                                _sideEffects.trySend(
+                                    ChatBotSideEffects.OnServerGenerationFailed(input, GenerationMode.TEXT)
+                                )
+                                _state.value = _state.value.copy(isGenerating = false)
+                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                                return@withContext
+                            }
+                        }
+                    }
+                    // --- End server routing ---
+
                     val generateSettings = _state.value.generateSettings
                     val shouldContinueKv = kvCacheValid
                     kvCacheValid = false
@@ -2985,4 +3046,5 @@ sealed class ChatBotSideEffects {
     data class OnToolCallDetected(val toolId: String, val rawJson: String) : ChatBotSideEffects()
     data class OnVideoSaved(val message: String) : ChatBotSideEffects()
     data class OnVideoSaveFailed(val message: String) : ChatBotSideEffects()
+    data class OnServerGenerationFailed(val prompt: String, val mode: GenerationMode) : ChatBotSideEffects()
 }
