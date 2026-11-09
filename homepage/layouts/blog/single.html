@@ -1,0 +1,49 @@
+{{ define "body_classes" }}page-default-single{{ end }}
+
+{{ define "meta_tags" }}
+  {{ $image := .Params.image | default .Site.Params.seo.meta_og_image }}
+  {{ with .Params.description }}<meta name="description" content="{{ . }}"/>{{ end }}
+  <link rel="canonical" href="{{ .Permalink }}"/>
+  <meta property="og:title" content="{{ .Params.meta_title | default .Title }}"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="{{ .Permalink }}"/>
+  <meta property="og:site_name" content="{{ .Site.Title }}"/>
+  {{ with $image }}<meta property="og:image" content="{{ . | absURL }}"/>{{ end }}
+  {{ with .Params.image_alt }}<meta property="og:image:alt" content="{{ . }}"/>{{ end }}
+  {{ with .Params.description }}<meta property="og:description" content="{{ . }}"/>{{ end }}
+  {{ with .Date }}<meta property="article:published_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}"/>{{ end }}
+  {{ with .Lastmod }}<meta property="article:modified_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}"/>{{ end }}
+  {{ range .Params.categories }}<meta property="article:section" content="{{ . }}"/>{{ end }}
+  {{ range .Params.tags }}<meta property="article:tag" content="{{ . }}"/>{{ end }}
+  <meta name="twitter:card" content="summary_large_image"/>
+  {{ with .Site.Params.seo.meta_twitter_site }}<meta name="twitter:site" content="{{ . }}"/>{{ end }}
+  {{ with .Site.Params.seo.meta_twitter_creator }}<meta name="twitter:creator" content="{{ . }}"/>{{ end }}
+  <meta name="twitter:title" content="{{ .Params.meta_title | default .Title }}"/>
+  {{ with .Params.description }}<meta name="twitter:description" content="{{ . }}"/>{{ end }}
+  {{ with $image }}<meta name="twitter:image" content="{{ . | absURL }}"/>{{ end }}
+  {{ $ld := dict
+      "@context" "https://schema.org"
+      "@type" "BlogPosting"
+      "headline" .Title
+      "description" (.Params.description | default .Summary | plainify)
+      "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+      "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+      "mainEntityOfPage" .Permalink
+      "author" (dict "@type" "Organization" "name" (.Params.author | default .Site.Title) "url" "https://www.llamatik.com/")
+      "publisher" (dict "@type" "Organization" "name" .Site.Title "url" "https://www.llamatik.com/" "logo" (dict "@type" "ImageObject" "url" ("images/logo/LlamatikLogo.svg" | absURL))) }}
+  {{ with $image }}{{ $ld = merge $ld (dict "image" (. | absURL)) }}{{ end }}
+  {{ with .Params.tags }}{{ $ld = merge $ld (dict "keywords" (delimit . ", ")) }}{{ end }}
+  <script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
+{{ end }}
+
+{{ define "main" }}
+<div class="container pb-6 pt-6 pt-md-14 pb-md-14">
+  <div class="row justify-content-start">
+    <div class="col-12 col-md-8">
+      <h1 class="title">{{ .Title }}</h1>
+
+      <div class="content">{{ .Content }}</div>
+    </div>
+  </div>
+</div>
+{{ end }}
