@@ -39,6 +39,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
@@ -73,10 +74,11 @@ class LlamatikServerClient(
         }.body<GenerateResponse>().text
 
     fun streamGenerate(prompt: String): Flow<String> = channelFlow {
-        val ch = httpClient.post("${config.baseUrl}/generation/stream") {
+        httpClient.preparePost("${config.baseUrl}/generation/stream") {
             setBody(GenerateRequest(prompt))
-        }.bodyAsChannel()
-        parseSse(ch)
+        }.execute { response ->
+            parseSse(response.bodyAsChannel())
+        }
     }
 
     fun streamGenerateWithContext(
@@ -84,24 +86,27 @@ class LlamatikServerClient(
         contextBlock: String,
         userPrompt: String,
     ): Flow<String> = channelFlow {
-        val ch = httpClient.post("${config.baseUrl}/generation/streamWithContext") {
+        httpClient.preparePost("${config.baseUrl}/generation/streamWithContext") {
             setBody(GenerateWithContextRequest(systemPrompt, contextBlock, userPrompt))
-        }.bodyAsChannel()
-        parseSse(ch)
+        }.execute { response ->
+            parseSse(response.bodyAsChannel())
+        }
     }
 
     fun streamContinue(prompt: String): Flow<String> = channelFlow {
-        val ch = httpClient.post("${config.baseUrl}/generation/continueStream") {
+        httpClient.preparePost("${config.baseUrl}/generation/continueStream") {
             setBody(GenerateContinueRequest(prompt))
-        }.bodyAsChannel()
-        parseSse(ch)
+        }.execute { response ->
+            parseSse(response.bodyAsChannel())
+        }
     }
 
     fun streamGenerateJson(prompt: String, jsonSchema: String? = null): Flow<String> = channelFlow {
-        val ch = httpClient.post("${config.baseUrl}/generation/jsonStream") {
+        httpClient.preparePost("${config.baseUrl}/generation/jsonStream") {
             setBody(GenerateJsonRequest(prompt, jsonSchema))
-        }.bodyAsChannel()
-        parseSse(ch)
+        }.execute { response ->
+            parseSse(response.bodyAsChannel())
+        }
     }
 
     fun streamGenerateJsonWithContext(
@@ -110,10 +115,11 @@ class LlamatikServerClient(
         userPrompt: String,
         jsonSchema: String? = null,
     ): Flow<String> = channelFlow {
-        val ch = httpClient.post("${config.baseUrl}/generation/jsonStreamWithContext") {
+        httpClient.preparePost("${config.baseUrl}/generation/jsonStreamWithContext") {
             setBody(GenerateJsonWithContextRequest(systemPrompt, contextBlock, userPrompt, jsonSchema))
-        }.bodyAsChannel()
-        parseSse(ch)
+        }.execute { response ->
+            parseSse(response.bodyAsChannel())
+        }
     }
 
     suspend fun updateParams(params: UpdateParamsRequest): Boolean = runCatching {
@@ -185,10 +191,11 @@ class LlamatikServerClient(
     }.getOrElse { false }
 
     fun streamAnalyzeImage(imageBase64: String, prompt: String): Flow<String> = channelFlow {
-        val ch = httpClient.post("${config.baseUrl}/multimodal/analyzeStream") {
+        httpClient.preparePost("${config.baseUrl}/multimodal/analyzeStream") {
             setBody(AnalyzeImageRequest(imageBase64, prompt))
-        }.bodyAsChannel()
-        parseSse(ch)
+        }.execute { response ->
+            parseSse(response.bodyAsChannel())
+        }
     }
 
     suspend fun cancelMultimodal(): Boolean = runCatching {
