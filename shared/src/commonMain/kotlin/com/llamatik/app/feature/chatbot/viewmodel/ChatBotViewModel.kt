@@ -146,7 +146,9 @@ class ChatBotViewModel(
             .map { it != null }
             .stateIn(screenModelScope, SharingStarted.Eagerly, serverConnectionRepository?.activeServer?.value != null)
 
-    private val _sideEffects = Channel<ChatBotSideEffects>()
+    // Buffered: trySend on a rendezvous channel drops events whenever the collector is busy,
+    // which lost OnMessageLoaded right after a burst of streamed chunks (spinner never cleared).
+    private val _sideEffects = Channel<ChatBotSideEffects>(Channel.UNLIMITED)
     val sideEffects: Flow<ChatBotSideEffects> = _sideEffects.receiveAsFlow()
 
     private var vectorStore: VectorStoreData? = null
