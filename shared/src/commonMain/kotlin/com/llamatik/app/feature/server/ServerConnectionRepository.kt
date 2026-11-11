@@ -4,9 +4,17 @@ import co.touchlab.kermit.Logger
 import com.llamatik.network.client.LlamatikServerClient
 import com.llamatik.network.client.LlamatikServerConfig
 import com.russhwolf.settings.Settings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 private const val ACTIVE_SERVER_HOST_KEY = "llamatik_server_host"
 private const val ACTIVE_SERVER_PORT_KEY = "llamatik_server_port"
@@ -14,7 +22,28 @@ private const val ACTIVE_SERVER_NAME_KEY = "llamatik_server_name"
 private const val SAVED_SERVERS_COUNT_KEY = "llamatik_saved_servers_count"
 private const val SAVED_SERVERS_PREFIX = "llamatik_saved_server_"
 
+private const val HEALTH_POLL_INTERVAL_MS = 10_000L
+
+/** Live health of the active server, shown as a coloured dot in the UI. */
+enum class ServerHealth {
+    /** Reachable and a text generation model is loaded. */
+    ONLINE,
+
+    /** Reachable but not fully usable (e.g. no text model loaded). */
+    DEGRADED,
+
+    /** Not reachable. */
+    OFFLINE,
+}
+
 class ServerConnectionRepository(private val settings: Settings) {
+
+    private val monitorScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private val _health = MutableStateFlow<ServerHealth?>(null)
+
+    /** Null when no server is connected. */
+    val health: StateFlow<ServerHealth?> = _health.asStateFlow()
 
     private val _activeServer = MutableStateFlow<ConnectedServer?>(null)
     val activeServer: StateFlow<ConnectedServer?> = _activeServer.asStateFlow()
@@ -31,6 +60,42 @@ class ServerConnectionRepository(private val settings: Settings) {
                 name = name.ifBlank { host },
                 capabilities = ServerCapabilities() // unknown until reconnected
             )
+        }
+        startHealthMonitoring()
+    }
+
+    /** Polls the active server while one is connected; restarts when the server changes. */
+    private fun startHealthMonitoring() {
+        monitorScope.launch {
+            _activeServer
+                .map { server -> server?.let { it.host to it.port } }
+                .distinctUntilChanged()
+                .collectLatest { target ->
+                    if (target == null) {
+                        _health.value = null
+                        return@collectLatest
+                    }
+                    val client = LlamatikServerClient(LlamatikServerConfig(target.first, target.second))
+                    while (true) {
+                        val status = client.getModelsStatus()
+                        if (status == null) {
+                            _health.value = ServerHealth.OFFLINE
+                        } else {
+                            _health.value =
+                                if (status.generation.loaded) ServerHealth.ONLINE else ServerHealth.DEGRADED
+                            _activeServer.value = _activeServer.value?.copy(
+                                capabilities = ServerCapabilities(
+                                    hasText = status.generation.loaded,
+                                    hasImage = status.stableDiffusion.loaded,
+                                    hasVideo = status.stableDiffusion.supportsVideo ?: false,
+                                    hasVision = status.multimodal.loaded,
+                                    hasAudio = status.whisper.loaded,
+                                )
+                            )
+                        }
+                        delay(HEALTH_POLL_INTERVAL_MS)
+                    }
+                }
         }
     }
 

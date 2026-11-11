@@ -35,6 +35,7 @@ import com.llamatik.app.feature.news.repositories.FeedItem
 import com.llamatik.app.feature.news.usecases.GetAllNewsUseCase
 import com.llamatik.app.feature.reviews.ReviewRequestManager
 import com.llamatik.app.feature.server.ServerConnectionRepository
+import com.llamatik.app.feature.server.ServerHealth
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.localization.getLanguageCode
 import com.llamatik.app.localization.getLanguageName
@@ -148,6 +149,10 @@ class ChatBotViewModel(
 
     // Buffered: trySend on a rendezvous channel drops events whenever the collector is busy,
     // which lost OnMessageLoaded right after a burst of streamed chunks (spinner never cleared).
+    /** Live health of the connected server (null when none is connected). */
+    val serverHealth: StateFlow<ServerHealth?> =
+        serverConnectionRepository?.health ?: MutableStateFlow(null)
+
     private val _sideEffects = Channel<ChatBotSideEffects>(Channel.UNLIMITED)
     val sideEffects: Flow<ChatBotSideEffects> = _sideEffects.receiveAsFlow()
 

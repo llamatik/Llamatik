@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -71,6 +72,7 @@ import com.llamatik.app.feature.chatbot.viewmodel.ChatUiModel
 import com.llamatik.app.feature.chatbot.viewmodel.ServerRoutingSkipReason
 import com.llamatik.app.feature.chathistory.PendingSessionRepository
 import com.llamatik.app.feature.models.ModelsTabScreen
+import com.llamatik.app.feature.server.ServerHealth
 import com.llamatik.app.localization.Localization
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.localization.getLanguageCode
@@ -339,6 +341,11 @@ class ChatBotTabScreen : Screen {
                             containerColor = MaterialTheme.colorScheme.background
                         ),
                         actions = {
+                            val serverHealth by viewModel.serverHealth.collectAsState()
+                            val hasServer by viewModel.hasActiveServer.collectAsState()
+                            if (hasServer) {
+                                ServerStatusDot(serverHealth)
+                            }
                             IconButton(
                                 onClick = {
                                     showSuggestions.value = false
@@ -407,6 +414,23 @@ class ChatBotTabScreen : Screen {
                 }
             }
         }
+    }
+
+    /** Green = online, yellow = reachable but no text model, red = unreachable, grey = checking. */
+    @Composable
+    private fun ServerStatusDot(health: ServerHealth?) {
+        val color = when (health) {
+            ServerHealth.ONLINE -> Color(0xFF2E7D32)
+            ServerHealth.DEGRADED -> Color(0xFFF9A825)
+            ServerHealth.OFFLINE -> Color(0xFFC62828)
+            null -> MaterialTheme.colorScheme.outline
+        }
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .size(10.dp)
+                .background(color, CircleShape)
+        )
     }
 
     @Composable
