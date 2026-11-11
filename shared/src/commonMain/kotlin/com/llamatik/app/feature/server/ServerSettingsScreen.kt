@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,7 +39,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,6 +67,25 @@ class ServerSettingsScreen : Screen {
         val state by viewModel.state.collectAsState()
         val loc = getCurrentLocalization()
         val snackbarHostState = remember { SnackbarHostState() }
+        // Connection is deferred until the user acknowledges the unencrypted-traffic warning.
+        var pendingConnect by remember { mutableStateOf<(() -> Unit)?>(null) }
+
+        pendingConnect?.let { connect ->
+            AlertDialog(
+                onDismissRequest = { pendingConnect = null },
+                title = { Text(loc.serverUnencryptedWarningTitle) },
+                text = { Text(loc.serverUnencryptedWarningMessage) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        pendingConnect = null
+                        connect()
+                    }) { Text(loc.serverUnencryptedWarningConfirm) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { pendingConnect = null }) { Text(loc.serverFallbackDismiss) }
+                },
+            )
+        }
 
         LaunchedEffect(state.connectionError) {
             state.connectionError?.let { err ->
@@ -97,6 +119,8 @@ class ServerSettingsScreen : Screen {
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
+                    item { UnencryptedWarningCard(loc) }
+
                     // Connected server section
                     if (state.activeServer != null) {
                         item {
@@ -145,7 +169,7 @@ class ServerSettingsScreen : Screen {
                                         node = node,
                                         isConnecting = state.isConnecting,
                                         isConnected = state.activeServer?.host == node.host && state.activeServer?.port == node.port,
-                                        onConnect = { viewModel.connectToDiscoveredNode(node) },
+                                        onConnect = { pendingConnect = { viewModel.connectToDiscoveredNode(node) } },
                                         loc = loc,
                                     )
                                     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -192,7 +216,7 @@ class ServerSettingsScreen : Screen {
                             }
                             Spacer(Modifier.height(12.dp))
                             Button(
-                                onClick = { viewModel.connectToManual() },
+                                onClick = { pendingConnect = { viewModel.connectToManual() } },
                                 enabled = state.manualHost.isNotBlank() && !state.isConnecting,
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
@@ -218,7 +242,7 @@ class ServerSettingsScreen : Screen {
                                         server = saved,
                                         isConnected = state.activeServer?.host == saved.host && state.activeServer?.port == saved.port,
                                         isConnecting = state.isConnecting,
-                                        onConnect = { viewModel.connectToSavedServer(saved.host, saved.port, saved.name) },
+                                        onConnect = { pendingConnect = { viewModel.connectToSavedServer(saved.host, saved.port, saved.name) } },
                                         onDelete = { viewModel.removeSavedServer(saved) },
                                         loc = loc,
                                     )
@@ -229,6 +253,28 @@ class ServerSettingsScreen : Screen {
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun UnencryptedWarningCard(loc: Localization) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = loc.serverUnencryptedWarningTitle,
+                style = Typography.get().titleSmall,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = loc.serverUnencryptedWarningMessage,
+                style = Typography.get().bodySmall,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
         }
     }
 }

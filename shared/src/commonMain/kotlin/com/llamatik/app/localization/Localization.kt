@@ -281,6 +281,12 @@ interface Localization {
     val serverConnectionSettings: String get() = "Server"
     val serverNoModelLoaded: String get() = "Server connected but no text model loaded — generating locally"
     val serverUnreachableForGeneration: String get() = "Could not reach server — generating locally"
+    val serverUnencryptedWarningTitle: String get() = "Connection not encrypted"
+    val serverUnencryptedWarningMessage: String get() =
+        "Messages sent to the server travel over the network without encryption, so they are not 100% secure. " +
+            "Anyone on the same network could potentially read them. Be careful about what you send, " +
+            "and avoid sharing passwords or sensitive personal information."
+    val serverUnencryptedWarningConfirm: String get() = "I understand, connect"
 }
 
 enum class AvailableLanguages {
