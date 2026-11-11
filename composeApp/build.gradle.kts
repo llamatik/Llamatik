@@ -219,6 +219,11 @@ android {
         compose = true
     }
 
+    // AGP 9.5+: the Compose Preview runfiles task requires compiled Android resources in unit tests.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+
     dependencies {
         implementation(project(":shared"))
 
@@ -256,6 +261,17 @@ android {
         androidTestImplementation(libs.androidx.espresso.core)
 
         debugImplementation(libs.androidx.ui.tooling)
+    }
+}
+
+// AGP 9.5+: the Compose Preview runfiles task is created for every variant and requires
+// unit tests to be enabled (including release).
+androidComponents {
+    beforeVariants { variantBuilder ->
+        (variantBuilder as? com.android.build.api.variant.HasHostTestsBuilder)
+            ?.hostTests
+            ?.get(com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE)
+            ?.enable = true
     }
 }
 
