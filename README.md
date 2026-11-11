@@ -24,6 +24,11 @@
   <a href="https://plugins.jetbrains.com/plugin/31304"><img src="https://img.shields.io/jetbrains/plugin/v/31304" alt="jetbrains plugin badge"/></a>
 </p>
 
+<p align="center">
+  🏆 <b>Llamatik is a 2026 <a href="https://kotlinfoundation.org/news/grants-program-winners-26/">Kotlin Foundation Grant</a> winner.</b>
+  <a href="https://www.llamatik.com/blog/kotlin-foundation-grant-2026/">Read the announcement →</a>
+</p>
+
 ---
 
 ## 🆕 What's New in v2.0.0
