@@ -36,10 +36,13 @@ import com.llamatik.network.client.dto.WhisperInitRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.ByteReadChannel
@@ -287,6 +290,10 @@ class LlamatikServerClient(
         fun defaultHttpClient(): HttpClient = HttpClient {
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true })
+            }
+            // Without a default Content-Type, ktor cannot pick a serializer for setBody(...)
+            defaultRequest {
+                contentType(ContentType.Application.Json)
             }
         }
     }

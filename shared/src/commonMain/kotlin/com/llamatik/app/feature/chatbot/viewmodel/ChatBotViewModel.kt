@@ -65,9 +65,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -136,6 +139,12 @@ class ChatBotViewModel(
         )
     )
     val state = _state.asStateFlow()
+
+    /** True while a Llamatik server is connected, so chat can work without a local model. */
+    val hasActiveServer: StateFlow<Boolean> =
+        (serverConnectionRepository?.activeServer ?: MutableStateFlow(null))
+            .map { it != null }
+            .stateIn(screenModelScope, SharingStarted.Eagerly, serverConnectionRepository?.activeServer?.value != null)
 
     private val _sideEffects = Channel<ChatBotSideEffects>()
     val sideEffects: Flow<ChatBotSideEffects> = _sideEffects.receiveAsFlow()

@@ -382,9 +382,10 @@ class ChatBotTabScreen : Screen {
                             .background(MaterialTheme.colorScheme.surfaceDim)
                     )
 
-                    if (state.isGenerateModelLoading && !state.isGenerateModelLoaded) {
+                    val hasActiveServer by viewModel.hasActiveServer.collectAsState()
+                    if (state.isGenerateModelLoading && !state.isGenerateModelLoaded && !hasActiveServer) {
                         ModelLoadingEmptyState(localization = localization)
-                    } else if (!state.isGenerateModelLoaded && !state.isInitialSetup) {
+                    } else if (!state.isGenerateModelLoaded && !hasActiveServer && !state.isInitialSetup) {
                         NoModelEmptyState(
                             localization = localization,
                             onDownloadDefault = { viewModel.downloadDefaultModel() }
