@@ -30,6 +30,7 @@ import platform.Foundation.closeFile
 import platform.Foundation.create
 import platform.Foundation.fileHandleForReadingAtPath
 import platform.Foundation.fileHandleForWritingAtPath
+import platform.Foundation.readDataOfLength
 import platform.Foundation.seekToEndOfFile
 import platform.Foundation.truncateFileAtOffset
 import platform.Foundation.writeData

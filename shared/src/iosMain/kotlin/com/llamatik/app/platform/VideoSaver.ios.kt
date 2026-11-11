@@ -2,9 +2,7 @@
 
 package com.llamatik.app.platform
 
-import kotlinx.cinterop.CPointerVar
 import kotlinx.cinterop.ObjCObjectVar
-import kotlinx.cinterop.OpaqueValue
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.convert
@@ -27,7 +25,6 @@ import platform.AVFoundation.AVVideoCodecTypeH264
 import platform.AVFoundation.AVVideoHeightKey
 import platform.AVFoundation.AVVideoWidthKey
 import platform.CoreMedia.CMTimeMake
-import platform.CoreMedia.kCMTimeZero
 import platform.CoreVideo.CVPixelBufferCreateWithBytes
 import platform.CoreVideo.CVPixelBufferRelease
 import platform.CoreVideo.kCVPixelFormatType_32BGRA
@@ -38,10 +35,12 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSNumber
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
+import platform.Foundation.timeIntervalSince1970
 import platform.Photos.PHAssetChangeRequest
 import platform.Photos.PHAuthorizationStatusAuthorized
 import platform.Photos.PHPhotoLibrary
 import kotlin.coroutines.resume
+import kotlin.time.Duration.Companion.milliseconds
 
 actual object VideoSaver {
 
@@ -78,7 +77,7 @@ actual object VideoSaver {
     ): Boolean {
         val assetWriter: AVAssetWriter = memScoped {
             val errRef = alloc<ObjCObjectVar<NSError?>>()
-            AVAssetWriter(URL = outputUrl, fileType = AVFileTypeMPEG4, error = errRef.ptr)
+            AVAssetWriter(uRL = outputUrl, fileType = AVFileTypeMPEG4, error = errRef.ptr)
         } ?: return false
 
         val videoSettings = mapOf<Any?, Any?>(
@@ -107,15 +106,15 @@ actual object VideoSaver {
         if (!assetWriter.canAddInput(writerInput)) return false
         assetWriter.addInput(writerInput)
         if (!assetWriter.startWriting()) return false
-        assetWriter.startSessionAtSourceTime(kCMTimeZero)
+        assetWriter.startSessionAtSourceTime(CMTimeMake(value = 0L, timescale = fps))
 
         for ((idx, frameData) in frames.withIndex()) {
             var retries = 0
-            while (!writerInput.isReadyForMoreMediaData && retries < 200) {
-                delay(5)
+            while (!writerInput.isReadyForMoreMediaData() && retries < 200) {
+                delay(5.milliseconds)
                 retries++
             }
-            if (!writerInput.isReadyForMoreMediaData) continue
+            if (!writerInput.isReadyForMoreMediaData()) continue
 
             val pts = CMTimeMake(value = idx.toLong(), timescale = fps)
             appendBgraFrame(adaptor, frameData, width, height, pts)
@@ -136,7 +135,7 @@ actual object VideoSaver {
         rgba: ByteArray,
         width: Int,
         height: Int,
-        pts: platform.CoreMedia.CMTime
+        pts: kotlinx.cinterop.CValue<platform.CoreMedia.CMTime>
     ) {
         val bgra = ByteArray(rgba.size)
         val pixelCount = minOf(rgba.size / 4, width * height)
@@ -150,7 +149,7 @@ actual object VideoSaver {
 
         bgra.usePinned { pinned ->
             memScoped {
-                val pbRef = alloc<CPointerVar<OpaqueValue>>()
+                val pbRef = alloc<platform.CoreVideo.CVPixelBufferRefVar>()
                 val status = CVPixelBufferCreateWithBytes(
                     null,
                     width.convert(),
