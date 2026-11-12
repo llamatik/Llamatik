@@ -107,7 +107,7 @@ class WebViewScreen(
                                 IconButton(onClick = { onClose.invoke() }) {
                                     Icon(
                                         imageVector = Icons.Filled.ArrowBack,
-                                        contentDescription = "Go back"
+                                        contentDescription = localization.backLabel
                                     )
                                 }
                             },

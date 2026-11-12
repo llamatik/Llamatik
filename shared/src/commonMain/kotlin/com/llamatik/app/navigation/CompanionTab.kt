@@ -8,6 +8,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.llamatik.app.feature.companion.ui.CompanionTabScreen
+import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.ui.icon.LlamatikIcons
 
 internal object CompanionTab : Tab {
@@ -15,8 +16,9 @@ internal object CompanionTab : Tab {
         @Composable
         get() {
             val icon = rememberVectorPainter(LlamatikIcons.PersonPin)
-            return remember {
-                TabOptions(index = 3u, title = "Companion", icon = icon)
+            val title = getCurrentLocalization().companionLabel
+            return remember(title) {
+                TabOptions(index = 3u, title = title, icon = icon)
             }
         }
 

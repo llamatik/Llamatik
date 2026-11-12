@@ -172,6 +172,29 @@ interface Localization {
     val modelDownloadCompanions: String
     val modelSizeTotal: String
     val modelSizeModel: String
+    val companionChooseTitle: String
+    val companionChooseDescription: String
+    val companionLabel: String
+    val changeCompanion: String
+    val newConversation: String
+    val deleteConversation: String
+    val strengthLabel: String
+    val removeImage: String
+    val loadPdfForRag: String
+    val pickSourceImage: String
+    val generatedVideo: String
+    val generatedImage: String
+    val videoFrame: String
+    val restart: String
+    val historyTitle: String
+    val errorLabel: String
+    val unknownError: String
+    val downloadInvalidFile: String
+    val downloadCancelled: String
+    val downloadMissingOutputPath: String
+    val downloadFailedGeneric: String
+    val serverCouldNotConnect: String
+    val webPreviewUnavailable: String
     val saveVideoToGallery: String
     val videoSavedToGallery: String
     val videoSaveError: String

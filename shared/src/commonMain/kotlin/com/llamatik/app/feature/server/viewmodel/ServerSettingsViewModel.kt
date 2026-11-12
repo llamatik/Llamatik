@@ -6,6 +6,7 @@ import co.touchlab.kermit.Logger
 import com.llamatik.app.feature.server.ConnectedServer
 import com.llamatik.app.feature.server.SavedServer
 import com.llamatik.app.feature.server.ServerConnectionRepository
+import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.network.discovery.DiscoveredNode
 import com.llamatik.network.discovery.DiscoveryEvent
 import com.llamatik.network.discovery.NodeDiscovery
@@ -113,7 +114,7 @@ class ServerSettingsViewModel(
             } else {
                 _state.value = _state.value.copy(
                     isConnecting = false,
-                    connectionError = "Could not connect to $host:$port",
+                    connectionError = "${getCurrentLocalization().serverCouldNotConnect} $host:$port",
                 )
             }
         }

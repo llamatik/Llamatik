@@ -64,6 +64,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
+import com.llamatik.app.AppBrand
 import com.llamatik.app.feature.chatbot.ui.ChatInputBox
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotSideEffects
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotState
@@ -370,7 +371,7 @@ class ChatBotTabScreen : Screen {
                             ) {
                                 Icon(
                                     imageVector = LlamatikIcons.NewConversation,
-                                    contentDescription = "Delete Conversation"
+                                    contentDescription = localization.deleteConversation
                                 )
                             }
                         }
@@ -688,7 +689,7 @@ class ChatBotTabScreen : Screen {
                         if (videoThumbnail != null) {
                             Image(
                                 bitmap = videoThumbnail,
-                                contentDescription = "Generated video",
+                                contentDescription = localization.generatedVideo,
                                 contentScale = ContentScale.Fit,
                                 modifier = Modifier.matchParentSize()
                             )
@@ -719,7 +720,7 @@ class ChatBotTabScreen : Screen {
                     if (bitmapToShow != null) {
                         Image(
                             bitmap = bitmapToShow,
-                            contentDescription = message.imageFileName ?: "Generated image",
+                            contentDescription = message.imageFileName ?: localization.generatedImage,
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
                                 .widthIn(max = CHAT_BUBBLE_MAX_WIDTH_DP.dp)
@@ -744,7 +745,7 @@ class ChatBotTabScreen : Screen {
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    text = if (message.isFromMe) localization.me else "Llamatik AI",
+                    text = if (message.isFromMe) localization.me else AppBrand.AI_NAME,
                     style = Typography.get().titleSmall,
                     color = if (message.isFromMe) MaterialTheme.colorScheme.onPrimaryContainer
                     else MaterialTheme.colorScheme.onSurface,

@@ -3,6 +3,7 @@ package com.llamatik.app.platform
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.llamatik.app.localization.getCurrentLocalization
 
 @Composable
 actual fun WebViewLayout(
@@ -16,5 +17,5 @@ actual fun WebViewLayout(
         isLoading(false)
     }
 
-    Text("Web preview is not available on the WASM target yet.")
+    Text(getCurrentLocalization().webPreviewUnavailable)
 }

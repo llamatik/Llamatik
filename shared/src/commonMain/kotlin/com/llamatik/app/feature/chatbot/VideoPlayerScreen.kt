@@ -148,7 +148,7 @@ private fun VideoPlayer(videoData: VideoData) {
             if (currentBitmap != null) {
                 Image(
                     bitmap = currentBitmap,
-                    contentDescription = "Video frame",
+                    contentDescription = getCurrentLocalization().videoFrame,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -178,7 +178,7 @@ private fun VideoPlayer(videoData: VideoData) {
             ) {
                 Icon(
                     imageVector = LlamatikIcons.Stop,
-                    contentDescription = "Restart",
+                    contentDescription = getCurrentLocalization().restart,
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }

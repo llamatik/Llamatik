@@ -83,7 +83,7 @@ class NewsFeedDetailScreen(private val link: String) : Screen {
                             IconButton(onClick = { onClose.invoke() }) {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowBack,
-                                    contentDescription = "Go back"
+                                    contentDescription = localization.backLabel
                                 )
                             }
                         },
