@@ -165,6 +165,13 @@ interface Localization {
     val videoGenerationError: String
     val modelMultilingual: String
     val modelEnglishOnly: String
+    val modelImage: String
+    val modelVideo: String
+    val modelUnload: String
+    val modelDownloadingCompanions: String
+    val modelDownloadCompanions: String
+    val modelSizeTotal: String
+    val modelSizeModel: String
     val saveVideoToGallery: String
     val videoSavedToGallery: String
     val videoSaveError: String
