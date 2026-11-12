@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -26,8 +28,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -63,8 +69,10 @@ import com.llamatik.app.feature.chatbot.viewmodel.ChatBotSideEffects
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotState
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotViewModel
 import com.llamatik.app.feature.chatbot.viewmodel.ChatUiModel
+import com.llamatik.app.feature.chatbot.viewmodel.ServerRoutingSkipReason
 import com.llamatik.app.feature.chathistory.PendingSessionRepository
 import com.llamatik.app.feature.models.ModelsTabScreen
+import com.llamatik.app.feature.server.ServerHealth
 import com.llamatik.app.localization.Localization
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.localization.getLanguageCode
@@ -106,6 +114,8 @@ class ChatBotTabScreen : Screen {
         // Dialog state (stable UI state rendered from Content)
         val isDialogOpen = remember { mutableStateOf(false) }
         val dialogMessage = remember { mutableStateOf("") }
+        val serverFallbackEffect = remember { mutableStateOf<ChatBotSideEffects.OnServerGenerationFailed?>(null) }
+        val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(Unit) {
             viewModel.showOnboardingIfNeeded()
@@ -137,6 +147,8 @@ class ChatBotTabScreen : Screen {
             isLoading = isLoading,
             isDialogOpen = isDialogOpen,
             dialogMessage = dialogMessage,
+            serverFallbackEffect = serverFallbackEffect,
+            snackbarHostState = snackbarHostState,
         )
 
         LlamatikTheme {
@@ -148,6 +160,12 @@ class ChatBotTabScreen : Screen {
                     isLoading,
                     state,
                     showSuggestions,
+                )
+
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    snackbar = { data -> Snackbar(snackbarData = data) },
                 )
 
                 if (state.isInitialSetup) {
@@ -201,6 +219,27 @@ class ChatBotTabScreen : Screen {
                     dismissButtonText = localization.dismiss
                 )
             }
+
+            serverFallbackEffect.value?.let { fallback ->
+                AlertDialog(
+                    onDismissRequest = { serverFallbackEffect.value = null },
+                    title = { Text(localization.serverFallbackTitle) },
+                    text = { Text(localization.serverFallbackMessage) },
+                    confirmButton = {
+                        Button(onClick = {
+                            serverFallbackEffect.value = null
+                            viewModel.onMessageSendDirect(fallback.prompt)
+                        }) {
+                            Text(localization.serverFallbackConfirm)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { serverFallbackEffect.value = null }) {
+                            Text(localization.serverFallbackDismiss)
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -210,7 +249,10 @@ class ChatBotTabScreen : Screen {
         isLoading: MutableState<Boolean>,
         isDialogOpen: MutableState<Boolean>,
         dialogMessage: MutableState<String>,
+        serverFallbackEffect: MutableState<ChatBotSideEffects.OnServerGenerationFailed?>,
+        snackbarHostState: SnackbarHostState,
     ) {
+        val localization = getCurrentLocalization()
         LaunchedEffect(viewModel) {
             viewModel.sideEffects.collect { effect ->
                 when (effect) {
@@ -251,6 +293,17 @@ class ChatBotTabScreen : Screen {
                         isDialogOpen.value = true
                     }
                     is ChatBotSideEffects.OnToolCallDetected -> {}  // companion only
+                    is ChatBotSideEffects.OnServerGenerationFailed -> {
+                        isLoading.value = false
+                        serverFallbackEffect.value = effect
+                    }
+                    is ChatBotSideEffects.OnServerRoutingSkipped -> {
+                        val msg = when (effect.reason) {
+                            ServerRoutingSkipReason.NO_MODEL -> localization.serverNoModelLoaded
+                            ServerRoutingSkipReason.UNREACHABLE -> localization.serverUnreachableForGeneration
+                        }
+                        snackbarHostState.showSnackbar(msg)
+                    }
                 }
             }
         }
@@ -288,6 +341,11 @@ class ChatBotTabScreen : Screen {
                             containerColor = MaterialTheme.colorScheme.background
                         ),
                         actions = {
+                            val serverHealth by viewModel.serverHealth.collectAsState()
+                            val hasServer by viewModel.hasActiveServer.collectAsState()
+                            if (hasServer) {
+                                ServerStatusDot(serverHealth)
+                            }
                             IconButton(
                                 onClick = {
                                     showSuggestions.value = false
@@ -331,9 +389,10 @@ class ChatBotTabScreen : Screen {
                             .background(MaterialTheme.colorScheme.surfaceDim)
                     )
 
-                    if (state.isGenerateModelLoading && !state.isGenerateModelLoaded) {
+                    val hasActiveServer by viewModel.hasActiveServer.collectAsState()
+                    if (state.isGenerateModelLoading && !state.isGenerateModelLoaded && !hasActiveServer) {
                         ModelLoadingEmptyState(localization = localization)
-                    } else if (!state.isGenerateModelLoaded && !state.isInitialSetup) {
+                    } else if (!state.isGenerateModelLoaded && !hasActiveServer && !state.isInitialSetup) {
                         NoModelEmptyState(
                             localization = localization,
                             onDownloadDefault = { viewModel.downloadDefaultModel() }
@@ -355,6 +414,23 @@ class ChatBotTabScreen : Screen {
                 }
             }
         }
+    }
+
+    /** Green = online, yellow = reachable but no text model, red = unreachable, grey = checking. */
+    @Composable
+    private fun ServerStatusDot(health: ServerHealth?) {
+        val color = when (health) {
+            ServerHealth.ONLINE -> Color(0xFF2E7D32)
+            ServerHealth.DEGRADED -> Color(0xFFF9A825)
+            ServerHealth.OFFLINE -> Color(0xFFC62828)
+            null -> MaterialTheme.colorScheme.outline
+        }
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .size(10.dp)
+                .background(color, CircleShape)
+        )
     }
 
     @Composable

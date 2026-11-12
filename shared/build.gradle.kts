@@ -56,6 +56,7 @@ kotlin {
             api(project(":core"))
             api(project(":sdk"))
             implementation(project(":sdk-agent"))
+            implementation(project(":network"))
 
             implementation(compose.ui)
             implementation(compose.foundation)
@@ -203,6 +204,17 @@ compose.resources {
     publicResClass = true
 }
 
+// AGP 9.5+: the Compose Preview runfiles task is created for every variant and requires
+// unit tests to be enabled (including release).
+androidComponents {
+    beforeVariants { variantBuilder ->
+        (variantBuilder as? com.android.build.api.variant.HasHostTestsBuilder)
+            ?.hostTests
+            ?.get(com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE)
+            ?.enable = true
+    }
+}
+
 android {
     namespace = "com.llamatik.app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -214,6 +226,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    // AGP 9.5+: the Compose Preview runfiles task requires compiled Android resources in unit tests.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
     }
 
     kotlin {

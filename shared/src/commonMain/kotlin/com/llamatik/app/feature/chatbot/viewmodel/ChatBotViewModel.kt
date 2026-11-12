@@ -34,6 +34,8 @@ import com.llamatik.app.feature.news.NewsFeedScreen
 import com.llamatik.app.feature.news.repositories.FeedItem
 import com.llamatik.app.feature.news.usecases.GetAllNewsUseCase
 import com.llamatik.app.feature.reviews.ReviewRequestManager
+import com.llamatik.app.feature.server.ServerConnectionRepository
+import com.llamatik.app.feature.server.ServerHealth
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.localization.getLanguageCode
 import com.llamatik.app.localization.getLanguageName
@@ -64,9 +66,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -105,6 +110,7 @@ class ChatBotViewModel(
     val chatAgentCoordinator: ChatAgentCoordinator? = null,
     val systemPromptOverride: String? = null,
     private val rootNavigatorRepository: RootNavigatorRepository? = null,
+    private val serverConnectionRepository: ServerConnectionRepository? = null,
 ) : ScreenModel {
     val localization = getCurrentLocalization()
 
@@ -135,7 +141,19 @@ class ChatBotViewModel(
     )
     val state = _state.asStateFlow()
 
-    private val _sideEffects = Channel<ChatBotSideEffects>()
+    /** True while a Llamatik server is connected, so chat can work without a local model. */
+    val hasActiveServer: StateFlow<Boolean> =
+        (serverConnectionRepository?.activeServer ?: MutableStateFlow(null))
+            .map { it != null }
+            .stateIn(screenModelScope, SharingStarted.Eagerly, serverConnectionRepository?.activeServer?.value != null)
+
+    // Buffered: trySend on a rendezvous channel drops events whenever the collector is busy,
+    // which lost OnMessageLoaded right after a burst of streamed chunks (spinner never cleared).
+    /** Live health of the connected server (null when none is connected). */
+    val serverHealth: StateFlow<ServerHealth?> =
+        serverConnectionRepository?.health ?: MutableStateFlow(null)
+
+    private val _sideEffects = Channel<ChatBotSideEffects>(Channel.UNLIMITED)
     val sideEffects: Flow<ChatBotSideEffects> = _sideEffects.receiveAsFlow()
 
     private var vectorStore: VectorStoreData? = null
@@ -2336,6 +2354,89 @@ class ChatBotViewModel(
                         return m != null
                     }
 
+                    // --- Server routing ---
+                    // Always fetch live status so we route correctly even when the server
+                    // loaded a model after the initial connection (or when the first
+                    // connection happened while HTTP was blocked).
+                    val serverClient = serverConnectionRepository?.makeClientForActiveServer()
+                    val liveServerStatus = serverClient?.let {
+                        runCatching { it.getModelsStatus() }.getOrNull()
+                    }
+                    Logger.d("ChatBotViewModel") {
+                        "Server routing check — client=${serverClient != null}" +
+                        ", statusFetched=${liveServerStatus != null}" +
+                        ", generation.loaded=${liveServerStatus?.generation?.loaded}" +
+                        ", server=${serverConnectionRepository?.activeServer?.value?.let { "${it.host}:${it.port}" }}"
+                    }
+                    if (liveServerStatus != null) {
+                        // Refresh stored capabilities so the UI chips stay current.
+                        serverConnectionRepository?.refreshCapabilities()
+                    }
+                    if (serverClient != null && liveServerStatus == null) {
+                        // Status fetch failed (network error or parse error) — tell user, fall through.
+                        Logger.w("ChatBotViewModel") { "Server status unreachable — falling back to local" }
+                        _sideEffects.trySend(ChatBotSideEffects.OnServerRoutingSkipped(ServerRoutingSkipReason.UNREACHABLE))
+                    } else if (serverClient != null && liveServerStatus?.generation?.loaded == false) {
+                        // Server is reachable but has no generation model loaded.
+                        Logger.w("ChatBotViewModel") { "Server has no generation model loaded — falling back to local" }
+                        _sideEffects.trySend(ChatBotSideEffects.OnServerRoutingSkipped(ServerRoutingSkipReason.NO_MODEL))
+                    }
+                    if (serverClient != null && liveServerStatus?.generation?.loaded == true) {
+                        val systemPrompt = currentSystemPrompt()
+                        val contextBlock = ""
+                        var serverSucceeded = false
+                        try {
+                            withTimeoutOrNull(30_000L) {
+                                serverClient.streamGenerateWithContext(
+                                    systemPrompt = systemPrompt,
+                                    contextBlock = contextBlock,
+                                    userPrompt = input,
+                                ).collect { chunk ->
+                                    if (activeRequestId != requestId) return@collect
+                                    acc.append(chunk)
+                                    _conversation.value = _conversation.value.dropLast(1) +
+                                        ChatUiModel.Message(acc.toString(), ChatUiModel.Author.bot)
+                                    _sideEffects.trySend(ChatBotSideEffects.ScrollToBottom)
+                                }
+                                serverSucceeded = true
+                                kvCacheValid = false
+                                activeRequestId = null
+                                _conversation.value = _conversation.value.dropLast(1) +
+                                    ChatUiModel.Message(acc.toString(), ChatUiModel.Author.bot)
+                                _state.value = _state.value.copy(isGenerating = false)
+                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                            } ?: run {
+                                // Timeout — restore conversation and offer local fallback
+                                if (_conversation.value.size >= 2) {
+                                    _conversation.value = _conversation.value.dropLast(2)
+                                }
+                                activeRequestId = null
+                                _sideEffects.trySend(
+                                    ChatBotSideEffects.OnServerGenerationFailed(input, GenerationMode.TEXT)
+                                )
+                                _state.value = _state.value.copy(isGenerating = false)
+                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                            }
+                            return@withContext
+                        } catch (e: Exception) {
+                            Logger.e(e) { "Server generation failed, offering local fallback" }
+                            if (!serverSucceeded) {
+                                acc.clear()
+                                activeRequestId = null
+                                if (_conversation.value.size >= 2) {
+                                    _conversation.value = _conversation.value.dropLast(2)
+                                }
+                                _sideEffects.trySend(
+                                    ChatBotSideEffects.OnServerGenerationFailed(input, GenerationMode.TEXT)
+                                )
+                                _state.value = _state.value.copy(isGenerating = false)
+                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                                return@withContext
+                            }
+                        }
+                    }
+                    // --- End server routing ---
+
                     val generateSettings = _state.value.generateSettings
                     val shouldContinueKv = kvCacheValid
                     kvCacheValid = false
@@ -2985,4 +3086,14 @@ sealed class ChatBotSideEffects {
     data class OnToolCallDetected(val toolId: String, val rawJson: String) : ChatBotSideEffects()
     data class OnVideoSaved(val message: String) : ChatBotSideEffects()
     data class OnVideoSaveFailed(val message: String) : ChatBotSideEffects()
+    data class OnServerGenerationFailed(val prompt: String, val mode: GenerationMode) : ChatBotSideEffects()
+    /** Emitted when a server is connected but generation was silently routed locally. */
+    data class OnServerRoutingSkipped(val reason: ServerRoutingSkipReason) : ChatBotSideEffects()
+}
+
+enum class ServerRoutingSkipReason {
+    /** The server responded but has no generation model loaded yet. */
+    NO_MODEL,
+    /** The server could not be reached or its status response could not be parsed. */
+    UNREACHABLE,
 }

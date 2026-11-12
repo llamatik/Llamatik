@@ -33,3 +33,6 @@ data class Img2ImgRequest(
 
 @Serializable
 data class ImageResponse(val imageBase64: String)
+
+@Serializable
+data class SupportsVideoResponse(val supportsVideo: Boolean = false)

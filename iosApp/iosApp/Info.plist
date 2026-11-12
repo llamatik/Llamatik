@@ -24,6 +24,18 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Llamatik uses the microphone for speech-to-text dictation.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Llamatik discovers and connects to Llamatik servers on your local network.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- The Llamatik server runs over plain HTTP on the local network.
+		     NSAllowsLocalNetworking covers .local Bonjour names; NSAllowsArbitraryLoads
+		     is additionally required for raw IP addresses (192.168.x.x, 10.x.x.x, etc.). -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

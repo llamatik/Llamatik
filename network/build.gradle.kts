@@ -36,8 +36,17 @@ kotlin {
             implementation(libs.kermit)
         }
 
+        androidMain.dependencies {
+            implementation(libs.ktor.client.android)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+
         val jvmMain by getting {
             dependencies {
+                implementation(libs.ktor.client.java)
                 implementation(libs.jmdns)
             }
         }

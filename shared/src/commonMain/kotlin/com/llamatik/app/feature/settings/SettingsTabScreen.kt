@@ -51,6 +51,8 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.llamatik.app.feature.debugmenu.viewmodel.DebugMenuViewModel
 import com.llamatik.app.feature.models.ModelsTabScreen
+import com.llamatik.app.feature.server.ServerConnectionRepository
+import com.llamatik.app.feature.server.ServerSettingsScreen
 import com.llamatik.app.localization.AvailableLanguages
 import com.llamatik.app.localization.SetLanguage
 import com.llamatik.app.localization.displayName
@@ -62,6 +64,7 @@ import com.llamatik.app.ui.screens.AboutScreen
 import com.llamatik.app.ui.screens.OnboardingScreen
 import com.llamatik.app.ui.theme.LlamatikTheme
 import com.llamatik.app.ui.theme.Typography
+import org.koin.mp.KoinPlatform
 
 class SettingsTabScreen : Screen {
     @Composable
@@ -79,6 +82,7 @@ class SettingsTabScreen : Screen {
                 onOpenModelSettings = { navigator.push(GenerationSettingsScreen()) },
                 onShowOnboarding = { navigator.push(OnboardingScreen()) },
                 onAbout = { navigator.push(AboutScreen()) },
+                onOpenServerSettings = { navigator.push(ServerSettingsScreen()) },
             )
         }
     }
@@ -92,11 +96,14 @@ class SettingsTabScreen : Screen {
         onOpenModels: (() -> Unit)? = null,
         onShowOnboarding: (() -> Unit)? = null,
         onAbout: (() -> Unit)? = null,
+        onOpenServerSettings: (() -> Unit)? = null,
     ) {
         val localization = getCurrentLocalization()
         val state by viewModel.state.collectAsState()
         val showLanguagePicker = remember { mutableStateOf(false) }
         val showAgentModeInfo = remember { mutableStateOf(false) }
+        val serverRepository = remember { KoinPlatform.getKoin().get<ServerConnectionRepository>() }
+        val activeServer by serverRepository.activeServer.collectAsState()
 
         if (state.currentLanguage != getCurrentLanguage()) {
             SetLanguage(state.currentLanguage)
@@ -153,6 +160,21 @@ class SettingsTabScreen : Screen {
                                 label = localization.generationSettings,
                                 buttonLabel = localization.configure,
                                 onClick = onOpenModelSettings
+                            )
+                        }
+
+                        if (onOpenServerSettings != null) {
+                            Spacer(Modifier.size(16.dp))
+                            SettingsRow(
+                                icon = LlamatikIcons.Server,
+                                label = localization.serverConnectionSettings,
+                                subtitle = activeServer?.let {
+                                    val address = "${it.host}:${it.port}"
+                                    val target = if (it.name.isBlank() || it.name == it.host) address else "${it.name} ($address)"
+                                    "${localization.serverConnected} · $target"
+                                },
+                                buttonLabel = localization.configure,
+                                onClick = onOpenServerSettings
                             )
                         }
 
@@ -347,7 +369,8 @@ class SettingsTabScreen : Screen {
         icon: ImageVector,
         label: String,
         buttonLabel: String,
-        onClick: () -> Unit
+        onClick: () -> Unit,
+        subtitle: String? = null,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -364,7 +387,16 @@ class SettingsTabScreen : Screen {
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp)
                 )
-                Text(text = label, style = Typography.get().bodyMedium)
+                Column(modifier = Modifier.weight(1f, fill = false)) {
+                    Text(text = label, style = Typography.get().bodyMedium)
+                    if (subtitle != null) {
+                        Text(
+                            text = subtitle,
+                            style = Typography.get().bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
             }
             Button(onClick = onClick) {
                 Text(buttonLabel)

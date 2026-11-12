@@ -73,11 +73,17 @@ actual fun migrateModelPathIfNeeded(
     val saved = File(savedPath)
     if (!saved.exists()) return ""
     if (saved.length() < MIN_VALID_MODEL_SIZE) return ""
-    if (!hasValidModelMagic(saved)) return ""
 
-    // Already in persistent models dir
+    // Already in persistent models dir — file was placed here by our own code
+    // (GGUF, GGML/Whisper, safetensors…). Trust it without re-checking magic bytes;
+    // the magic guard below is only needed for paths outside our storage to reject
+    // HTTP error pages or stale temp files that slipped through.
     val persistentDir = modelsDir(context).absolutePath
     if (saved.absolutePath.startsWith(persistentDir)) return savedPath
+
+    // Not yet in the persistent dir — validate magic before migrating.
+    // Rejects tiny HTML error responses (< 1 MB caught above) and junk files.
+    if (!hasValidModelMagic(saved)) return ""
 
     // Move into persistent stable path
     val dest = stableModelFile(context, modelNameOrFileName)

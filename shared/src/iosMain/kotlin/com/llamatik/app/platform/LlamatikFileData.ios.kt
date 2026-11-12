@@ -30,6 +30,7 @@ import platform.Foundation.closeFile
 import platform.Foundation.create
 import platform.Foundation.fileHandleForReadingAtPath
 import platform.Foundation.fileHandleForWritingAtPath
+import platform.Foundation.readDataOfLength
 import platform.Foundation.seekToEndOfFile
 import platform.Foundation.truncateFileAtOffset
 import platform.Foundation.writeData
@@ -321,11 +322,15 @@ actual fun migrateModelPathIfNeeded(
     val attrs = fm.attributesOfItemAtPath(savedPath, null)
     val fileSize = (attrs?.get(NSFileSize) as? NSNumber)?.longLongValue ?: 0L
     if (fileSize < MIN_VALID_MODEL_SIZE) return ""
-    if (!hasValidModelMagicIos(savedPath)) return ""
 
+    // Already in persistent models dir — placed here by our own code.
+    // Skip the magic check: GGML/Whisper .bin files are valid but don't carry
+    // GGUF magic, so checking magic here would cause re-downloads every restart.
     val persistentDir = modelsDirIos().path ?: return savedPath
-
     if (savedPath.startsWith(persistentDir)) return savedPath
+
+    // Not yet in the persistent dir — validate magic before migrating.
+    if (!hasValidModelMagicIos(savedPath)) return ""
 
     // Prefer the actual filename from the source path to preserve the extension.
     // Fall back to sanitizing the model name only if no filename is available.
