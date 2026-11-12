@@ -240,8 +240,10 @@ endforeach()
 # Chat-template parsers (required by chat.cpp via parsers/parsers.h)
 foreach(_parser_src IN ITEMS
         parsers.cpp cohere2moe.cpp deepseek.cpp functionary-v3-2.cpp gemma4.cpp
-        gigachat-v3.cpp gpt-oss.cpp kimi-k2.cpp kimi-k3.cpp lfm2.cpp minicpm5.cpp
-        minimax-m3.cpp ministral3.cpp muse-glimmer.cpp qwen3-coder.cpp)
+        gigachat-v3.cpp gpt-oss.cpp harmony-xml.cpp k2-horizon.cpp kimi-k2.cpp
+        kimi-k3.cpp ling3.cpp lfm2.cpp llm-jp-harmony.cpp minicpm5.cpp
+        minimax-m3.cpp ministral3.cpp muse-glimmer.cpp muse-spark.cpp
+        qwen3-coder.cpp translate-gemma.cpp)
     if(EXISTS "${LLAMA_PARSERS_DIR}/${_parser_src}")
         target_sources(llamatik_llama_common_obj PRIVATE "${LLAMA_PARSERS_DIR}/${_parser_src}")
     endif()
@@ -332,6 +334,16 @@ add_library(mtmd_ios_obj OBJECT
         ${MTMD_DIR}/models/whisper-enc.cpp
         ${MTMD_DIR}/models/yasa2.cpp
         ${MTMD_DIR}/models/youtuvl.cpp
+        ${MTMD_DIR}/models/chatterbox-gen.cpp
+        ${MTMD_DIR}/models/chatterbox-spkenc.cpp
+        ${MTMD_DIR}/models/lfm3a-gen.cpp
+        ${MTMD_DIR}/models/lfm3a.cpp
+        ${MTMD_DIR}/models/lfm3vl.cpp
+        ${MTMD_DIR}/models/muse-spark-audio.cpp
+        ${MTMD_DIR}/models/nemotron-transcribe.cpp
+        ${MTMD_DIR}/models/sensenova-u1.cpp
+        ${MTMD_DIR}/models/soprano.cpp
+        ${MTMD_DIR}/models/voxtral-rt.cpp
         ${MTMD_DIR}/deprecation-warning.cpp
 )
 

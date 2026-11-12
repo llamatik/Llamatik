@@ -176,6 +176,7 @@ internal object ChineseLocalization : Localization {
     override val iDontHaveEnoughInfoInSources = "我的资料中没有足够的信息。"
     override val imageModeEnabledButNoModelLoadedError = "🖼️ 已启用图像模式，但未加载 Stable Diffusion 模型。请打开模型并选择一个 SD 模型。"
     override val visionModeEnabledButNoModelLoadedError = "👁️ 已启用视觉模式，但未加载 VLM 模型。请打开模型并选择一个视觉模型。"
+    override val visionModelCannotAnalyzeImagesError = "👁️ 当前加载的模型无法分析图像。请打开模型并选择一个视觉模型。"
     override val imageGenerationFailedError = "🖼️ 图像生成失败（输出为空）。"
     override val imageGenerationError = "图像生成错误"
     override val videoGeneration = "视频"

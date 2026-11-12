@@ -358,6 +358,26 @@ Java_com_llamatik_core_platform_MultimodalBridge_nativeAnalyzeImageBytesStream(
     mtmd_bitmap_free(bitmap);
 }
 
+// Capability bitmask, see MultimodalCapabilities.fromMask() in Kotlin.
+// Returns 0 when no model is loaded.
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_llamatik_core_platform_MultimodalBridge_nativeGetCapabilities(
+        JNIEnv * /*env*/, jobject /*thiz*/) {
+    if (!mm_model || !mm_mtmd) return 0;
+    const mtmd_helper_cap c = mtmd_helper_get_capabilities(mm_model, mm_mtmd);
+    int mask = 0;
+    if (c.chat)               mask |= 1 << 0;
+    if (c.vision)             mask |= 1 << 1;
+    if (c.audio)              mask |= 1 << 2;
+    if (c.video)              mask |= 1 << 3;
+    if (c.audio_stream)       mask |= 1 << 4;
+    if (c.text_gen)           mask |= 1 << 5;
+    if (c.audio_gen)          mask |= 1 << 6;
+    if (c.audio_gen_spk_ref)  mask |= 1 << 7;
+    return (jint) mask;
+}
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_llamatik_core_platform_MultimodalBridge_cancelAnalysis(

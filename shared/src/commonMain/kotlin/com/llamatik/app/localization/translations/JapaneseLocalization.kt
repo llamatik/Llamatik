@@ -174,6 +174,7 @@ internal object JapaneseLocalization : Localization {
     override val iDontHaveEnoughInfoInSources = "情報源に十分な情報がありません。"
     override val imageModeEnabledButNoModelLoadedError = "🖼️ 画像モードが有効ですが、Stable Diffusionモデルが読み込まれていません。モデルを開いてSDモデルを選択してください。"
     override val visionModeEnabledButNoModelLoadedError = "👁️ ビジョンモードが有効ですが、VLMモデルが読み込まれていません。モデルを開いてビジョンモデルを選択してください。"
+    override val visionModelCannotAnalyzeImagesError = "👁️ 読み込まれているモデルは画像を分析できません。モデルを開いてビジョンモデルを選択してください。"
     override val imageGenerationFailedError = "🖼️ 画像生成に失敗しました（出力が空です）。"
     override val imageGenerationError = "画像生成エラー"
     override val videoGeneration = "動画"

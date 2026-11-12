@@ -177,6 +177,7 @@ Deine Prioritäten:
     override val iDontHaveEnoughInfoInSources = "Ich habe nicht genügend Informationen in meinen Quellen."
     override val imageModeEnabledButNoModelLoadedError = "🖼️ Bildmodus ist aktiviert, aber kein Stable-Diffusion-Modell geladen. Öffnen Sie Modelle und wählen Sie ein SD-Modell."
     override val visionModeEnabledButNoModelLoadedError = "👁️ Visionsmodus ist aktiv, aber kein VLM-Modell geladen. Öffnen Sie Modelle und wählen Sie ein Visionsmodell."
+    override val visionModelCannotAnalyzeImagesError = "👁️ Das geladene Modell kann keine Bilder analysieren. Öffnen Sie Modelle und wählen Sie ein Visionsmodell."
     override val imageGenerationFailedError = "🖼️ Bildgenerierung fehlgeschlagen (leere Ausgabe)."
     override val imageGenerationError = "Fehler bei der Bildgenerierung"
     override val videoGeneration = "Video"

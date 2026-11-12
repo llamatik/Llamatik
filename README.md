@@ -175,6 +175,9 @@ Designed for **privacy-first**, **offline-capable**, and **cross-platform** AI a
 - ✅ On-device, fully offline
 - ✅ Configurable steps, CFG scale, seed, and `img2img` strength
 - ✅ **Text-to-video** (`txt2video`) — generate short video clips from text prompts; runtime capability check via `supportsVideoGeneration()`
+- ✅ **Generation progress** — `setProgressListener` reports live progress (stage, step, percentage) for images and video
+- ✅ **ControlNet** — guide images with pose, depth, canny edges and more via `loadControlNet` + `generateWithControl`
+- ✅ **Video upscaling** (`VideoUpscalerBridge`) — on-device video super-resolution (RelayVSR / SeedVR2 style models)
 
 ### 🔐 On-device & Private
 - ✅ Fully offline by default — no network required
@@ -265,9 +268,9 @@ The dependency chain is strictly layered — each module only depends on modules
 
 | Library | Version | Versioning |
 |---|---|---|
-| llama.cpp | [v0.7.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.7.0) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
+| llama.cpp | [v0.9.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.9.0) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
 | whisper.cpp | [v1.9.5](https://github.com/ggml-org/whisper.cpp/releases/tag/v1.9.5) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
-| stable-diffusion.cpp | [master-1024-77b72a2](https://github.com/leejet/stable-diffusion.cpp/releases/tag/master-1024-77b72a2) | Git tag (no semver) |
+| stable-diffusion.cpp | [master-1088-32d516c](https://github.com/leejet/stable-diffusion.cpp/releases/tag/master-1088-32d516c) | Git tag (no semver) |
 
 > **Note:** Both llama.cpp and whisper.cpp now follow **semantic versioning**. Previously llama.cpp used build-number tags (e.g. `b4812`). Llamatik tracks these semver releases directly, so you can rely on stable API guarantees across patch and minor upgrades of the underlying libraries.
 
@@ -847,6 +850,36 @@ object StableDiffusionBridge {
         cfgScale: Float = 7.0f,
         seed: Long = -1L,
     ): ByteArray
+
+    /**
+     * Receives progress during txt2img / img2img / generateWithControl / txt2video.
+     * Called synchronously on the generation thread. Pass null to clear. No-op on WASM.
+     */
+    fun setProgressListener(listener: SdProgressListener?)
+
+    /** ControlNet hot-swap. Requires initModel first; never call during a generation. */
+    fun loadControlNet(path: String): Boolean
+    fun unloadControlNet(): Boolean
+    fun hasControlNet(): Boolean
+
+    /**
+     * Image generation guided by a control image (RGBA, controlImageW * controlImageH * 4 bytes).
+     * Requires a loaded ControlNet. Returns raw RGBA pixels, or an empty array on failure.
+     */
+    fun generateWithControl(
+        controlImageRgba: ByteArray,
+        controlImageW: Int,
+        controlImageH: Int,
+        controlType: SdControlType,
+        prompt: String,
+        negativePrompt: String? = null,
+        width: Int = 512,
+        height: Int = 512,
+        steps: Int = 20,
+        cfgScale: Float = 7.0f,
+        controlStrength: Float = 0.9f,
+        seed: Long = -1L,
+    ): ByteArray
 }
 ```
 
@@ -906,6 +939,44 @@ if (StableDiffusionBridge.supportsVideoGeneration()) {
 }
 ```
 
+#### Progress example
+
+```kotlin
+StableDiffusionBridge.setProgressListener { p ->
+    p.fraction?.let { updateProgressBar(it) }   // 0f..1f, null when the total is unknown
+}
+try {
+    val rgba = StableDiffusionBridge.txt2img(prompt = "a lighthouse at dusk")
+} finally {
+    StableDiffusionBridge.setProgressListener(null)
+}
+```
+
+#### ControlNet example
+
+```kotlin
+StableDiffusionBridge.initModel(modelPath)
+StableDiffusionBridge.loadControlNet(controlNetPath)   // reload after every initModel
+
+val rgba = StableDiffusionBridge.generateWithControl(
+    controlImageRgba = edgesRgba,       // already preprocessed, e.g. an edge map for CANNY
+    controlImageW = 512,
+    controlImageH = 512,
+    controlType = SdControlType.CANNY,
+    prompt = "a modern glass house, golden hour",
+)
+```
+
+#### Video upscaling (VideoUpscalerBridge)
+
+`VideoUpscalerBridge` upscales a packed clip (the layout `txt2video` returns) and keeps its own native context. Not available on WASM.
+
+```kotlin
+VideoUpscalerBridge.initModel(upscalerModelPath, upscalerVaePath, upscaleFactor = 2)
+val upscaled = VideoUpscalerBridge.upscale(packedBytes)   // background thread; empty array on failure
+VideoUpscalerBridge.release()
+```
+
 ### 👁️ Vision / Multimodal (MultimodalBridge)
 
 MultimodalBridge wraps llama.cpp's multimodal (VLM) support for on-device image analysis using vision-language models such as SmolVLM.
@@ -936,6 +1007,12 @@ object MultimodalBridge {
      * Must be called from a background thread/coroutine; blocks until generation completes.
      */
     fun analyzeImageBytesStream(imageBytes: ByteArray, prompt: String, callback: GenStream)
+
+    /**
+     * What the loaded model can do (vision, audio, video, ...); MultimodalCapabilities.NONE if
+     * nothing is loaded. Use canAnalyzeImages before calling analyzeImageBytesStream.
+     */
+    fun getCapabilities(): MultimodalCapabilities
 
     /** Cancel an in-progress analyzeImageBytesStream call. */
     fun cancelAnalysis()

@@ -153,6 +153,7 @@ class ModelCatalogScreen(private val type: ModelCatalogType) : Screen {
                     ModelRow(
                         model = model,
                         isCurrent = (model.name == selectedName),
+                        capabilities = if (type == ModelCatalogType.Vlm) state.vlmCapabilities else null,
                         isDownloading = downloadingMap[model.url] == true,
                         progress = progressMap[model.url] ?: 0f,
                         isSelecting = (model.name == loadingModelName.value),

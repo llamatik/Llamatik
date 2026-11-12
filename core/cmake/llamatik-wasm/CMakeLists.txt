@@ -117,6 +117,16 @@ if(EXISTS "${MTMD_DIR}/mtmd.cpp")
     "${MTMD_DIR}/models/whisper-enc.cpp"
     "${MTMD_DIR}/models/yasa2.cpp"
     "${MTMD_DIR}/models/youtuvl.cpp"
+    "${MTMD_DIR}/models/chatterbox-gen.cpp"
+    "${MTMD_DIR}/models/chatterbox-spkenc.cpp"
+    "${MTMD_DIR}/models/lfm3a-gen.cpp"
+    "${MTMD_DIR}/models/lfm3a.cpp"
+    "${MTMD_DIR}/models/lfm3vl.cpp"
+    "${MTMD_DIR}/models/muse-spark-audio.cpp"
+    "${MTMD_DIR}/models/nemotron-transcribe.cpp"
+    "${MTMD_DIR}/models/sensenova-u1.cpp"
+    "${MTMD_DIR}/models/soprano.cpp"
+    "${MTMD_DIR}/models/voxtral-rt.cpp"
     "${MTMD_DIR}/deprecation-warning.cpp"
   )
   target_include_directories(mtmd_sources PRIVATE

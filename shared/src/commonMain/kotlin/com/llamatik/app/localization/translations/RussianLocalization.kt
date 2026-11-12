@@ -175,6 +175,7 @@ internal object RussianLocalization : Localization {
     override val iDontHaveEnoughInfoInSources = "У меня недостаточно информации в источниках."
     override val imageModeEnabledButNoModelLoadedError = "🖼️ Режим изображения включён, но модель Stable Diffusion не загружена. Откройте раздел «Модели» и выберите модель SD."
     override val visionModeEnabledButNoModelLoadedError = "👁️ Режим зрения включён, но VLM-модель не загружена. Откройте раздел «Модели» и выберите модель зрения."
+    override val visionModelCannotAnalyzeImagesError = "👁️ Загруженная модель не умеет анализировать изображения. Откройте раздел «Модели» и выберите модель зрения."
     override val imageGenerationFailedError = "🖼️ Ошибка генерации изображения (пустой результат)."
     override val imageGenerationError = "Ошибка генерации изображения"
     override val videoGeneration = "Видео"

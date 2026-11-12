@@ -22,6 +22,12 @@ expect object MultimodalBridge {
      */
     fun analyzeImageBytesStream(imageBytes: ByteArray, prompt: String, callback: GenStream)
 
+    /**
+     * Capabilities of the currently loaded model/projector pair.
+     * Returns [MultimodalCapabilities.NONE] when no model is loaded.
+     */
+    fun getCapabilities(): MultimodalCapabilities
+
     /** Cancel an in-progress analyzeImageBytesStream call. */
     fun cancelAnalysis()
 

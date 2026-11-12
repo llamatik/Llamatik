@@ -40,6 +40,7 @@ import com.llamatik.app.feature.chatbot.model.SdCapability
 import com.llamatik.app.feature.chatbot.model.totalSizeMb
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.ui.theme.Typography
+import com.llamatik.core.platform.MultimodalCapabilities
 
 @Composable
 fun ModelCategoryRow(
@@ -101,6 +102,7 @@ fun ModelCategoryRow(
 fun ModelRow(
     model: LlamaModel,
     isCurrent: Boolean,
+    capabilities: MultimodalCapabilities? = null,
     isDownloading: Boolean,
     progress: Float,
     isSelecting: Boolean,
@@ -135,6 +137,36 @@ fun ModelRow(
                 val totalMb = model.totalSizeMb
                 val sizeText = if (totalMb > model.sizeMb) "$totalMb MB ${localization.modelSizeTotal} (${model.sizeMb} MB ${localization.modelSizeModel})" else "$totalMb MB"
                 Text(sizeText, style = Typography.get().labelSmall)
+                if (isCurrent && capabilities != null && (capabilities.vision || capabilities.audio)) {
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (capabilities.vision) {
+                            SuggestionChip(
+                                onClick = {},
+                                label = { Text(localization.serverCapabilityVision, style = Typography.get().labelSmall) },
+                                colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    labelColor = MaterialTheme.colorScheme.onSecondary,
+                                ),
+                                modifier = Modifier.height(24.dp)
+                            )
+                        }
+                        if (capabilities.audio) {
+                            SuggestionChip(
+                                onClick = {},
+                                label = { Text(localization.serverCapabilityAudio, style = Typography.get().labelSmall) },
+                                colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    labelColor = MaterialTheme.colorScheme.onSecondary,
+                                ),
+                                modifier = Modifier.height(24.dp)
+                            )
+                        }
+                    }
+                }
                 if (model.sdCapability != null || model.mobileSuitability != null || model.multilingual != null) {
                     Spacer(Modifier.height(4.dp))
                     Row(

@@ -61,6 +61,18 @@ actual object MultimodalBridge {
         }
     }
 
+    /**
+     * The model is loaded lazily inside the Web Worker, so real capabilities are not
+     * queryable here. The web path only supports image analysis, so report that once
+     * [initModel] has been called.
+     */
+    actual fun getCapabilities(): MultimodalCapabilities =
+        if (lastFsPath != null) {
+            MultimodalCapabilities(chat = true, vision = true, textGen = true)
+        } else {
+            MultimodalCapabilities.NONE
+        }
+
     actual fun cancelAnalysis() {
         runVlmCancelWorker()
     }
