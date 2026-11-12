@@ -265,7 +265,7 @@ The dependency chain is strictly layered — each module only depends on modules
 
 | Library | Version | Versioning |
 |---|---|---|
-| llama.cpp | [v0.7.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.7.0) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
+| llama.cpp | [v0.9.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.9.0) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
 | whisper.cpp | [v1.9.5](https://github.com/ggml-org/whisper.cpp/releases/tag/v1.9.5) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
 | stable-diffusion.cpp | [master-1024-77b72a2](https://github.com/leejet/stable-diffusion.cpp/releases/tag/master-1024-77b72a2) | Git tag (no semver) |
 

@@ -14,6 +14,11 @@ actual object MultimodalBridge {
         callback: GenStream
     )
 
+    private external fun nativeGetCapabilities(): Int
+
+    actual fun getCapabilities(): MultimodalCapabilities =
+        MultimodalCapabilities.fromMask(nativeGetCapabilities())
+
     actual external fun cancelAnalysis()
     actual external fun release()
 

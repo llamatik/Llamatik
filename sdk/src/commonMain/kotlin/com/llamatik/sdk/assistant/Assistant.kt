@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.llamatik.core.platform.LlamaBridge
 import com.llamatik.core.platform.LlamaSession
 import com.llamatik.core.platform.MultimodalBridge
+import com.llamatik.core.platform.MultimodalCapabilities
 import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
 import com.llamatik.sdk.agent.ParsedToolCall
@@ -849,6 +850,13 @@ class Assistant(
     // endregion
 
     // region — Vision (VLM)
+
+    /**
+     * Capabilities (vision, audio, video, ...) of the currently loaded VLM model,
+     * or [MultimodalCapabilities.NONE] if none is loaded.
+     */
+    fun multimodalCapabilities(): MultimodalCapabilities =
+        if (_state.value.isVlmModelLoaded) MultimodalBridge.getCapabilities() else MultimodalCapabilities.NONE
 
     fun analyzeImage(
         imageBytes: ByteArray,

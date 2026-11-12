@@ -35,6 +35,13 @@ void vlm_analyze_image_bytes_stream(
         vlm_on_error         on_error,
         void                *user_data);
 
+/**
+ * Capability bitmask of the loaded model (0 if none is loaded):
+ * bit0 chat, bit1 vision, bit2 audio, bit3 video, bit4 audio_stream,
+ * bit5 text_gen, bit6 audio_gen, bit7 audio_gen_spk_ref.
+ */
+int vlm_get_capabilities(void);
+
 /** Cancel an in-progress vlm_analyze_image_bytes_stream call. */
 void vlm_cancel(void);
 

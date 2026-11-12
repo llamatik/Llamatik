@@ -4,6 +4,7 @@ package com.llamatik.core.platform
 
 import com.llamatik.core.platform.vlm.vlm_analyze_image_bytes_stream
 import com.llamatik.core.platform.vlm.vlm_cancel
+import com.llamatik.core.platform.vlm.vlm_get_capabilities
 import com.llamatik.core.platform.vlm.vlm_init
 import com.llamatik.core.platform.vlm.vlm_release
 import kotlinx.cinterop.BetaInteropApi
@@ -60,6 +61,9 @@ actual object MultimodalBridge {
             }
         }
     }
+
+    actual fun getCapabilities(): MultimodalCapabilities =
+        MultimodalCapabilities.fromMask(vlm_get_capabilities())
 
     actual fun cancelAnalysis() = vlm_cancel()
 
