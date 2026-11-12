@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import co.touchlab.kermit.Logger
 import com.llamatik.app.feature.server.ConnectedServer
+import com.llamatik.app.feature.server.PairingProgress
 import com.llamatik.app.feature.server.SavedServer
 import com.llamatik.app.feature.server.ServerConnectionRepository
 import com.llamatik.app.localization.getCurrentLocalization
@@ -26,6 +27,8 @@ data class ServerSettingsState(
     val manualHost: String = "",
     val manualPort: String = "8080",
     val manualName: String = "",
+    /** Set while waiting for the other device's owner to approve this one. */
+    val pairing: PairingProgress = PairingProgress.Idle,
 )
 
 class ServerSettingsViewModel(
@@ -42,6 +45,11 @@ class ServerSettingsViewModel(
             activeServer = serverConnectionRepository.activeServer.value,
             savedServers = serverConnectionRepository.getSavedServers(),
         )
+        screenModelScope.launch {
+            serverConnectionRepository.pairing.collect { p ->
+                _state.value = _state.value.copy(pairing = p)
+            }
+        }
         screenModelScope.launch {
             serverConnectionRepository.activeServer.collect { server ->
                 _state.value = _state.value.copy(activeServer = server)
@@ -112,10 +120,14 @@ class ServerSettingsViewModel(
                     savedServers = serverConnectionRepository.getSavedServers(),
                 )
             } else {
-                _state.value = _state.value.copy(
-                    isConnecting = false,
-                    connectionError = "${getCurrentLocalization().serverCouldNotConnect} $host:$port",
-                )
+                val loc = getCurrentLocalization()
+                val message = when (serverConnectionRepository.pairing.value) {
+                    PairingProgress.Denied -> loc.serverPairingDenied
+                    PairingProgress.Expired -> loc.serverPairingExpired
+                    else -> "${loc.serverCouldNotConnect} $host:$port"
+                }
+                serverConnectionRepository.clearPairingResult()
+                _state.value = _state.value.copy(isConnecting = false, connectionError = message)
             }
         }
     }

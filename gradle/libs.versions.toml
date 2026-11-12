@@ -130,6 +130,8 @@ androidx-compose-ui-util = "androidx.compose.ui:ui-util:1.12.1"
 jetbrains-compose-ui-util = "org.jetbrains.compose.ui:ui-util:1.12.2"
 
 # Backend
+ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor-server" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor-server" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-server" }
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor-server" }
 ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor-server" }

@@ -33,6 +33,7 @@ import com.llamatik.app.feature.reviews.ReviewService
 import com.llamatik.app.feature.reviews.createReviewService
 import com.llamatik.app.feature.server.ServerConnectionRepository
 import com.llamatik.app.feature.server.viewmodel.ServerSettingsViewModel
+import com.llamatik.app.feature.sharing.sharingModule
 import com.llamatik.app.feature.webview.viewmodel.WebViewModel
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.platform.AppDispatchersIO
@@ -67,6 +68,7 @@ import com.llamatik.sdk.agent.audit.AgentAuditRepository as SdkAuditRepository
 import com.llamatik.sdk.agent.permissions.PermissionRepository as SdkPermissionRepository
 
 val commonModule = module {
+    includes(sharingModule)
     factory { (navigator: Navigator) ->
         HomeScreenViewModel(navigator, get(), get(), get(), get())
     }

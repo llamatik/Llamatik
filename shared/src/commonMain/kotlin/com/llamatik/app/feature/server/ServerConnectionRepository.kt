@@ -1,6 +1,7 @@
 package com.llamatik.app.feature.server
 
 import co.touchlab.kermit.Logger
+import com.llamatik.app.platform.PlatformInfo
 import com.llamatik.network.client.LlamatikServerClient
 import com.llamatik.network.client.LlamatikServerConfig
 import com.russhwolf.settings.Settings
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 private const val ACTIVE_SERVER_HOST_KEY = "llamatik_server_host"
 private const val ACTIVE_SERVER_PORT_KEY = "llamatik_server_port"
@@ -23,6 +25,20 @@ private const val SAVED_SERVERS_COUNT_KEY = "llamatik_saved_servers_count"
 private const val SAVED_SERVERS_PREFIX = "llamatik_saved_server_"
 
 private const val HEALTH_POLL_INTERVAL_MS = 10_000L
+private const val CLIENT_ID_KEY = "llamatik_client_id"
+private const val SERVER_TOKEN_PREFIX = "llamatik_server_token_"
+private const val PAIRING_POLL_INTERVAL_MS = 1_000L
+private const val PAIRING_TIMEOUT_MS = 65_000L
+
+/** Progress of asking a server's owner to approve this device. */
+sealed interface PairingProgress {
+    data object Idle : PairingProgress
+
+    /** The request was sent; the owner of [serverName] has to approve it on their device. */
+    data class Waiting(val serverName: String) : PairingProgress
+    data object Denied : PairingProgress
+    data object Expired : PairingProgress
+}
 
 /** Live health of the active server, shown as a coloured dot in the UI. */
 enum class ServerHealth {
@@ -44,6 +60,9 @@ class ServerConnectionRepository(private val settings: Settings) {
 
     /** Null when no server is connected. */
     val health: StateFlow<ServerHealth?> = _health.asStateFlow()
+
+    private val _pairing = MutableStateFlow<PairingProgress>(PairingProgress.Idle)
+    val pairing: StateFlow<PairingProgress> = _pairing.asStateFlow()
 
     private val _activeServer = MutableStateFlow<ConnectedServer?>(null)
     val activeServer: StateFlow<ConnectedServer?> = _activeServer.asStateFlow()
@@ -75,7 +94,7 @@ class ServerConnectionRepository(private val settings: Settings) {
                         _health.value = null
                         return@collectLatest
                     }
-                    val client = LlamatikServerClient(LlamatikServerConfig(target.first, target.second))
+                    val client = LlamatikServerClient(configFor(target.first, target.second))
                     while (true) {
                         val status = client.getModelsStatus()
                         if (status == null) {
@@ -101,12 +120,17 @@ class ServerConnectionRepository(private val settings: Settings) {
 
     /** Try to connect to a server: test reachability, fetch capabilities, save as active. */
     suspend fun connectToServer(host: String, port: Int, name: String = host): ConnectedServer? {
-        val config = LlamatikServerConfig(host, port)
-        val client = LlamatikServerClient(config)
+        var client = LlamatikServerClient(configFor(host, port))
         val reachable = client.isReachable()
         if (!reachable) {
             Logger.w { "ServerConnectionRepository - $host:$port not reachable" }
             return null
+        }
+        if (client.probeAccess() == LlamatikServerClient.AccessProbe.PAIRING_REQUIRED) {
+            // No token yet, or it was revoked: ask the owner to approve this device.
+            settings.remove(tokenKey(host, port))
+            if (!pairWith(host, port, name)) return null
+            client = LlamatikServerClient(configFor(host, port))
         }
         val status = client.getModelsStatus()
         val capabilities = ServerCapabilities(
@@ -162,7 +186,7 @@ class ServerConnectionRepository(private val settings: Settings) {
 
     fun makeClientForActiveServer(): LlamatikServerClient? {
         val server = _activeServer.value ?: return null
-        return LlamatikServerClient(LlamatikServerConfig(server.host, server.port))
+        return LlamatikServerClient(configFor(server.host, server.port))
     }
 
     /**
@@ -175,7 +199,7 @@ class ServerConnectionRepository(private val settings: Settings) {
      */
     suspend fun refreshCapabilities(): ConnectedServer? {
         val current = _activeServer.value ?: return null
-        val client = LlamatikServerClient(LlamatikServerConfig(current.host, current.port))
+        val client = LlamatikServerClient(configFor(current.host, current.port))
         val status = client.getModelsStatus() ?: return current // keep existing caps on error
         val capabilities = ServerCapabilities(
             hasText   = status.generation.loaded,
@@ -187,6 +211,63 @@ class ServerConnectionRepository(private val settings: Settings) {
         val updated = current.copy(capabilities = capabilities)
         _activeServer.value = updated
         return updated
+    }
+
+    private fun configFor(host: String, port: Int) =
+        LlamatikServerConfig(host, port, accessToken = settings.getStringOrNull(tokenKey(host, port)))
+
+    private fun tokenKey(host: String, port: Int) = "$SERVER_TOKEN_PREFIX${host}_$port"
+
+    /** Stable random id for this installation, so a server can recognise the device it approved. */
+    private fun clientId(): String =
+        settings.getStringOrNull(CLIENT_ID_KEY) ?: buildString {
+            repeat(4) { append(Random.nextLong().toULong().toString(16).padStart(16, '0')) }
+        }.also { settings.putString(CLIENT_ID_KEY, it) }
+
+    /**
+     * Asks the server's owner to approve this device and waits for the answer. On approval the
+     * issued token is stored for this server. Progress is exposed through [pairing].
+     */
+    private suspend fun pairWith(host: String, port: Int, name: String): Boolean {
+        val client = LlamatikServerClient(LlamatikServerConfig(host, port))
+        val requestId = client.requestPairing(clientId(), PlatformInfo.deviceName)
+        if (requestId == null) {
+            _pairing.value = PairingProgress.Denied
+            return false
+        }
+        _pairing.value = PairingProgress.Waiting(name)
+        try {
+            var waited = 0L
+            while (waited < PAIRING_TIMEOUT_MS) {
+                val poll = client.pollPairing(requestId)
+                when (poll?.status) {
+                    "approved" -> {
+                        val token = poll.token ?: return false
+                        settings.putString(tokenKey(host, port), token)
+                        _pairing.value = PairingProgress.Idle
+                        return true
+                    }
+                    "denied" -> {
+                        _pairing.value = PairingProgress.Denied
+                        return false
+                    }
+                    "expired" -> {
+                        _pairing.value = PairingProgress.Expired
+                        return false
+                    }
+                }
+                delay(PAIRING_POLL_INTERVAL_MS)
+                waited += PAIRING_POLL_INTERVAL_MS
+            }
+            _pairing.value = PairingProgress.Expired
+            return false
+        } finally {
+            if (_pairing.value is PairingProgress.Waiting) _pairing.value = PairingProgress.Idle
+        }
+    }
+
+    fun clearPairingResult() {
+        _pairing.value = PairingProgress.Idle
     }
 
     private fun persistActiveServer(server: ConnectedServer) {

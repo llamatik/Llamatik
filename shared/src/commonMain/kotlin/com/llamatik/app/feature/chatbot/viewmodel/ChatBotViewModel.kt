@@ -59,6 +59,7 @@ import com.llamatik.core.platform.MultimodalCapabilities
 import com.llamatik.core.platform.SdProgress
 import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
+import com.llamatik.host.LoadedModels
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
 import com.russhwolf.settings.Settings
 import io.github.vinceglb.filekit.FileKit
@@ -143,6 +144,20 @@ class ChatBotViewModel(
         )
     )
     val state = _state.asStateFlow()
+
+    init {
+        // Only the main chat (not companion chats) tells the embedded server what is loaded, so
+        // "Share this device" reflects the model the user actually has active.
+        if (serverConnectionRepository != null) {
+            screenModelScope.launch {
+                _state.collect { s ->
+                    LoadedModels.generation.value = s.selectedGenerateModelName.takeIf { s.isGenerateModelLoaded }
+                    LoadedModels.embedding.value = s.selectedEmbedModelName.takeIf { s.isEmbedModelLoaded }
+                    LoadedModels.isGenerating.value = s.isGenerating
+                }
+            }
+        }
+    }
 
     /** True while a Llamatik server is connected, so chat can work without a local model. */
     val hasActiveServer: StateFlow<Boolean> =

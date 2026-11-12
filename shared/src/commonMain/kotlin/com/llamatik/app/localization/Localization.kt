@@ -320,6 +320,38 @@ interface Localization {
             "Anyone on the same network could potentially read them. Be careful about what you send, " +
             "and avoid sharing passwords or sensitive personal information."
     val serverUnencryptedWarningConfirm: String get() = "I understand, connect"
+
+    // Share this device (embedded server)
+    val shareDeviceTitle: String get() = "Share this device"
+    val shareDeviceSubtitleOn: String get() = "Sharing on"
+    val shareDeviceDescription: String get() =
+        "Let other Llamatik devices on your network send prompts to this device and use the models you have loaded. " +
+            "Each device must be approved by you first."
+    val shareDeviceSwitch: String get() = "Share this device"
+    val shareDeviceUnsupported: String get() = "Sharing this device isn't available on this platform. You can still connect to other devices."
+    val shareDeviceAddress: String get() = "Other devices can connect to"
+    val shareDeviceStarting: String get() = "Starting…"
+    val shareDeviceError: String get() = "Could not start sharing"
+    val shareDeviceModelsSection: String get() = "Shared models"
+    val shareDeviceNoModel: String get() = "No model loaded. Load one in the Models tab so others can use it."
+    val shareDeviceTextModel: String get() = "Text"
+    val shareDeviceEmbeddingModel: String get() = "Embeddings"
+    val shareDeviceRequests: String get() = "Requests served"
+    val shareDeviceActiveRequests: String get() = "Active now"
+    val shareDevicePendingTitle: String get() = "Allow this device?"
+    val shareDevicePendingMessage: String get() = "wants to use this device's models."
+    val shareDeviceAllow: String get() = "Allow"
+    val shareDeviceDeny: String get() = "Deny"
+    val shareDeviceApprovedSection: String get() = "Approved devices"
+    val shareDeviceNoDevices: String get() = "No devices approved yet"
+    val shareDeviceRevoke: String get() = "Revoke"
+    val shareDevicePortLabel: String get() = "Port"
+    val shareDeviceWarning: String get() =
+        "Traffic between devices is not encrypted. Only approve devices you trust on a network you trust. " +
+            "Generating for others uses your battery and may heat the device."
+    val serverWaitingForApproval: String get() = "Waiting for approval on the other device…"
+    val serverPairingDenied: String get() = "The other device denied access"
+    val serverPairingExpired: String get() = "The request was not approved in time"
 }
 
 enum class AvailableLanguages {

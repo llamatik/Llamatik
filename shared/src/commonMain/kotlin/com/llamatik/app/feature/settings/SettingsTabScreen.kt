@@ -53,6 +53,7 @@ import com.llamatik.app.feature.debugmenu.viewmodel.DebugMenuViewModel
 import com.llamatik.app.feature.models.ModelsTabScreen
 import com.llamatik.app.feature.server.ServerConnectionRepository
 import com.llamatik.app.feature.server.ServerSettingsScreen
+import com.llamatik.app.feature.sharing.ShareDeviceScreen
 import com.llamatik.app.localization.AvailableLanguages
 import com.llamatik.app.localization.SetLanguage
 import com.llamatik.app.localization.displayName
@@ -83,6 +84,7 @@ class SettingsTabScreen : Screen {
                 onShowOnboarding = { navigator.push(OnboardingScreen()) },
                 onAbout = { navigator.push(AboutScreen()) },
                 onOpenServerSettings = { navigator.push(ServerSettingsScreen()) },
+                onOpenShareDevice = { navigator.push(ShareDeviceScreen()) },
             )
         }
     }
@@ -97,6 +99,7 @@ class SettingsTabScreen : Screen {
         onShowOnboarding: (() -> Unit)? = null,
         onAbout: (() -> Unit)? = null,
         onOpenServerSettings: (() -> Unit)? = null,
+        onOpenShareDevice: (() -> Unit)? = null,
     ) {
         val localization = getCurrentLocalization()
         val state by viewModel.state.collectAsState()
@@ -175,6 +178,16 @@ class SettingsTabScreen : Screen {
                                 },
                                 buttonLabel = localization.configure,
                                 onClick = onOpenServerSettings
+                            )
+                        }
+
+                        if (onOpenShareDevice != null) {
+                            Spacer(Modifier.size(16.dp))
+                            SettingsRow(
+                                icon = LlamatikIcons.Server,
+                                label = localization.shareDeviceTitle,
+                                buttonLabel = localization.configure,
+                                onClick = onOpenShareDevice
                             )
                         }
 

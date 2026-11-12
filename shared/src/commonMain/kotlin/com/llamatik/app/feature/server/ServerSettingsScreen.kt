@@ -121,6 +121,21 @@ class ServerSettingsScreen : Screen {
                 ) {
                     item { UnencryptedWarningCard(loc) }
 
+                    (state.pairing as? PairingProgress.Waiting)?.let { waiting ->
+                        item {
+                            Card(Modifier.fillMaxWidth()) {
+                                Row(
+                                    Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                ) {
+                                    CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                                    Text("${loc.serverWaitingForApproval} (${waiting.serverName})")
+                                }
+                            }
+                        }
+                    }
+
                     // Connected server section
                     if (state.activeServer != null) {
                         item {
