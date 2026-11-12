@@ -174,6 +174,7 @@ internal object HindiLocalization : Localization {
     override val iDontHaveEnoughInfoInSources = "मेरे स्रोतों में पर्याप्त जानकारी नहीं है।"
     override val imageModeEnabledButNoModelLoadedError = "🖼️ इमेज मोड सक्षम है, लेकिन कोई Stable Diffusion मॉडल लोड नहीं है। Models खोलें और एक SD मॉडल चुनें।"
     override val visionModeEnabledButNoModelLoadedError = "👁️ विज़न मोड सक्षम है, लेकिन कोई VLM मॉडल लोड नहीं है। Models खोलें और एक विज़न मॉडल चुनें।"
+    override val visionModelCannotAnalyzeImagesError = "👁️ लोड किया गया मॉडल छवियों का विश्लेषण नहीं कर सकता। Models खोलें और एक विज़न मॉडल चुनें।"
     override val imageGenerationFailedError = "🖼️ इमेज जनरेशन विफल (कोई आउटपुट नहीं)।"
     override val imageGenerationError = "इमेज जनरेशन त्रुटि"
     override val videoGeneration = "वीडियो"

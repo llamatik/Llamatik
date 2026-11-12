@@ -171,6 +171,7 @@ internal object PortugueseLocalization : Localization {
     override val iDontHaveEnoughInfoInSources = "Não tenho informações suficientes nas minhas fontes."
     override val imageModeEnabledButNoModelLoadedError = "🖼️ O modo de imagem está ativado, mas nenhum modelo Stable Diffusion foi carregado. Abra Modelos e selecione um modelo SD."
     override val visionModeEnabledButNoModelLoadedError = "👁️ O modo visão está ativado, mas nenhum modelo VLM foi carregado. Abra Modelos e selecione um modelo de visão."
+    override val visionModelCannotAnalyzeImagesError = "👁️ O modelo carregado não consegue analisar imagens. Abra Modelos e selecione um modelo de visão."
     override val imageGenerationFailedError = "🖼️ Falha na geração de imagem (saída vazia)."
     override val imageGenerationError = "Erro na geração de imagem"
     override val videoGeneration = "Vídeo"

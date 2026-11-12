@@ -560,7 +560,7 @@ fun ChatInputBox(
                                 Spacer(modifier = Modifier.size(6.dp))
                             }
 
-                            if (state.isVlmModelLoaded) {
+                            if (state.isVlmModelLoaded && state.vlmCapabilities.canAnalyzeImages) {
                                 val hasImage = state.pendingVisionImageBytes != null
                                 IconButton(
                                     onClick = { viewModel.onPickVisionImage() },

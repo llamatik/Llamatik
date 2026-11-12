@@ -55,6 +55,7 @@ import com.llamatik.app.ui.screens.OnboardingScreen
 import com.llamatik.core.platform.LlamaBridge
 import com.llamatik.core.platform.LlamaSession
 import com.llamatik.core.platform.MultimodalBridge
+import com.llamatik.core.platform.MultimodalCapabilities
 import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
@@ -471,7 +472,8 @@ class ChatBotViewModel(
                         if (loaded) {
                             _state.value = _state.value.copy(
                                 selectedVlmModelName = model.name,
-                                isVlmModelLoaded = true
+                                isVlmModelLoaded = true,
+                                vlmCapabilities = MultimodalBridge.getCapabilities()
                             )
                             _sideEffects.trySend(ChatBotSideEffects.OnVlmModelLoaded)
                             break
@@ -930,11 +932,12 @@ class ChatBotViewModel(
             if (loaded) {
                 _state.value = _state.value.copy(
                     selectedVlmModelName = model.name,
-                    isVlmModelLoaded = true
+                    isVlmModelLoaded = true,
+                    vlmCapabilities = MultimodalBridge.getCapabilities()
                 )
                 _sideEffects.trySend(ChatBotSideEffects.OnVlmModelLoaded)
             } else {
-                _state.value = _state.value.copy(isVlmModelLoaded = false)
+                _state.value = _state.value.copy(isVlmModelLoaded = false, vlmCapabilities = MultimodalCapabilities.NONE)
                 _sideEffects.trySend(ChatBotSideEffects.OnVlmModelLoadError)
             }
         }
@@ -1106,6 +1109,13 @@ class ChatBotViewModel(
             withContext(AppDispatchersIO) {
                 if (!_state.value.isVlmModelLoaded) {
                     updateLastBotMessage(localization.visionModeEnabledButNoModelLoadedError)
+                    _state.value = _state.value.copy(isGenerating = false)
+                    _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                    return@withContext
+                }
+
+                if (!_state.value.vlmCapabilities.canAnalyzeImages) {
+                    updateLastBotMessage(localization.visionModelCannotAnalyzeImagesError)
                     _state.value = _state.value.copy(isGenerating = false)
                     _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
                     return@withContext
@@ -1774,7 +1784,8 @@ class ChatBotViewModel(
                                 if (loaded) {
                                     _state.value = _state.value.copy(
                                         selectedVlmModelName = vlmModel.name,
-                                        isVlmModelLoaded = true
+                                        isVlmModelLoaded = true,
+                                        vlmCapabilities = MultimodalBridge.getCapabilities()
                                     )
                                     _sideEffects.trySend(ChatBotSideEffects.OnVlmModelLoaded)
                                 }
@@ -1842,6 +1853,7 @@ class ChatBotViewModel(
                     isVideoGenerationSupported = if (_state.value.selectedStableDiffusionModelName == model.name) false else _state.value.isVideoGenerationSupported,
                     selectedVlmModelName = if (_state.value.selectedVlmModelName == model.name) null else _state.value.selectedVlmModelName,
                     isVlmModelLoaded = if (_state.value.selectedVlmModelName == model.name) false else _state.value.isVlmModelLoaded,
+                    vlmCapabilities = if (_state.value.selectedVlmModelName == model.name) MultimodalCapabilities.NONE else _state.value.vlmCapabilities,
                 )
             } catch (t: Throwable) {
                 Logger.e(t) { "LlamaVM - error deleting model ${model.name}" }
@@ -1883,6 +1895,7 @@ class ChatBotViewModel(
                     ModelCategory.Vlm -> s.copy(
                         selectedVlmModelName = if (s.selectedVlmModelName == model.name) null else s.selectedVlmModelName,
                         isVlmModelLoaded = if (s.selectedVlmModelName == model.name) false else s.isVlmModelLoaded,
+                        vlmCapabilities = if (s.selectedVlmModelName == model.name) MultimodalCapabilities.NONE else s.vlmCapabilities,
                     )
                 }
             }
@@ -1949,6 +1962,7 @@ class ChatBotViewModel(
                         isStableDiffusionModelLoaded = false,
                         isVideoGenerationSupported = false,
                         isVlmModelLoaded = false,
+                        vlmCapabilities = MultimodalCapabilities.NONE,
                         ragPdfFileName = null,
                         isRagIndexing = false,
                         ragIndexingProgress = 0,
@@ -3032,6 +3046,7 @@ data class ChatBotState(
     val isStableDiffusionModelLoaded: Boolean = false,
     val isVideoGenerationSupported: Boolean = false,
     val isVlmModelLoaded: Boolean = false,
+    val vlmCapabilities: MultimodalCapabilities = MultimodalCapabilities.NONE,
     val selectedEmbedModelName: String? = null,
     val selectedGenerateModelName: String? = null,
     val selectedSttModelName: String? = null,

@@ -18,6 +18,9 @@ data class MultimodalCapabilities(
     /** Accepts a speaker reference audio for voice cloning. */
     val audioGenSpeakerRef: Boolean = false,
 ) {
+    /** True when the model can take an image and answer about it in text. */
+    val canAnalyzeImages: Boolean get() = chat && vision && textGen
+
     companion object {
         val NONE = MultimodalCapabilities()
 

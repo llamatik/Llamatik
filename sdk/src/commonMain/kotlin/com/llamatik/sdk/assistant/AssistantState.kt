@@ -1,5 +1,6 @@
 package com.llamatik.sdk.assistant
 
+import com.llamatik.core.platform.MultimodalCapabilities
 import com.llamatik.sdk.chat.ChatSessionSummary
 import com.llamatik.sdk.model.GenerateSettings
 import com.llamatik.sdk.model.LlamaModel
@@ -20,6 +21,8 @@ data class AssistantState(
     val isSttModelLoaded: Boolean = false,
     val isStableDiffusionModelLoaded: Boolean = false,
     val isVlmModelLoaded: Boolean = false,
+    /** What the loaded VLM can do; [MultimodalCapabilities.NONE] when none is loaded. */
+    val vlmCapabilities: MultimodalCapabilities = MultimodalCapabilities.NONE,
     val isGenerating: Boolean = false,
     val isInitialSetup: Boolean = false,
     val initialSetupModelName: String? = null,

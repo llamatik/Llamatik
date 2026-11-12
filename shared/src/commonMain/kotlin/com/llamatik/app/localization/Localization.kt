@@ -158,6 +158,7 @@ interface Localization {
     val iDontHaveEnoughInfoInSources: String
     val imageModeEnabledButNoModelLoadedError: String
     val visionModeEnabledButNoModelLoadedError: String
+    val visionModelCannotAnalyzeImagesError: String
     val imageGenerationFailedError: String
     val imageGenerationError: String
     val videoGeneration: String

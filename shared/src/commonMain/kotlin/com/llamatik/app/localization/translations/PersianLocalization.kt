@@ -174,6 +174,7 @@ internal object PersianLocalization : Localization {
     override val iDontHaveEnoughInfoInSources = "اطلاعات کافی در منابع من وجود ندارد."
     override val imageModeEnabledButNoModelLoadedError = "🖼️ حالت تصویر فعال است اما هیچ مدل Stable Diffusion بارگذاری نشده است. بخش مدل‌ها را باز کرده و یک مدل SD انتخاب کنید."
     override val visionModeEnabledButNoModelLoadedError = "👁️ حالت بینایی فعال است اما هیچ مدل VLM بارگذاری نشده است. بخش مدل‌ها را باز کرده و یک مدل بینایی انتخاب کنید."
+    override val visionModelCannotAnalyzeImagesError = "👁️ مدل بارگذاری‌شده نمی‌تواند تصاویر را تحلیل کند. بخش مدل‌ها را باز کرده و یک مدل بینایی انتخاب کنید."
     override val imageGenerationFailedError = "🖼️ تولید تصویر ناموفق بود (خروجی خالی)."
     override val imageGenerationError = "خطای تولید تصویر"
     override val videoGeneration = "ویدیو"

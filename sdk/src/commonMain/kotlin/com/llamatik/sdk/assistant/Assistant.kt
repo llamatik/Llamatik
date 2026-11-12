@@ -103,7 +103,7 @@ class Assistant(
                     val mmprojPath = pathResolver.resolveMmproj(model) ?: continue
                     val loaded = MultimodalBridge.initModel(path, mmprojPath)
                     if (loaded) {
-                        _state.update { it.copy(selectedVlmModelName = model.name, isVlmModelLoaded = true) }
+                        _state.update { it.copy(selectedVlmModelName = model.name, isVlmModelLoaded = true, vlmCapabilities = MultimodalBridge.getCapabilities()) }
                         _events.trySend(AssistantEvent.VlmModelLoaded)
                         break
                     } else {
@@ -248,10 +248,10 @@ class Assistant(
             }
             val loaded = MultimodalBridge.initModel(path, mmprojPath)
             if (loaded) {
-                _state.update { it.copy(selectedVlmModelName = model.name, isVlmModelLoaded = true) }
+                _state.update { it.copy(selectedVlmModelName = model.name, isVlmModelLoaded = true, vlmCapabilities = MultimodalBridge.getCapabilities()) }
                 _events.trySend(AssistantEvent.VlmModelLoaded)
             } else {
-                _state.update { it.copy(isVlmModelLoaded = false) }
+                _state.update { it.copy(isVlmModelLoaded = false, vlmCapabilities = MultimodalCapabilities.NONE) }
                 _events.trySend(AssistantEvent.VlmModelLoadError)
             }
         }
@@ -348,6 +348,7 @@ class Assistant(
                         isStableDiffusionModelLoaded = if (s.selectedStableDiffusionModelName == model.name) false else s.isStableDiffusionModelLoaded,
                         selectedVlmModelName = if (s.selectedVlmModelName == model.name) null else s.selectedVlmModelName,
                         isVlmModelLoaded = if (s.selectedVlmModelName == model.name) false else s.isVlmModelLoaded,
+                        vlmCapabilities = if (s.selectedVlmModelName == model.name) MultimodalCapabilities.NONE else s.vlmCapabilities,
                     )
                 }
             } catch (t: Throwable) {
@@ -396,6 +397,7 @@ class Assistant(
                         isSttModelLoaded = false,
                         isStableDiffusionModelLoaded = false,
                         isVlmModelLoaded = false,
+                        vlmCapabilities = MultimodalCapabilities.NONE,
                         ragPdfFileName = null,
                         isRagIndexing = false,
                         ragIndexingProgress = 0,
@@ -856,13 +858,14 @@ class Assistant(
      * or [MultimodalCapabilities.NONE] if none is loaded.
      */
     fun multimodalCapabilities(): MultimodalCapabilities =
-        if (_state.value.isVlmModelLoaded) MultimodalBridge.getCapabilities() else MultimodalCapabilities.NONE
+        _state.value.vlmCapabilities
 
     fun analyzeImage(
         imageBytes: ByteArray,
         prompt: String,
         languageCode: String? = null,
         visionNoModelMessage: String = "Vision mode enabled but no model loaded.",
+        visionUnsupportedMessage: String = "The loaded model can't analyze images.",
     ) {
         if (_state.value.isGenerating) return
         val userInput = prompt.trim().ifBlank { "Describe this image." }
@@ -883,6 +886,13 @@ class Assistant(
             kotlinx.coroutines.withContext(ioDispatcher) {
                 if (!_state.value.isVlmModelLoaded) {
                     updateLastBotMessage(visionNoModelMessage)
+                    _state.update { it.copy(isGenerating = false) }
+                    _events.trySend(AssistantEvent.MessageLoaded)
+                    return@withContext
+                }
+
+                if (!_state.value.vlmCapabilities.canAnalyzeImages) {
+                    updateLastBotMessage(visionUnsupportedMessage)
                     _state.update { it.copy(isGenerating = false) }
                     _events.trySend(AssistantEvent.MessageLoaded)
                     return@withContext
@@ -1203,7 +1213,7 @@ class Assistant(
                             if (!modelPath.isNullOrBlank()) {
                                 val loaded = MultimodalBridge.initModel(modelPath, mmprojPath)
                                 if (loaded) {
-                                    _state.update { it.copy(selectedVlmModelName = vlmModel.name, isVlmModelLoaded = true) }
+                                    _state.update { it.copy(selectedVlmModelName = vlmModel.name, isVlmModelLoaded = true, vlmCapabilities = MultimodalBridge.getCapabilities()) }
                                     _events.trySend(AssistantEvent.VlmModelLoaded)
                                 }
                             }
