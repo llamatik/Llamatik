@@ -17,25 +17,22 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.9.0</string>
+	<string>2.0.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Llamatik uses the microphone for speech-to-text dictation.</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Llamatik discovers and connects to Llamatik servers on your local network.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<!-- The Llamatik server runs over plain HTTP on the local network.
-		     NSAllowsLocalNetworking covers .local Bonjour names; NSAllowsArbitraryLoads
-		     is additionally required for raw IP addresses (192.168.x.x, 10.x.x.x, etc.). -->
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
 	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Llamatik discovers and connects to Llamatik servers on your local network.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Llamatik uses the microphone for speech-to-text dictation.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
