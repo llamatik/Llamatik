@@ -2,21 +2,21 @@
 android-compileSdk = "37"
 android-minSdk = "26"
 android-targetSdk = "37"
-koalaplotCore = "0.11.2"
-kotlin = "2.4.20"
-ktor-client = "3.3.1"
-ktor-server = "3.3.1"
+koalaplotCore = "0.12.1"
+kotlin = "2.4.21"
+ktor-client = "3.6.1"
+ktor-server = "3.6.1"
 multiplatform-settings = "1.3.0"
-okhttp = "5.4.0"
-richeditorCompose = "1.0.0-rc14"
+okhttp = "5.5.1"
+richeditorCompose = "1.2.1"
 markdownRenderer = "0.46.0"
 voyager = "2.2.21-1.10.3"
 koin = "4.2.2"
 koin-compose = "4.2.2"
 junit = "4.13.2"
 androidGradlePlugin = "9.5.1"
-composeMultiplatform = "1.11.1"
-exposed = "1.3.1"
+composeMultiplatform = "1.12.2"
+exposed = "1.6.1"
 ktlint = "14.2.0"
 detekt = "1.23.8"
 kotlinx-coroutines = "1.11.0"
@@ -24,19 +24,19 @@ androidx-junit = "1.3.0"
 espressoCore = "3.7.0"
 accompanistSystemuicontroller = "0.36.0"
 activityCompose = "1.13.0"
-firebase = "34.16.0"
+firebase = "35.2.0"
 touchlab = "2.1.0"
 navigationCommonKtx = "2.9.1"
 xmlutil = "0.91.2"
-bouquet = "1.1.3"
-filekit = "0.12.0"
+bouquet = "2.1.0"
+filekit = "0.17.0"
 urlencoder = "1.6.0"
-kotlinx-io = "0.8.0"
-kotlinStdlib = "2.4.20"
-kotlinTest = "2.4.20"
+kotlinx-io = "0.9.2"
+kotlinStdlib = "2.4.21"
+kotlinTest = "2.4.21"
 runner = "1.6.2"
 core = "1.6.1"
-runtime = "1.11.4"
+runtime = "1.12.1"
 android-play-review = "2.0.2"
 kamel = "1.0.9"
 
@@ -58,9 +58,9 @@ richeditor-compose = { module = "com.mohamedrejeb.richeditor:richeditor-compose"
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor-client" }
 kamel = { module = "media.kamel:kamel-image", version.ref = "kamel" }
 kamel-default = { module = "media.kamel:kamel-image-default", version.ref = "kamel" }
-kermit = "co.touchlab:kermit:2.1.0"
+kermit = "co.touchlab:kermit:2.2.0"
 
-kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0"
+kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0"
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.8.0"
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
@@ -87,15 +87,15 @@ filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref =
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 
 urlencoder = { module = "net.thauvin.erik.urlencoder:urlencoder-lib", version.ref = "urlencoder" }
-jmdns = { module = "org.jmdns:jmdns", version = "3.5.9" }
+jmdns = { module = "org.jmdns:jmdns", version = "3.6.5" }
 
 
 # Android
-compose-bom = "androidx.compose:compose-bom:2026.06.01"
+compose-bom = "androidx.compose:compose-bom:2026.09.00"
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 
-androidx-work-routine-ktx = "androidx.work:work-runtime-ktx:2.11.2"
-androidx-core-ktx = "androidx.core:core-ktx:1.19.0"
+androidx-work-routine-ktx = "androidx.work:work-runtime-ktx:2.12.0"
+androidx-core-ktx = "androidx.core:core-ktx:1.19.1"
 androidx-core-splashscreen = "androidx.core:core-splashscreen:1.2.0"
 androidx-tracing-ktx = "androidx.tracing:tracing-ktx:1.3.0"
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -126,8 +126,8 @@ stately-common = { module = "co.touchlab:stately-common", version.ref = "touchla
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
 kotlinx-coroutines-swingui = "org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.11.0"
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor-client" }
-androidx-compose-ui-util = "androidx.compose.ui:ui-util:1.11.4"
-jetbrains-compose-ui-util = "org.jetbrains.compose.ui:ui-util:1.11.1"
+androidx-compose-ui-util = "androidx.compose.ui:ui-util:1.12.1"
+jetbrains-compose-ui-util = "org.jetbrains.compose.ui:ui-util:1.12.2"
 
 # Backend
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-server" }
@@ -156,8 +156,8 @@ exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exp
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 
 kotlinx-html-jvm = "org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0"
-logback-classic = "ch.qos.logback:logback-classic:1.5.38"
-postgresql = "org.postgresql:postgresql:42.7.13"
+logback-classic = "ch.qos.logback:logback-classic:1.6.6"
+postgresql = "org.postgresql:postgresql:42.7.14"
 hikariCP = "com.zaxxer:HikariCP:7.1.0"
 swagger-codegen = "io.swagger.codegen.v3:swagger-codegen-generators:1.0.62"
 
@@ -181,7 +181,7 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 
 #Backend
 #kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version = "kotlin" }
-shadow = { id = "com.gradleup.shadow", version = "9.5.1" }
+shadow = { id = "com.gradleup.shadow", version = "9.6.1" }
 
 [bundles]
 
