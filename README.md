@@ -117,7 +117,7 @@ A production-ready agentic runtime for host-app integration:
 Fully **on-device**, optionally remote — all behind a **unified Kotlin API**.
 
 No Python.  
-No required servers.  
+No required servers (a self-hosted server is optional).  
 Your models, your data, your device.
 
 Designed for **privacy-first**, **offline-capable**, and **cross-platform** AI applications on Android, iOS, Desktop, and WASM.
@@ -178,7 +178,8 @@ Designed for **privacy-first**, **offline-capable**, and **cross-platform** AI a
 
 ### 🔐 On-device & Private
 - ✅ Fully offline by default — no network required
-- ✅ No data exfiltration — models and data never leave the device
+- ✅ No data exfiltration by default — models and data never leave the device
+- ⚠️ If you choose to connect the app to a Llamatik Server, your prompts are sent to that server. Connections are currently **unencrypted (plain HTTP)** and not 100% secure — avoid sending sensitive data over untrusted networks. Encrypted connections are planned.
 - ✅ Optional remote inference via the built-in HTTP client for hybrid deployments
 
 ### 🧩 Kotlin Multiplatform
@@ -987,6 +988,20 @@ The Llamatik backend server is now maintained in a dedicated repository.
 [https://github.com/ferranpons/Llamatik-Server](https://github.com/ferranpons/Llamatik-Server)
 
 Visit the repository for full setup instructions, configuration options, and usage details.
+
+### Connecting the app to a server
+
+The Llamatik app can use a Llamatik Server for generation, with or without a local model:
+
+- **Settings → Server**: add a server manually by IP and port, or scan the local network (Llamatik Server advertises itself via mDNS as `_llamatik._tcp`); saved servers can be reconnected in one tap.
+- Capability chips show what the server has loaded (text, image, vision, video, audio).
+- Chat works with only a server connected; responses are streamed.
+- A status dot in the chat toolbar shows the server state: green (online), yellow (reachable but no text model), red (unreachable).
+- If the server fails or has no text model, the app falls back to local generation.
+
+> **Security note:** server connections are currently **not encrypted**. The app warns you before connecting. Be careful about what you send and avoid sharing passwords or sensitive information. Encrypted and unencrypted modes will both be supported in the future.
+
+Details: https://docs.llamatik.com/guides/connecting-to-a-server/
 
 ---
 
