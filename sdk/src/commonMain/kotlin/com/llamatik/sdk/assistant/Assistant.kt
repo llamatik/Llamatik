@@ -5,7 +5,9 @@ import com.llamatik.core.platform.LlamaBridge
 import com.llamatik.core.platform.LlamaSession
 import com.llamatik.core.platform.MultimodalBridge
 import com.llamatik.core.platform.MultimodalCapabilities
+import com.llamatik.core.platform.SdControlType
 import com.llamatik.core.platform.StableDiffusionBridge
+import com.llamatik.core.platform.VideoUpscalerBridge
 import com.llamatik.core.platform.WhisperBridge
 import com.llamatik.sdk.agent.ParsedToolCall
 import com.llamatik.sdk.agent.ToolCallParser
@@ -226,7 +228,7 @@ class Assistant(
             val path = pathResolver.resolve(model) ?: return@launch
             val loaded = StableDiffusionBridge.initModel(path)
             if (loaded) {
-                _state.update { it.copy(selectedStableDiffusionModelName = model.name, isStableDiffusionModelLoaded = true) }
+                _state.update { it.copy(selectedStableDiffusionModelName = model.name, isStableDiffusionModelLoaded = true, isControlNetLoaded = StableDiffusionBridge.hasControlNet()) }
                 _events.trySend(AssistantEvent.StableDiffusionModelLoaded)
             } else {
                 _events.trySend(AssistantEvent.StableDiffusionModelLoadError)
@@ -346,6 +348,7 @@ class Assistant(
                         isSttModelLoaded = if (s.selectedSttModelName == model.name) false else s.isSttModelLoaded,
                         selectedStableDiffusionModelName = if (s.selectedStableDiffusionModelName == model.name) null else s.selectedStableDiffusionModelName,
                         isStableDiffusionModelLoaded = if (s.selectedStableDiffusionModelName == model.name) false else s.isStableDiffusionModelLoaded,
+                        isControlNetLoaded = if (s.selectedStableDiffusionModelName == model.name) false else s.isControlNetLoaded,
                         selectedVlmModelName = if (s.selectedVlmModelName == model.name) null else s.selectedVlmModelName,
                         isVlmModelLoaded = if (s.selectedVlmModelName == model.name) false else s.isVlmModelLoaded,
                         vlmCapabilities = if (s.selectedVlmModelName == model.name) MultimodalCapabilities.NONE else s.vlmCapabilities,
@@ -396,6 +399,7 @@ class Assistant(
                         isGenerateModelLoaded = false,
                         isSttModelLoaded = false,
                         isStableDiffusionModelLoaded = false,
+                        isControlNetLoaded = false,
                         isVlmModelLoaded = false,
                         vlmCapabilities = MultimodalCapabilities.NONE,
                         ragPdfFileName = null,
@@ -762,7 +766,7 @@ class Assistant(
                         return@withContext
                     }
 
-                    val rgbaBytes = StableDiffusionBridge.txt2img(prompt = input, negativePrompt = "", width = 512, height = 512, steps = 20, seed = -1)
+                    val rgbaBytes = withGenerationProgress { StableDiffusionBridge.txt2img(prompt = input, negativePrompt = "", width = 512, height = 512, steps = 20, seed = -1) }
 
                     if (rgbaBytes.isEmpty()) {
                         updateLastBotMessage(imageGenerationFailedMessage)
@@ -827,7 +831,7 @@ class Assistant(
                     val outW = snapTo64(initW)
                     val outH = snapTo64(initH)
 
-                    val rgbaBytes = StableDiffusionBridge.img2img(initRgba, initW, initH, input, "", outW, outH, 20, 7.0f, strength, -1L)
+                    val rgbaBytes = withGenerationProgress { StableDiffusionBridge.img2img(initRgba, initW, initH, input, "", outW, outH, 20, 7.0f, strength, -1L) }
 
                     if (rgbaBytes.isEmpty()) {
                         updateLastBotMessage(imageGenerationFailedMessage)
@@ -846,6 +850,159 @@ class Assistant(
                     _events.trySend(AssistantEvent.ScrollToBottom)
                 }
             }
+        }
+    }
+
+    // endregion
+
+    /**
+     * Runs a Stable Diffusion generation while publishing its progress to
+     * [AssistantState.generationProgress]. The progress is cleared when the block ends.
+     */
+    private inline fun <T> withGenerationProgress(block: () -> T): T {
+        StableDiffusionBridge.setProgressListener { p -> _state.update { it.copy(generationProgress = p) } }
+        try {
+            return block()
+        } finally {
+            StableDiffusionBridge.setProgressListener(null)
+            _state.update { it.copy(generationProgress = null) }
+        }
+    }
+
+    // region — ControlNet
+
+    /**
+     * Loads a ControlNet model into the current Stable Diffusion context.
+     * A Stable Diffusion model must be loaded first. Returns true on success.
+     */
+    suspend fun loadControlNet(path: String): Boolean {
+        if (!_state.value.isStableDiffusionModelLoaded || _state.value.isGenerating) return false
+        val ok = kotlinx.coroutines.withContext(ioDispatcher) { StableDiffusionBridge.loadControlNet(path) }
+        _state.update { it.copy(isControlNetLoaded = StableDiffusionBridge.hasControlNet()) }
+        return ok
+    }
+
+    suspend fun unloadControlNet(): Boolean {
+        if (_state.value.isGenerating) return false
+        val ok = kotlinx.coroutines.withContext(ioDispatcher) { StableDiffusionBridge.unloadControlNet() }
+        _state.update { it.copy(isControlNetLoaded = StableDiffusionBridge.hasControlNet()) }
+        return ok
+    }
+
+    /**
+     * Generates an image guided by [controlImageBytes] (pose, depth, canny edges, ...) using the loaded
+     * ControlNet. Mirrors [imageToImage]: the prompt and result are added to the conversation.
+     */
+    @OptIn(ExperimentalTime::class)
+    fun generateImageWithControl(
+        prompt: String,
+        controlImageBytes: ByteArray,
+        controlType: SdControlType,
+        controlStrength: Float = 0.9f,
+        decodeImageBytesToRgba: (ByteArray) -> Triple<ByteArray, Int, Int>?,
+        noControlNetMessage: String = "Load a ControlNet model first.",
+        imageGenerationFailedMessage: String = "Image generation failed.",
+        errorMessage: String = "Image generation error.",
+    ) {
+        if (_state.value.isGenerating) return
+        val input = prompt.trim().ifBlank { return }
+
+        scope.launch {
+            if (!_state.value.isTemporaryChat && currentChatId == null) currentChatId = Random.nextLong().toString()
+            _conversation.update { it + ConversationMessage(input, ConversationMessage.Author.ME) }
+            _events.trySend(AssistantEvent.MessageLoading)
+            _events.trySend(AssistantEvent.ScrollToBottom)
+            _state.update { it.copy(isGenerating = true) }
+
+            kotlinx.coroutines.withContext(ioDispatcher) {
+                try {
+                    persistConversationIfNeeded()
+                    _conversation.update { it + ConversationMessage("", ConversationMessage.Author.BOT) }
+
+                    if (!_state.value.isStableDiffusionModelLoaded || !StableDiffusionBridge.hasControlNet()) {
+                        updateLastBotMessage(noControlNetMessage)
+                        return@withContext
+                    }
+
+                    val decoded = decodeImageBytesToRgba(controlImageBytes) ?: run {
+                        updateLastBotMessage(imageGenerationFailedMessage)
+                        return@withContext
+                    }
+
+                    val (controlRgba, controlW, controlH) = decoded
+                    fun snapTo64(v: Int) = (v.coerceIn(64, 1024) / 64) * 64
+                    val outW = snapTo64(controlW)
+                    val outH = snapTo64(controlH)
+
+                    val rgbaBytes = withGenerationProgress {
+                        StableDiffusionBridge.generateWithControl(
+                            controlImageRgba = controlRgba,
+                            controlImageW = controlW,
+                            controlImageH = controlH,
+                            controlType = controlType,
+                            prompt = input,
+                            negativePrompt = "",
+                            width = outW,
+                            height = outH,
+                            controlStrength = controlStrength,
+                        )
+                    }
+
+                    if (rgbaBytes.isEmpty()) {
+                        updateLastBotMessage(imageGenerationFailedMessage)
+                    } else {
+                        val fileName = "control_${Random.nextInt()}_${Clock.System.now().toString().replace(":", "_")}.png"
+                        updateLastBotImageRgba(rgbaBytes, outW, outH, fileName)
+                    }
+
+                    persistConversationIfNeeded()
+                } catch (t: Throwable) {
+                    Logger.e(t.message ?: errorMessage)
+                    updateLastBotMessage("Error: ${t.message ?: "unknown"}")
+                } finally {
+                    _state.update { it.copy(isGenerating = false) }
+                    _events.trySend(AssistantEvent.MessageLoaded)
+                    _events.trySend(AssistantEvent.ScrollToBottom)
+                }
+            }
+        }
+    }
+
+    // endregion
+
+    // region — Video upscaler
+
+    /** Loads a video super-resolution model. Independent from the generation model. */
+    suspend fun loadVideoUpscaler(
+        diffusionModelPath: String,
+        vaePath: String,
+        upscaleFactor: Int = 2,
+    ): Boolean {
+        val ok = kotlinx.coroutines.withContext(ioDispatcher) {
+            VideoUpscalerBridge.initModel(diffusionModelPath, vaePath, upscaleFactor)
+        }
+        _state.update { it.copy(isVideoUpscalerLoaded = VideoUpscalerBridge.isLoaded()) }
+        return ok
+    }
+
+    fun unloadVideoUpscaler() {
+        VideoUpscalerBridge.release()
+        _state.update { it.copy(isVideoUpscalerLoaded = false) }
+    }
+
+    /**
+     * Upscales packed video frames (the same layout [StableDiffusionBridge.txt2video] returns).
+     * Returns an empty array if no upscaler is loaded or on failure.
+     */
+    suspend fun upscaleVideo(
+        packedFrames: ByteArray,
+        seed: Long = -1L,
+        windowSize: Int = 0,
+        temporalChunkSize: Int = 0,
+    ): ByteArray {
+        if (!_state.value.isVideoUpscalerLoaded) return ByteArray(0)
+        return kotlinx.coroutines.withContext(ioDispatcher) {
+            VideoUpscalerBridge.upscale(packedFrames, seed, windowSize, temporalChunkSize)
         }
     }
 

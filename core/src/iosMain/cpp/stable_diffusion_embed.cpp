@@ -26,6 +26,18 @@ static std::string g_sd_vae_path;
 static std::string g_sd_t5xxl_path;
 static std::string g_sd_clip_vision_path;
 
+// ---- generation progress ----
+typedef void (*sd_bridge_progress_cb)(const char * stage, const char * detail, const char * unit,
+                               int32_t sample_pass, int64_t completed, int64_t total, void * user);
+static sd_bridge_progress_cb g_sd_progress_cb   = nullptr;
+static void *         g_sd_progress_user = nullptr;
+
+static void sd_progress_trampoline(const sd_generation_progress_t * p, void * /*data*/) {
+    if (!p || !g_sd_progress_cb) return;
+    g_sd_progress_cb(p->stage, p->detail, p->unit, (int32_t) p->sample_pass,
+                     (int64_t) p->completed, (int64_t) p->total, g_sd_progress_user);
+}
+
 extern "C" {
 
 // Returns 1 on success, 0 on failure.
@@ -91,6 +103,8 @@ int32_t sd_init(const char * model_path, int32_t threads,
         std::fprintf(stderr, "sd_init: FAILED to create sd context for '%s'\n", model_path);
         return 0;
     }
+
+    sd_set_generation_progress_callback(g_sd_ctx, sd_progress_trampoline, nullptr);
 
     g_sd_model_path       = path;
     g_sd_vae_path         = vae;
@@ -407,6 +421,256 @@ uint8_t * sd_txt2video_frames(
 }
 
 void sd_free_video_frames(uint8_t * p) {
+    if (p) std::free(p);
+}
+
+} // extern "C"
+
+
+// -----------------------------------------------------------------------------
+// Progress, ControlNet, video upscaler (see stable_diffusion_bridge.h)
+// -----------------------------------------------------------------------------
+
+extern "C" {
+
+void sd_bridge_set_progress_callback(sd_bridge_progress_cb cb, void * user) {
+    g_sd_progress_cb   = cb;
+    g_sd_progress_user = user;
+}
+
+int32_t sd_load_control_net(const char * path) {
+    if (!g_sd_ctx || !path || path[0] == '\0') return 0;
+    return sd_ctx_load_control_net(g_sd_ctx, path) ? 1 : 0;
+}
+
+int32_t sd_unload_control_net(void) {
+    if (!g_sd_ctx) return 0;
+    return sd_ctx_unload_control_net(g_sd_ctx) ? 1 : 0;
+}
+
+int32_t sd_has_control_net(void) {
+    if (!g_sd_ctx) return 0;
+    return sd_ctx_has_control_net(g_sd_ctx) ? 1 : 0;
+}
+
+uint8_t * sd_generate_with_control_rgba(
+        const uint8_t * control_image_rgba,
+        int32_t control_w,
+        int32_t control_h,
+        int32_t control_type,
+        const char * prompt,
+        const char * negative_prompt,
+        int32_t width,
+        int32_t height,
+        int32_t steps,
+        float cfg_scale,
+        float control_strength,
+        int64_t seed,
+        int32_t * out_w,
+        int32_t * out_h,
+        int32_t * out_size_bytes
+) {
+    if (out_w) *out_w = 0;
+    if (out_h) *out_h = 0;
+    if (out_size_bytes) *out_size_bytes = 0;
+
+    if (!g_sd_ctx || !sd_ctx_has_control_net(g_sd_ctx)) {
+        std::fprintf(stderr, "sd_generate_with_control_rgba: no context or control net\n");
+        return nullptr;
+    }
+    if (!prompt || prompt[0] == '\0' || !control_image_rgba || control_w <= 0 || control_h <= 0) return nullptr;
+    if (control_type < 0 || control_type >= (int32_t) SD_CONTROL_TYPE_COUNT) return nullptr;
+
+    // Copy: the caller's buffer is only valid for the duration of this call.
+    std::vector<uint8_t> control(control_image_rgba, control_image_rgba + (size_t) control_w * (size_t) control_h * 4);
+
+    sd_img_gen_params_t gen;
+    sd_img_gen_params_init(&gen);
+    gen.prompt = prompt;
+    gen.negative_prompt = (negative_prompt && negative_prompt[0]) ? negative_prompt : "";
+    gen.width  = (int) width;
+    gen.height = (int) height;
+    gen.seed   = (int64_t) seed;
+    gen.sample_params.sample_steps = (int) steps;
+    gen.sample_params.guidance.txt_cfg = (float) cfg_scale;
+
+    gen.control_image.data    = control.data();
+    gen.control_image.width   = (uint32_t) control_w;
+    gen.control_image.height  = (uint32_t) control_h;
+    gen.control_image.channel = 4;
+    gen.control_strength      = control_strength;
+    gen.control_type          = (enum sd_control_type_t) control_type;
+
+    sd_image_generation_result_t * img_result = nullptr;
+    const bool ok = generate_image(g_sd_ctx, &gen, &img_result);
+    if (!ok || !img_result || img_result->count == 0 || !img_result->items[0].image.data ||
+            img_result->items[0].image.width == 0 || img_result->items[0].image.height == 0) {
+        std::fprintf(stderr, "sd_generate_with_control_rgba: generate_image failed\n");
+        free_sd_image_generation_result(img_result);
+        return nullptr;
+    }
+    sd_image_t * img = &img_result->items[0].image;
+    const int w = (int) img->width;
+    const int h = (int) img->height;
+    const int pixelCount = w * h;
+
+    std::vector<uint8_t> rgba;
+    if (img->channel == 4) {
+        rgba.assign(img->data, img->data + (size_t) pixelCount * 4);
+    } else if (img->channel == 3) {
+        rgba_from_rgb(img->data, pixelCount, rgba);
+    } else if (img->channel == 1) {
+        rgba_from_gray(img->data, pixelCount, rgba);
+    } else {
+        free_sd_image_generation_result(img_result);
+        return nullptr;
+    }
+    free_sd_image_generation_result(img_result);
+
+    uint8_t * out = (uint8_t *) std::malloc(rgba.size());
+    if (!out) return nullptr;
+    std::memcpy(out, rgba.data(), rgba.size());
+    if (out_w) *out_w = w;
+    if (out_h) *out_h = h;
+    if (out_size_bytes) *out_size_bytes = (int32_t) rgba.size();
+    return out;
+}
+
+// ---- video upscaler ----
+
+static video_upscaler_ctx_t * g_vu_ctx = nullptr;
+
+static int32_t vu_read_le_i32(const uint8_t * b) {
+    return (int32_t) ((uint32_t) b[0] | ((uint32_t) b[1] << 8) | ((uint32_t) b[2] << 16) | ((uint32_t) b[3] << 24));
+}
+
+static void vu_write_le_i32(uint8_t * b, int32_t v) {
+    b[0] = (uint8_t) (v & 0xFF);
+    b[1] = (uint8_t) ((v >> 8) & 0xFF);
+    b[2] = (uint8_t) ((v >> 16) & 0xFF);
+    b[3] = (uint8_t) ((v >> 24) & 0xFF);
+}
+
+int32_t vu_init(const char * diffusion_model_path, const char * vae_path, int32_t upscale_factor, int32_t threads) {
+    if (!diffusion_model_path || !diffusion_model_path[0] || !vae_path || !vae_path[0]) return 0;
+    if (g_vu_ctx) {
+        free_video_upscaler_ctx(g_vu_ctx);
+        g_vu_ctx = nullptr;
+    }
+    sd_video_upscaler_ctx_params_t params;
+    sd_video_upscaler_ctx_params_init(&params);
+    params.diffusion_model_path = diffusion_model_path;
+    params.vae_path             = vae_path;
+    params.upscale_factor       = (int) upscale_factor;
+    if (threads > 0) params.n_threads = (int) threads;
+    g_vu_ctx = new_video_upscaler_ctx(&params);
+    return g_vu_ctx ? 1 : 0;
+}
+
+int32_t vu_is_loaded(void) {
+    return g_vu_ctx ? 1 : 0;
+}
+
+void vu_release(void) {
+    if (g_vu_ctx) {
+        free_video_upscaler_ctx(g_vu_ctx);
+        g_vu_ctx = nullptr;
+    }
+}
+
+uint8_t * vu_upscale(const uint8_t * packed, int32_t packed_size, int64_t seed,
+                     int32_t window_size, int32_t temporal_chunk_size, int32_t * out_total_size) {
+    if (out_total_size) *out_total_size = 0;
+    if (!g_vu_ctx || !packed || packed_size < 16) return nullptr;
+
+    const int32_t frame_count = vu_read_le_i32(packed + 0);
+    const int32_t w           = vu_read_le_i32(packed + 4);
+    const int32_t h           = vu_read_le_i32(packed + 8);
+    const int32_t fps         = vu_read_le_i32(packed + 12);
+    if (frame_count <= 0 || w <= 0 || h <= 0) return nullptr;
+
+    const size_t in_frame_bytes = (size_t) w * (size_t) h * 4;
+    if ((size_t) packed_size < 16 + (size_t) frame_count * in_frame_bytes) return nullptr;
+
+    // The upscaler takes RGB frames.
+    std::vector<std::vector<uint8_t>> rgb_frames((size_t) frame_count);
+    std::vector<sd_image_t> frames((size_t) frame_count);
+    for (int32_t i = 0; i < frame_count; i++) {
+        const uint8_t * src = packed + 16 + (size_t) i * in_frame_bytes;
+        auto & rgb = rgb_frames[(size_t) i];
+        rgb.resize((size_t) w * (size_t) h * 3);
+        for (size_t px = 0, n = (size_t) w * (size_t) h; px < n; px++) {
+            rgb[px * 3 + 0] = src[px * 4 + 0];
+            rgb[px * 3 + 1] = src[px * 4 + 1];
+            rgb[px * 3 + 2] = src[px * 4 + 2];
+        }
+        frames[(size_t) i].width   = (uint32_t) w;
+        frames[(size_t) i].height  = (uint32_t) h;
+        frames[(size_t) i].channel = 3;
+        frames[(size_t) i].data    = rgb.data();
+    }
+
+    sd_video_upscale_params_t params;
+    sd_video_upscale_params_init(&params);
+    params.frames      = frames.data();
+    params.frame_count = (int) frame_count;
+    params.fps         = (int) fps;
+    if (seed >= 0) params.seed = seed;
+    if (window_size > 0)         params.window_size         = (int) window_size;
+    if (temporal_chunk_size > 0) params.temporal_chunk_size = (int) temporal_chunk_size;
+
+    sd_video_generation_result_t * result = nullptr;
+    const bool ok = upscale_video(g_vu_ctx, &params, &result);
+    if (!ok || !result || result->frame_count <= 0 || !result->frames) {
+        std::fprintf(stderr, "vu_upscale: upscale_video failed\n");
+        free_sd_video_generation_result(result);
+        return nullptr;
+    }
+
+    const int out_w = (int) result->frames[0].width;
+    const int out_h = (int) result->frames[0].height;
+    const size_t out_frame_bytes = (size_t) out_w * (size_t) out_h * 4;
+    const size_t out_total = 16 + (size_t) result->frame_count * out_frame_bytes;
+
+    uint8_t * out = (uint8_t *) std::malloc(out_total);
+    if (!out) {
+        free_sd_video_generation_result(result);
+        return nullptr;
+    }
+    vu_write_le_i32(out + 0,  (int32_t) result->frame_count);
+    vu_write_le_i32(out + 4,  (int32_t) out_w);
+    vu_write_le_i32(out + 8,  (int32_t) out_h);
+    vu_write_le_i32(out + 12, (int32_t) (result->fps > 0 ? result->fps : fps));
+
+    std::vector<uint8_t> rgba;
+    for (int i = 0; i < result->frame_count; i++) {
+        sd_image_t * img = &result->frames[i];
+        const int px = out_w * out_h;
+        if ((int) img->width != out_w || (int) img->height != out_h) {
+            std::free(out);
+            free_sd_video_generation_result(result);
+            return nullptr;
+        }
+        if (img->channel == 4) {
+            rgba.assign(img->data, img->data + (size_t) px * 4);
+        } else if (img->channel == 3) {
+            rgba_from_rgb(img->data, px, rgba);
+        } else if (img->channel == 1) {
+            rgba_from_gray(img->data, px, rgba);
+        } else {
+            std::free(out);
+            free_sd_video_generation_result(result);
+            return nullptr;
+        }
+        std::memcpy(out + 16 + (size_t) i * out_frame_bytes, rgba.data(), out_frame_bytes);
+    }
+
+    free_sd_video_generation_result(result);
+    if (out_total_size) *out_total_size = (int32_t) out_total;
+    return out;
+}
+
+void vu_free(uint8_t * p) {
     if (p) std::free(p);
 }
 

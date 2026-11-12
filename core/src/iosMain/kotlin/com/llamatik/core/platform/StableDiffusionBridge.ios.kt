@@ -2,23 +2,35 @@
 
 package com.llamatik.core.platform
 
+import com.llamatik.core.platform.sd.sd_bridge_set_progress_callback
 import com.llamatik.core.platform.sd.sd_free_bytes
 import com.llamatik.core.platform.sd.sd_free_video_frames
+import com.llamatik.core.platform.sd.sd_generate_with_control_rgba
+import com.llamatik.core.platform.sd.sd_has_control_net
 import com.llamatik.core.platform.sd.sd_img2img_rgba
 import com.llamatik.core.platform.sd.sd_init
+import com.llamatik.core.platform.sd.sd_load_control_net
 import com.llamatik.core.platform.sd.sd_release
 import com.llamatik.core.platform.sd.sd_supports_video_generation
 import com.llamatik.core.platform.sd.sd_txt2img_rgba
 import com.llamatik.core.platform.sd.sd_txt2video_frames
+import com.llamatik.core.platform.sd.sd_unload_control_net
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.COpaquePointer
+import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
+import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
+import kotlinx.cinterop.asStableRef
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.pin
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.reinterpret
+import kotlinx.cinterop.staticCFunction
+import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
 import platform.Foundation.NSLog
 
@@ -190,6 +202,116 @@ actual object StableDiffusionBridge {
             val out = bytesPtr.readBytes(size)
             sd_free_video_frames(bytesPtr)
             out
+        }
+    }
+
+    // ---- progress ------------------------------------------------------------------------
+    private var progressRef: StableRef<SdProgressListener>? = null
+
+    actual fun setProgressListener(listener: SdProgressListener?) {
+        // Clear the native callback before disposing the ref it points to.
+        sd_bridge_set_progress_callback(null, null)
+        progressRef?.dispose()
+        progressRef = null
+        if (listener == null) return
+
+        val ref = StableRef.create(listener)
+        progressRef = ref
+        sd_bridge_set_progress_callback(
+            staticCFunction { stage: CPointer<ByteVar>?,
+                              detail: CPointer<ByteVar>?,
+                              unit: CPointer<ByteVar>?,
+                              samplePass: Int,
+                              completed: Long,
+                              total: Long,
+                              user: COpaquePointer? ->
+                val l = user?.asStableRef<SdProgressListener>()?.get() ?: return@staticCFunction
+                l.onProgress(
+                    SdProgress(
+                        stage = stage?.toKString() ?: "",
+                        detail = detail?.toKString(),
+                        unit = unit?.toKString(),
+                        samplePass = samplePass,
+                        completed = completed,
+                        total = total,
+                    )
+                )
+            },
+            ref.asCPointer()
+        )
+    }
+
+    // ---- ControlNet ----------------------------------------------------------------------
+    actual fun loadControlNet(path: String): Boolean {
+        if (!isInitialized) return false
+        return sd_load_control_net(path) != 0
+    }
+
+    actual fun unloadControlNet(): Boolean {
+        if (!isInitialized) return false
+        return sd_unload_control_net() != 0
+    }
+
+    actual fun hasControlNet(): Boolean {
+        if (!isInitialized) return false
+        return sd_has_control_net() != 0
+    }
+
+    actual fun generateWithControl(
+        controlImageRgba: ByteArray,
+        controlImageW: Int,
+        controlImageH: Int,
+        controlType: SdControlType,
+        prompt: String,
+        negativePrompt: String?,
+        width: Int,
+        height: Int,
+        steps: Int,
+        cfgScale: Float,
+        controlStrength: Float,
+        seed: Long,
+    ): ByteArray {
+        if (!isInitialized) return ByteArray(0)
+        if (prompt.isBlank()) return ByteArray(0)
+        if (controlImageRgba.isEmpty() || controlImageW <= 0 || controlImageH <= 0) return ByteArray(0)
+        if (controlImageRgba.size < controlImageW * controlImageH * 4) return ByteArray(0)
+
+        val pinned = controlImageRgba.pin()
+        return try {
+            memScoped {
+                val outW = alloc<IntVar>()
+                val outH = alloc<IntVar>()
+                val outSize = alloc<IntVar>()
+
+                val bytesPtr = sd_generate_with_control_rgba(
+                    control_image_rgba = pinned.addressOf(0).reinterpret(),
+                    control_w = controlImageW,
+                    control_h = controlImageH,
+                    control_type = controlType.nativeId,
+                    prompt = prompt,
+                    negative_prompt = (negativePrompt ?: ""),
+                    width = width,
+                    height = height,
+                    steps = steps,
+                    cfg_scale = cfgScale,
+                    control_strength = controlStrength,
+                    seed = seed,
+                    out_w = outW.ptr,
+                    out_h = outH.ptr,
+                    out_size_bytes = outSize.ptr
+                ) ?: return@memScoped ByteArray(0)
+
+                val size = outSize.value
+                if (size <= 0) {
+                    sd_free_bytes(bytesPtr)
+                    return@memScoped ByteArray(0)
+                }
+                val out = bytesPtr.readBytes(size)
+                sd_free_bytes(bytesPtr)
+                out
+            }
+        } finally {
+            pinned.unpin()
         }
     }
 }

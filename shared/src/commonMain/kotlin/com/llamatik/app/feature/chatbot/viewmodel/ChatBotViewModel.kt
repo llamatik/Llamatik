@@ -56,6 +56,7 @@ import com.llamatik.core.platform.LlamaBridge
 import com.llamatik.core.platform.LlamaSession
 import com.llamatik.core.platform.MultimodalBridge
 import com.llamatik.core.platform.MultimodalCapabilities
+import com.llamatik.core.platform.SdProgress
 import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
@@ -1042,7 +1043,7 @@ class ChatBotViewModel(
                     val outW = snapTo64(initW)
                     val outH = snapTo64(initH)
 
-                    val rgbaBytes = StableDiffusionBridge.img2img(
+                    val rgbaBytes = withSdProgress { StableDiffusionBridge.img2img(
                         initImageRgba = initRgba,
                         initImageW = initW,
                         initImageH = initH,
@@ -1053,7 +1054,7 @@ class ChatBotViewModel(
                         steps = 20,
                         strength = strength,
                         seed = -1,
-                    )
+                    ) }
 
                     if (rgbaBytes.isEmpty()) {
                         updateLastBotMessage(localization.imageGenerationFailedError)
@@ -1077,6 +1078,22 @@ class ChatBotViewModel(
                     _sideEffects.trySend(ChatBotSideEffects.ScrollToBottom)
                 }
             }
+        }
+    }
+
+    /**
+     * Runs a Stable Diffusion generation and publishes its progress to [ChatBotState.generationProgress].
+     * The listener is registered before and cleared after the call, so it is never changed mid-generation.
+     */
+    private inline fun <T> withSdProgress(block: () -> T): T {
+        StableDiffusionBridge.setProgressListener { p ->
+            _state.update { it.copy(generationProgress = p) }
+        }
+        try {
+            return block()
+        } finally {
+            StableDiffusionBridge.setProgressListener(null)
+            _state.update { it.copy(generationProgress = null) }
         }
     }
 
@@ -1190,14 +1207,14 @@ class ChatBotViewModel(
                         return@withContext
                     }
 
-                    val rgbaBytes = StableDiffusionBridge.txt2img(
+                    val rgbaBytes = withSdProgress { StableDiffusionBridge.txt2img(
                         prompt = input,
                         negativePrompt = "",
                         width = 512,
                         height = 512,
                         steps = 20,
                         seed = -1,
-                    )
+                    ) }
 
                     if (rgbaBytes.isEmpty()) {
                         updateLastBotMessage(localization.imageGenerationFailedError)
@@ -1277,7 +1294,7 @@ class ChatBotViewModel(
                         return@withContext
                     }
 
-                    val packedBytes = StableDiffusionBridge.txt2video(
+                    val packedBytes = withSdProgress { StableDiffusionBridge.txt2video(
                         prompt = input,
                         negativePrompt = "",
                         width = 512,
@@ -1285,7 +1302,7 @@ class ChatBotViewModel(
                         videoFrames = 16,
                         fps = 8,
                         seed = -1L,
-                    )
+                    ) }
 
                     if (packedBytes.isEmpty()) {
                         updateLastBotMessage(localization.videoGenerationFailedError)
@@ -3046,6 +3063,8 @@ data class ChatBotState(
     val isStableDiffusionModelLoaded: Boolean = false,
     val isVideoGenerationSupported: Boolean = false,
     val isVlmModelLoaded: Boolean = false,
+    /** Live progress of the running image/video generation; null when idle or unknown. */
+    val generationProgress: SdProgress? = null,
     val vlmCapabilities: MultimodalCapabilities = MultimodalCapabilities.NONE,
     val selectedEmbedModelName: String? = null,
     val selectedGenerateModelName: String? = null,

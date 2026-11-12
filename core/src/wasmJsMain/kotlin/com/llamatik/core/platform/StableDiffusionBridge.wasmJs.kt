@@ -37,4 +37,23 @@ actual object StableDiffusionBridge {
         cfgScale: Float,
         seed: Long,
     ): ByteArray = ByteArray(0)
+
+    actual fun setProgressListener(listener: SdProgressListener?) {}
+    actual fun loadControlNet(path: String): Boolean = false
+    actual fun unloadControlNet(): Boolean = false
+    actual fun hasControlNet(): Boolean = false
+    actual fun generateWithControl(
+        controlImageRgba: ByteArray,
+        controlImageW: Int,
+        controlImageH: Int,
+        controlType: SdControlType,
+        prompt: String,
+        negativePrompt: String?,
+        width: Int,
+        height: Int,
+        steps: Int,
+        cfgScale: Float,
+        controlStrength: Float,
+        seed: Long,
+    ): ByteArray = ByteArray(0)
 }

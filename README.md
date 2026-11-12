@@ -267,7 +267,7 @@ The dependency chain is strictly layered — each module only depends on modules
 |---|---|---|
 | llama.cpp | [v0.9.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.9.0) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
 | whisper.cpp | [v1.9.5](https://github.com/ggml-org/whisper.cpp/releases/tag/v1.9.5) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
-| stable-diffusion.cpp | [master-1024-77b72a2](https://github.com/leejet/stable-diffusion.cpp/releases/tag/master-1024-77b72a2) | Git tag (no semver) |
+| stable-diffusion.cpp | [master-1088-32d516c](https://github.com/leejet/stable-diffusion.cpp/releases/tag/master-1088-32d516c) | Git tag (no semver) |
 
 > **Note:** Both llama.cpp and whisper.cpp now follow **semantic versioning**. Previously llama.cpp used build-number tags (e.g. `b4812`). Llamatik tracks these semver releases directly, so you can rely on stable API guarantees across patch and minor upgrades of the underlying libraries.
 

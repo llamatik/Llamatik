@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -90,6 +92,7 @@ import com.llamatik.app.ui.components.NewsCardSmall
 import com.llamatik.app.ui.icon.LlamatikIcons
 import com.llamatik.app.ui.theme.LlamatikTheme
 import com.llamatik.app.ui.theme.Typography
+import com.llamatik.core.platform.SdProgress
 import com.llamatik.core.platform.WhisperBridge
 import com.mikepenz.markdown.m3.Markdown
 import kotlinx.coroutines.Dispatchers
@@ -521,6 +524,7 @@ class ChatBotTabScreen : Screen {
                             localization = localization,
                             message = chatUiModel.messages[item],
                             showLoading = isLoading.value && item == chatUiModel.messages.size - 1,
+                            progress = if (isLoading.value && item == chatUiModel.messages.size - 1) state.generationProgress else null,
                             isSpeaking = speakingMessageKey.value == messageKey,
                             onSpeak = { text ->
                                 speakingMessageKey.value = messageKey
@@ -615,6 +619,7 @@ class ChatBotTabScreen : Screen {
         localization: Localization,
         message: ChatUiModel.Message,
         showLoading: Boolean,
+        progress: SdProgress? = null,
         isSpeaking: Boolean,
         onSpeak: (String) -> Unit,
         onStop: () -> Unit,
@@ -799,11 +804,29 @@ class ChatBotTabScreen : Screen {
 
                 if (showLoading) {
                     Spacer(modifier = Modifier.size(8.dp))
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .align(Alignment.CenterVertically)
-                    )
+                    val fraction = progress?.fraction
+                    if (fraction != null) {
+                        // Determinate: generation progress reported by stable-diffusion.cpp.
+                        Column(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            LinearProgressIndicator(
+                                progress = { fraction },
+                                modifier = Modifier.width(96.dp),
+                            )
+                            Text(
+                                text = "${(fraction * 100).toInt()}%",
+                                style = Typography.get().labelSmall,
+                            )
+                        }
+                    } else {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
                 }
             }
         }

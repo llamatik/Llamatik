@@ -1,6 +1,7 @@
 package com.llamatik.sdk.assistant
 
 import com.llamatik.core.platform.MultimodalCapabilities
+import com.llamatik.core.platform.SdProgress
 import com.llamatik.sdk.chat.ChatSessionSummary
 import com.llamatik.sdk.model.GenerateSettings
 import com.llamatik.sdk.model.LlamaModel
@@ -20,6 +21,12 @@ data class AssistantState(
     val isEmbedModelLoaded: Boolean = false,
     val isSttModelLoaded: Boolean = false,
     val isStableDiffusionModelLoaded: Boolean = false,
+    /** True when a ControlNet model is loaded into the current Stable Diffusion context. */
+    val isControlNetLoaded: Boolean = false,
+    /** Live progress of the running Stable Diffusion generation; null when idle or unknown. */
+    val generationProgress: SdProgress? = null,
+    /** True when a video upscaler model is loaded. */
+    val isVideoUpscalerLoaded: Boolean = false,
     val isVlmModelLoaded: Boolean = false,
     /** What the loaded VLM can do; [MultimodalCapabilities.NONE] when none is loaded. */
     val vlmCapabilities: MultimodalCapabilities = MultimodalCapabilities.NONE,

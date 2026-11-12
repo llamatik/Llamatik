@@ -87,4 +87,47 @@ expect object StableDiffusionBridge {
         cfgScale: Float = 7.0f,
         seed: Long = -1L,
     ): ByteArray
+
+    /**
+     * Registers a listener that receives progress during [txt2img], [img2img], [generateWithControl]
+     * and [txt2video]. Pass null to clear it. Register or clear only while no generation is running.
+     * The listener survives [initModel]/[release].
+     *
+     * No-op on platforms without a native backend (WASM).
+     */
+    fun setProgressListener(listener: SdProgressListener?)
+
+    /**
+     * Loads a ControlNet model into the current context (hot-swap, replaces any loaded one).
+     * Requires [initModel] first. Do not call during a generation.
+     */
+    fun loadControlNet(path: String): Boolean
+
+    /** Unloads the ControlNet model, if any. */
+    fun unloadControlNet(): Boolean
+
+    /** True when a ControlNet model is loaded in the current context. */
+    fun hasControlNet(): Boolean
+
+    /**
+     * Text-to-image guided by a control image (pose, depth, canny edges, ...).
+     * Requires [loadControlNet]. [controlImageRgba] is RGBA, [controlImageW]x[controlImageH]x4 bytes.
+     *
+     * @param controlStrength How strongly the control image steers the result (0.0 - 1.0+).
+     * @return RGBA byte array or an empty array on failure.
+     */
+    fun generateWithControl(
+        controlImageRgba: ByteArray,
+        controlImageW: Int,
+        controlImageH: Int,
+        controlType: SdControlType,
+        prompt: String,
+        negativePrompt: String? = null,
+        width: Int = 512,
+        height: Int = 512,
+        steps: Int = 20,
+        cfgScale: Float = 7.0f,
+        controlStrength: Float = 0.9f,
+        seed: Long = -1L,
+    ): ByteArray
 }
