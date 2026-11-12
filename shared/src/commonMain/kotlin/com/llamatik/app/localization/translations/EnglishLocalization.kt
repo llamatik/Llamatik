@@ -181,6 +181,8 @@ internal object EnglishLocalization : Localization {
     override val videoGeneration = "Video"
     override val videoGenerationFailedError = "🎬 Video generation failed (empty output)."
     override val videoGenerationError = "Video generation error"
+    override val modelMultilingual = "Multilingual"
+    override val modelEnglishOnly = "English only"
     override val saveVideoToGallery = "Save to Gallery"
     override val videoSavedToGallery = "Video saved to Gallery."
     override val videoSaveError = "Failed to save video."

@@ -179,6 +179,8 @@ internal object HindiLocalization : Localization {
     override val videoGeneration = "वीडियो"
     override val videoGenerationFailedError = "🎬 वीडियो जनरेशन विफल।"
     override val videoGenerationError = "वीडियो जनरेशन त्रुटि"
+    override val modelMultilingual = "बहुभाषी"
+    override val modelEnglishOnly = "केवल अंग्रेज़ी"
     override val saveVideoToGallery = "गैलरी में सहेजें"
     override val videoSavedToGallery = "वीडियो गैलरी में सहेजा गया।"
     override val videoSaveError = "वीडियो सहेजने में विफल।"

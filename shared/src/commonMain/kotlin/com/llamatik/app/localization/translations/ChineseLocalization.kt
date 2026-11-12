@@ -181,6 +181,8 @@ internal object ChineseLocalization : Localization {
     override val videoGeneration = "视频"
     override val videoGenerationFailedError = "🎬 视频生成失败（输出为空）。"
     override val videoGenerationError = "视频生成错误"
+    override val modelMultilingual = "多语言"
+    override val modelEnglishOnly = "仅限英语"
     override val saveVideoToGallery = "保存到相册"
     override val videoSavedToGallery = "视频已保存到相册。"
     override val videoSaveError = "保存视频失败。"

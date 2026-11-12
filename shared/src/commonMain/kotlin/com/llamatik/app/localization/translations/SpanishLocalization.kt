@@ -180,6 +180,8 @@ Tus prioridades:
     override val videoGeneration = "Vídeo"
     override val videoGenerationFailedError = "🎬 Error al generar el vídeo."
     override val videoGenerationError = "Error de generación de vídeo"
+    override val modelMultilingual = "Multilingüe"
+    override val modelEnglishOnly = "Solo inglés"
     override val saveVideoToGallery = "Guardar en galería"
     override val videoSavedToGallery = "Vídeo guardado en la galería."
     override val videoSaveError = "Error al guardar el vídeo."

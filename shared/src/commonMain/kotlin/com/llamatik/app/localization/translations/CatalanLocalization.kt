@@ -179,6 +179,8 @@ internal object CatalanLocalization : Localization {
     override val videoGeneration = "Vídeo"
     override val videoGenerationFailedError = "🎬 Error en generar el vídeo."
     override val videoGenerationError = "Error de generació de vídeo"
+    override val modelMultilingual = "Multilingüe"
+    override val modelEnglishOnly = "Només anglès"
     override val saveVideoToGallery = "Desar a la galeria"
     override val videoSavedToGallery = "Vídeo desat a la galeria."
     override val videoSaveError = "Error en desar el vídeo."

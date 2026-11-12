@@ -179,6 +179,8 @@ internal object JapaneseLocalization : Localization {
     override val videoGeneration = "動画"
     override val videoGenerationFailedError = "🎬 動画生成に失敗しました。"
     override val videoGenerationError = "動画生成エラー"
+    override val modelMultilingual = "多言語対応"
+    override val modelEnglishOnly = "英語のみ"
     override val saveVideoToGallery = "ギャラリーに保存"
     override val videoSavedToGallery = "動画がギャラリーに保存されました。"
     override val videoSaveError = "動画の保存に失敗しました。"

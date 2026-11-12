@@ -180,6 +180,8 @@ internal object RussianLocalization : Localization {
     override val videoGeneration = "Видео"
     override val videoGenerationFailedError = "🎬 Ошибка генерации видео."
     override val videoGenerationError = "Ошибка генерации видео"
+    override val modelMultilingual = "Многоязычная"
+    override val modelEnglishOnly = "Только английский"
     override val saveVideoToGallery = "Сохранить в галерею"
     override val videoSavedToGallery = "Видео сохранено в галерею."
     override val videoSaveError = "Не удалось сохранить видео."

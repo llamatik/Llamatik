@@ -176,6 +176,8 @@ internal object PortugueseLocalization : Localization {
     override val videoGeneration = "Vídeo"
     override val videoGenerationFailedError = "🎬 Falha na geração de vídeo."
     override val videoGenerationError = "Erro de geração de vídeo"
+    override val modelMultilingual = "Multilíngue"
+    override val modelEnglishOnly = "Somente inglês"
     override val saveVideoToGallery = "Guardar na galeria"
     override val videoSavedToGallery = "Vídeo guardado na galeria."
     override val videoSaveError = "Falha ao guardar o vídeo."

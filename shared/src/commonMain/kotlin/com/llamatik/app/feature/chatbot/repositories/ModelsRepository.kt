@@ -158,6 +158,7 @@ class ModelsRepository(private val service: ServiceClient) {
         return listOf(
             LlamaModel(
                 name = "Gemma 3 1B Instruct Q4 KM",
+                multilingual = false,
                 sizeMb = 806,
                 url = "https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf?download=true",
                 template = Gemma3,
@@ -165,6 +166,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Gemma 3 270M Instruct Q8_0",
+                multilingual = true,
                 sizeMb = 292,
                 url = "https://huggingface.co/ggml-org/gemma-3-270m-it-GGUF/resolve/main/gemma-3-270m-it-Q8_0.gguf?download=true",
                 template = Gemma3,
@@ -172,6 +174,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Qwen 3 1.7B Q8",
+                multilingual = true,
                 sizeMb = 1830,
                 url = "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q8_0.gguf?download=true",
                 template = QwenChat,
@@ -179,6 +182,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "SmolVLM 256M Instruct",
+                multilingual = false,
                 sizeMb = 175,
                 url = "https://huggingface.co/ggml-org/SmolVLM-256M-Instruct-GGUF/resolve/main/SmolVLM-256M-Instruct-Q8_0.gguf?download=true",
                 template = Plain,
@@ -186,6 +190,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "SmolVLM 500M Instruct",
+                multilingual = false,
                 sizeMb = 437,
                 url = "https://huggingface.co/ggml-org/SmolVLM-500M-Instruct-GGUF/resolve/main/SmolVLM-500M-Instruct-Q8_0.gguf?download=true",
                 template = Plain,
@@ -193,6 +198,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Qwen 2.5 5B Instruct",
+                multilingual = true,
                 sizeMb = 753,
                 url = "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q2_k.gguf?download=true",
                 template = QwenChat,
@@ -200,6 +206,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Phi-1_5 Q2 K",
+                multilingual = false,
                 sizeMb = 613,
                 url = "https://huggingface.co/TKDKid1000/phi-1_5-GGUF/resolve/main/phi-1_5-Q2_K.gguf?download=true",
                 template = Plain,
@@ -207,6 +214,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Llama 3.2 1B Instruct Q2 K",
+                multilingual = true,
                 sizeMb = 581,
                 url = "https://huggingface.co/unsloth/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q2_K.gguf?download=true",
                 template = Llama3Instruct,
@@ -219,6 +227,7 @@ class ModelsRepository(private val service: ServiceClient) {
         return listOf(
             LlamaModel(
                 name = "Nomic Embed Text v1.5 Q4",
+                multilingual = false,
                 sizeMb = 77,
                 url = "https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF/resolve/main/nomic-embed-text-v1.5.Q4_0.gguf?download=true",
                 template = Plain,
@@ -231,6 +240,7 @@ class ModelsRepository(private val service: ServiceClient) {
         return listOf(
             LlamaModel(
                 name = "Whisper Base q8_0",
+                multilingual = true,
                 sizeMb = 82,
                 url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base-q8_0.bin?download=true",
                 template = Plain,
@@ -238,6 +248,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Whisper Base",
+                multilingual = true,
                 sizeMb = 148,
                 url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin?download=true",
                 template = Plain,
@@ -245,6 +256,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Whisper Tiny",
+                multilingual = true,
                 sizeMb = 78,
                 url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin?download=true",
                 template = Plain,
@@ -252,6 +264,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Whisper Tiny q8_0",
+                multilingual = true,
                 sizeMb = 44,
                 url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny-q8_0.bin?download=true",
                 template = Plain,
@@ -259,6 +272,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Whisper Small q8_0",
+                multilingual = true,
                 sizeMb = 264,
                 url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small-q8_0.bin?download=true",
                 template = Plain,
@@ -266,6 +280,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "Whisper Medium q8_0",
+                multilingual = true,
                 sizeMb = 823,
                 url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q8_0.bin?download=true",
                 template = Plain,
@@ -278,6 +293,7 @@ class ModelsRepository(private val service: ServiceClient) {
         return listOf(
             LlamaModel(
                 name = "SmolVLM 256M Instruct (Vision)",
+                multilingual = false,
                 sizeMb = 175,
                 url = "https://huggingface.co/ggml-org/SmolVLM-256M-Instruct-GGUF/resolve/main/SmolVLM-256M-Instruct-Q8_0.gguf?download=true",
                 template = Plain,
@@ -287,6 +303,7 @@ class ModelsRepository(private val service: ServiceClient) {
             ),
             LlamaModel(
                 name = "SmolVLM 500M Instruct (Vision)",
+                multilingual = false,
                 sizeMb = 437,
                 url = "https://huggingface.co/ggml-org/SmolVLM-500M-Instruct-GGUF/resolve/main/SmolVLM-500M-Instruct-Q8_0.gguf?download=true",
                 template = Plain,

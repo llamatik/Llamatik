@@ -179,6 +179,8 @@ internal object PersianLocalization : Localization {
     override val videoGeneration = "ویدیو"
     override val videoGenerationFailedError = "🎬 تولید ویدیو ناموفق بود."
     override val videoGenerationError = "خطای تولید ویدیو"
+    override val modelMultilingual = "چندزبانه"
+    override val modelEnglishOnly = "فقط انگلیسی"
     override val saveVideoToGallery = "ذخیره در گالری"
     override val videoSavedToGallery = "ویدیو در گالری ذخیره شد."
     override val videoSaveError = "ذخیره ویدیو ناموفق بود."

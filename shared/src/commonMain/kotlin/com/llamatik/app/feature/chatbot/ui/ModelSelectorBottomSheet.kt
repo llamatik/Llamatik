@@ -135,7 +135,7 @@ fun ModelRow(
                 val totalMb = model.totalSizeMb
                 val sizeText = if (totalMb > model.sizeMb) "$totalMb MB total (${model.sizeMb} MB model)" else "$totalMb MB"
                 Text(sizeText, style = Typography.get().labelSmall)
-                if (model.sdCapability != null || model.mobileSuitability != null) {
+                if (model.sdCapability != null || model.mobileSuitability != null || model.multilingual != null) {
                     Spacer(Modifier.height(4.dp))
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -159,6 +159,29 @@ fun ModelRow(
                                 colors = SuggestionChipDefaults.suggestionChipColors(
                                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                     labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                ),
+                                modifier = Modifier.height(24.dp)
+                            )
+                        }
+                        if (model.multilingual != null) {
+                            val isMultilingual = model.multilingual
+                            SuggestionChip(
+                                onClick = {},
+                                label = {
+                                    Text(
+                                        if (isMultilingual) localization.modelMultilingual else localization.modelEnglishOnly,
+                                        style = Typography.get().labelSmall
+                                    )
+                                },
+                                colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = if (isMultilingual)
+                                        MaterialTheme.colorScheme.secondaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                    labelColor = if (isMultilingual)
+                                        MaterialTheme.colorScheme.onSecondaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant,
                                 ),
                                 modifier = Modifier.height(24.dp)
                             )
