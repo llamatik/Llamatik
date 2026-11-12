@@ -39,6 +39,8 @@ data class LlamaModel(
     val sdCapability: SdCapability? = null,
     // Mobile suitability rating 1–4 stars (null = not rated / not applicable)
     val mobileSuitability: Int? = null,
+    // Language coverage: true = multilingual, false = English-centric, null = unknown (imported/custom/not applicable)
+    val multilingual: Boolean? = null,
     // SD companion files for video models (VAE, T5 text encoder, CLIP vision)
     val vaeUrl: String? = null,
     val vaeSizeMb: Int = 0,

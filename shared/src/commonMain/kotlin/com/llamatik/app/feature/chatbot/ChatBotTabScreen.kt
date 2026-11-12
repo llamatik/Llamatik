@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -64,6 +65,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
+import com.llamatik.app.AppBrand
 import com.llamatik.app.feature.chatbot.ui.ChatInputBox
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotSideEffects
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotState
@@ -89,6 +91,7 @@ import com.llamatik.app.ui.icon.LlamatikIcons
 import com.llamatik.app.ui.theme.LlamatikTheme
 import com.llamatik.app.ui.theme.Typography
 import com.llamatik.core.platform.WhisperBridge
+import com.mikepenz.markdown.m3.Markdown
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -369,7 +372,7 @@ class ChatBotTabScreen : Screen {
                             ) {
                                 Icon(
                                     imageVector = LlamatikIcons.NewConversation,
-                                    contentDescription = "Delete Conversation"
+                                    contentDescription = localization.deleteConversation
                                 )
                             }
                         }
@@ -687,7 +690,7 @@ class ChatBotTabScreen : Screen {
                         if (videoThumbnail != null) {
                             Image(
                                 bitmap = videoThumbnail,
-                                contentDescription = "Generated video",
+                                contentDescription = localization.generatedVideo,
                                 contentScale = ContentScale.Fit,
                                 modifier = Modifier.matchParentSize()
                             )
@@ -718,7 +721,7 @@ class ChatBotTabScreen : Screen {
                     if (bitmapToShow != null) {
                         Image(
                             bitmap = bitmapToShow,
-                            contentDescription = message.imageFileName ?: "Generated image",
+                            contentDescription = message.imageFileName ?: localization.generatedImage,
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
                                 .widthIn(max = CHAT_BUBBLE_MAX_WIDTH_DP.dp)
@@ -729,7 +732,18 @@ class ChatBotTabScreen : Screen {
                         Text(localization.failedToDecodeImageError)
                     }
                 } else {
-                    Text(text = message.text)
+                    // While streaming, the markdown library re-parses asynchronously on every
+                    // token and shows an empty "loading" box in between, which makes the bubble
+                    // flicker. Render plain text until generation finishes, then switch to Markdown.
+                    if (message.isFromMe || showLoading) {
+                        Text(text = message.text)
+                    } else {
+                        Markdown(
+                            content = message.text,
+                            modifier = Modifier.wrapContentSize(),
+                            loading = { Text(text = message.text) },
+                        )
+                    }
                 }
             }
 
@@ -739,7 +753,7 @@ class ChatBotTabScreen : Screen {
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    text = if (message.isFromMe) localization.me else "Llamatik AI",
+                    text = if (message.isFromMe) localization.me else AppBrand.AI_NAME,
                     style = Typography.get().titleSmall,
                     color = if (message.isFromMe) MaterialTheme.colorScheme.onPrimaryContainer
                     else MaterialTheme.colorScheme.onSurface,

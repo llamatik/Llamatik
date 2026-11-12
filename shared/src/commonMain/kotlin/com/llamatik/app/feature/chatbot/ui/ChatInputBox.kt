@@ -54,6 +54,7 @@ import com.llamatik.app.feature.chatbot.viewmodel.ChatBotState
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotViewModel
 import com.llamatik.app.feature.chatbot.viewmodel.GenerationMode
 import com.llamatik.app.localization.Localization
+import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.ui.icon.LlamatikIcons
 import com.llamatik.app.ui.theme.Typography
 import kotlin.math.PI
@@ -253,7 +254,7 @@ fun ChatInputBox(
                                 ) {
                                     Icon(
                                         imageVector = LlamatikIcons.Close,
-                                        contentDescription = "Remove image",
+                                        contentDescription = getCurrentLocalization().removeImage,
                                         modifier = Modifier.size(16.dp),
                                         tint = MaterialTheme.colorScheme.onSecondaryContainer
                                     )
@@ -293,7 +294,7 @@ fun ChatInputBox(
                                     ) {
                                         Icon(
                                             imageVector = LlamatikIcons.Close,
-                                            contentDescription = "Remove image",
+                                            contentDescription = getCurrentLocalization().removeImage,
                                             modifier = Modifier.size(16.dp),
                                             tint = MaterialTheme.colorScheme.onSecondaryContainer
                                         )
@@ -304,7 +305,7 @@ fun ChatInputBox(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "Strength",
+                                        text = getCurrentLocalization().strengthLabel,
                                         style = Typography.get().labelSmall,
                                         color = MaterialTheme.colorScheme.onSecondaryContainer
                                     )
@@ -445,7 +446,7 @@ fun ChatInputBox(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.PictureAsPdf,
-                                        contentDescription = "Load PDF for RAG",
+                                        contentDescription = getCurrentLocalization().loadPdfForRag,
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -523,7 +524,7 @@ fun ChatInputBox(
                                     ) {
                                         Icon(
                                             imageVector = LlamatikIcons.Edit,
-                                            contentDescription = "Pick source image for editing",
+                                            contentDescription = getCurrentLocalization().pickSourceImage,
                                             tint = if (hasImg2ImgSource) MaterialTheme.colorScheme.onPrimaryContainer
                                             else MaterialTheme.colorScheme.onSurfaceVariant
                                         )

@@ -68,7 +68,7 @@ class GenerationSettingsScreen : Screen {
                             IconButton(onClick = { navigator.pop() }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Go back"
+                                    contentDescription = localization.backLabel
                                 )
                             }
                         }

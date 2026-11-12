@@ -8,6 +8,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.llamatik.app.feature.settings.SettingsTabScreen
+import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.ui.icon.LlamatikIcons
 
 internal object SettingsTab : Tab {
@@ -15,8 +16,9 @@ internal object SettingsTab : Tab {
         @Composable
         get() {
             val icon = rememberVectorPainter(LlamatikIcons.Settings)
-            return remember {
-                TabOptions(index = 4u, title = "Settings", icon = icon)
+            val title = getCurrentLocalization().settings
+            return remember(title) {
+                TabOptions(index = 4u, title = title, icon = icon)
             }
         }
 

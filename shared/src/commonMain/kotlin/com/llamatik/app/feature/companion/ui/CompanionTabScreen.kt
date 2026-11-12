@@ -95,7 +95,7 @@ private fun PersonaPickerScreen(onChosen: (CompanionMode) -> Unit) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Choose your companion",
+                        text = getCurrentLocalization().companionChooseTitle,
                         style = Typography.get().titleLarge
                     )
                 },
@@ -115,7 +115,7 @@ private fun PersonaPickerScreen(onChosen: (CompanionMode) -> Unit) {
         ) {
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Pick a personality for your companion. You can change this anytime from the toolbar.",
+                text = getCurrentLocalization().companionChooseDescription,
                 style = Typography.get().bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -251,7 +251,7 @@ private fun CompanionChatScreen(mode: CompanionMode, onReset: () -> Unit) {
                             style = Typography.get().bodyLarge
                         )
                         Text(
-                            text = "Companion",
+                            text = getCurrentLocalization().companionLabel,
                             style = Typography.get().labelSmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
@@ -264,7 +264,7 @@ private fun CompanionChatScreen(mode: CompanionMode, onReset: () -> Unit) {
                     IconButton(onClick = onReset) {
                         Icon(
                             imageVector = LlamatikIcons.Person,
-                            contentDescription = "Change companion"
+                            contentDescription = getCurrentLocalization().changeCompanion
                         )
                     }
                     IconButton(
@@ -275,7 +275,7 @@ private fun CompanionChatScreen(mode: CompanionMode, onReset: () -> Unit) {
                     ) {
                         Icon(
                             imageVector = LlamatikIcons.NewConversation,
-                            contentDescription = "New conversation"
+                            contentDescription = getCurrentLocalization().newConversation
                         )
                     }
                 }

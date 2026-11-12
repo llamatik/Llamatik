@@ -133,9 +133,9 @@ fun ModelRow(
             Column(Modifier.weight(1f)) {
                 Text(model.name, style = Typography.get().labelLarge)
                 val totalMb = model.totalSizeMb
-                val sizeText = if (totalMb > model.sizeMb) "$totalMb MB total (${model.sizeMb} MB model)" else "$totalMb MB"
+                val sizeText = if (totalMb > model.sizeMb) "$totalMb MB ${localization.modelSizeTotal} (${model.sizeMb} MB ${localization.modelSizeModel})" else "$totalMb MB"
                 Text(sizeText, style = Typography.get().labelSmall)
-                if (model.sdCapability != null || model.mobileSuitability != null) {
+                if (model.sdCapability != null || model.mobileSuitability != null || model.multilingual != null) {
                     Spacer(Modifier.height(4.dp))
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -144,7 +144,7 @@ fun ModelRow(
                         if (model.sdCapability == SdCapability.Image || model.sdCapability == SdCapability.ImageAndVideo) {
                             SuggestionChip(
                                 onClick = {},
-                                label = { Text("Image", style = Typography.get().labelSmall) },
+                                label = { Text(localization.modelImage, style = Typography.get().labelSmall) },
                                 colors = SuggestionChipDefaults.suggestionChipColors(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                                     labelColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -155,10 +155,33 @@ fun ModelRow(
                         if (model.sdCapability == SdCapability.Video || model.sdCapability == SdCapability.ImageAndVideo) {
                             SuggestionChip(
                                 onClick = {},
-                                label = { Text("Video", style = Typography.get().labelSmall) },
+                                label = { Text(localization.modelVideo, style = Typography.get().labelSmall) },
                                 colors = SuggestionChipDefaults.suggestionChipColors(
                                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                     labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                ),
+                                modifier = Modifier.height(24.dp)
+                            )
+                        }
+                        if (model.multilingual != null) {
+                            val isMultilingual = model.multilingual
+                            SuggestionChip(
+                                onClick = {},
+                                label = {
+                                    Text(
+                                        if (isMultilingual) localization.modelMultilingual else localization.modelEnglishOnly,
+                                        style = Typography.get().labelSmall
+                                    )
+                                },
+                                colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = if (isMultilingual)
+                                        MaterialTheme.colorScheme.secondaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                    labelColor = if (isMultilingual)
+                                        MaterialTheme.colorScheme.onSecondaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant,
                                 ),
                                 modifier = Modifier.height(24.dp)
                             )
@@ -186,7 +209,7 @@ fun ModelRow(
             if (hasLocalFile) {
                 if (isCurrent) {
                     FilledTonalButton(onClick = { onUnloadModelClicked(model) }) {
-                        Text("Unload")
+                        Text(localization.modelUnload)
                     }
                 } else if (isAnyCompanionDownloading) {
                     Column(horizontalAlignment = Alignment.End) {
@@ -194,7 +217,7 @@ fun ModelRow(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text("Downloading companions…", style = Typography.get().labelSmall)
+                            Text(localization.modelDownloadingCompanions, style = Typography.get().labelSmall)
                         }
                         Spacer(Modifier.height(6.dp))
                         LinearProgressIndicator(
@@ -206,7 +229,7 @@ fun ModelRow(
                     }
                 } else if (!companionsReady) {
                     Button(onClick = { onDownloadCompanionsClicked(model) }) {
-                        Text("Download companion files", style = Typography.get().labelSmall)
+                        Text(localization.modelDownloadCompanions, style = Typography.get().labelSmall)
                     }
                 } else {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

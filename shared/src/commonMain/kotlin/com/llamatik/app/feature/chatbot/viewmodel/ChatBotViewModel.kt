@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import cafe.adriel.voyager.navigator.Navigator
 import co.touchlab.kermit.Logger
+import com.llamatik.app.AppBrand
 import com.llamatik.app.feature.agent.ChatAgentCoordinator
 import com.llamatik.app.feature.agent.ToolCallParser
 import com.llamatik.app.feature.chatbot.download.DownloadEvent
@@ -314,7 +315,7 @@ class ChatBotViewModel(
                             val persistedPath = migrateModelPathIfNeeded(key, rawPath)
                             if (persistedPath.isBlank()) {
                                 Logger.e { "StableDiffusion - companion $role file too small, treating as failed" }
-                                updateDownload(url) { it.copy(inProgress = false, error = "Downloaded file is invalid", done = false) }
+                                updateDownload(url) { it.copy(inProgress = false, error = localization.downloadInvalidFile, done = false) }
                             } else {
                                 getModelsUseCase.saveModelPath(key, persistedPath)
                                 updateDownload(url) { it.copy(inProgress = false, progress = 100, done = true, error = null) }
@@ -1066,7 +1067,7 @@ class ChatBotViewModel(
                     persistCurrentConversationIfNeeded()
                 } catch (t: Throwable) {
                     Logger.e(t.message ?: localization.imageGenerationError)
-                    updateLastBotMessage("🖼️ Error: ${t.message ?: "unknown"}")
+                    updateLastBotMessage("🖼️ ${localization.errorLabel}: ${t.message ?: localization.unknownError}")
                 } finally {
                     _state.value = _state.value.copy(isGenerating = false)
                     _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
@@ -1203,7 +1204,7 @@ class ChatBotViewModel(
                     persistCurrentConversationIfNeeded()
                 } catch (t: Throwable) {
                     Logger.e(t.message ?: localization.imageGenerationError)
-                    updateLastBotMessage("🖼️ Error: ${t.message ?: "unknown"}")
+                    updateLastBotMessage("🖼️ ${localization.errorLabel}: ${t.message ?: localization.unknownError}")
                 } finally {
                     _state.value = _state.value.copy(isGenerating = false)
                     _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
@@ -1290,7 +1291,7 @@ class ChatBotViewModel(
                     persistCurrentConversationIfNeeded()
                 } catch (t: Throwable) {
                     Logger.e(t.message ?: localization.videoGenerationError)
-                    updateLastBotMessage("🎬 Error: ${t.message ?: "unknown"}")
+                    updateLastBotMessage("🎬 ${localization.errorLabel}: ${t.message ?: localization.unknownError}")
                 } finally {
                     _state.value = _state.value.copy(isGenerating = false)
                     _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
@@ -1598,7 +1599,7 @@ class ChatBotViewModel(
         modelDownloadOrchestrator.cancel(model)
 
         updateDownload(url) {
-            it.copy(inProgress = false, done = false, progress = 0, error = "Cancelled")
+            it.copy(inProgress = false, done = false, progress = 0, error = localization.downloadCancelled)
         }
     }
 
@@ -1964,7 +1965,7 @@ class ChatBotViewModel(
 
                 _sideEffects.trySend(
                     ChatBotSideEffects.OnCacheClearFailed(
-                        t.message ?: "Unknown error while clearing cache."
+                        t.message ?: localization.unknownError
                     )
                 )
             }
@@ -2141,7 +2142,7 @@ class ChatBotViewModel(
             } catch (t: Throwable) {
                 t.printStackTrace()
                 _state.update { it.copy(isRagIndexing = false, ragIndexingProgress = 0) }
-                emitBot("${localization.pdfFailedToLoadPDFForRAG}: ${t.message ?: "unknown error"}")
+                emitBot("${localization.pdfFailedToLoadPDFForRAG}: ${t.message ?: localization.unknownError}")
             }
         }
     }
@@ -2526,7 +2527,7 @@ class ChatBotViewModel(
                         }
                     }
                 } catch (t: Throwable) {
-                    emitBot("${localization.thereIsAProblemWithAI}: ${t.message ?: "Unknown error"}")
+                    emitBot("${localization.thereIsAProblemWithAI}: ${t.message ?: localization.unknownError}")
                     activeRequestId = null
                     _state.value = _state.value.copy(isGenerating = false)
                     _sideEffects.trySend(ChatBotSideEffects.OnLoadError)
@@ -2619,7 +2620,7 @@ class ChatBotViewModel(
             }
         } catch (t: Throwable) {
             Logger.e(t) { "AgentRuntime error for message: $userMessage" }
-            updateLastBotMessage("${localization.thereIsAProblemWithAI}: ${t.message ?: "Unknown error"}")
+            updateLastBotMessage("${localization.thereIsAProblemWithAI}: ${t.message ?: localization.unknownError}")
             _state.value = _state.value.copy(isGenerating = false)
             _sideEffects.trySend(ChatBotSideEffects.OnLoadError)
         }
@@ -3001,7 +3002,7 @@ data class ChatUiModel(
         val name: String
     ) {
         companion object {
-            val bot = Author(BOT_ID, "Llamatik AI")
+            val bot = Author(BOT_ID, AppBrand.AI_NAME)
             val me = Author(MY_ID, "Me")
         }
     }

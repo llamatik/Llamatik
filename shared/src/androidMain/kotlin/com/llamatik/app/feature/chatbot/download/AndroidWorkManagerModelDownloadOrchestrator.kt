@@ -7,6 +7,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.llamatik.app.feature.chatbot.model.LlamaModel
+import com.llamatik.app.localization.getCurrentLocalization
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -42,11 +43,11 @@ class AndroidWorkManagerModelDownloadOrchestrator(
                 when (info.state) {
                     WorkInfo.State.SUCCEEDED -> {
                         val path = info.outputData.getString(ModelDownloadWorker.KEY_PATH)
-                        if (path.isNullOrBlank()) DownloadEvent.Failed("Missing output path")
+                        if (path.isNullOrBlank()) DownloadEvent.Failed(getCurrentLocalization().downloadMissingOutputPath)
                         else DownloadEvent.Completed(path)
                     }
                     WorkInfo.State.FAILED, WorkInfo.State.CANCELLED -> {
-                        DownloadEvent.Failed("Download ${info.state.name.lowercase()}")
+                        DownloadEvent.Failed(getCurrentLocalization().downloadFailedGeneric)
                     }
                     else -> DownloadEvent.Progress(p)
                 }

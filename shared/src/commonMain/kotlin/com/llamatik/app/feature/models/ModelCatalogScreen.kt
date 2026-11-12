@@ -122,7 +122,7 @@ class ModelCatalogScreen(private val type: ModelCatalogType) : Screen {
                         IconButton(onClick = { navigator.pop() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
+                                contentDescription = localization.backLabel
                             )
                         }
                     }
