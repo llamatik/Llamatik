@@ -95,6 +95,7 @@ kotlin {
             implementation(libs.xmlutil.serialization)
 
             implementation(libs.richeditor.compose)
+            implementation(libs.markdown.renderer.m3)
             implementation(libs.koalaplot.core)
 
             implementation(libs.filekit.core)

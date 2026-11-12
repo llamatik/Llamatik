@@ -89,6 +89,7 @@ import com.llamatik.app.ui.icon.LlamatikIcons
 import com.llamatik.app.ui.theme.LlamatikTheme
 import com.llamatik.app.ui.theme.Typography
 import com.llamatik.core.platform.WhisperBridge
+import com.mikepenz.markdown.m3.Markdown
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -729,7 +730,11 @@ class ChatBotTabScreen : Screen {
                         Text(localization.failedToDecodeImageError)
                     }
                 } else {
-                    Text(text = message.text)
+                    if (message.isFromMe) {
+                        Text(text = message.text)
+                    } else {
+                        Markdown(content = message.text)
+                    }
                 }
             }
 
