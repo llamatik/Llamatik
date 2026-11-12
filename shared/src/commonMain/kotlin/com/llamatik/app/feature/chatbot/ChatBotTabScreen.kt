@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -731,10 +732,17 @@ class ChatBotTabScreen : Screen {
                         Text(localization.failedToDecodeImageError)
                     }
                 } else {
-                    if (message.isFromMe) {
+                    // While streaming, the markdown library re-parses asynchronously on every
+                    // token and shows an empty "loading" box in between, which makes the bubble
+                    // flicker. Render plain text until generation finishes, then switch to Markdown.
+                    if (message.isFromMe || showLoading) {
                         Text(text = message.text)
                     } else {
-                        Markdown(content = message.text)
+                        Markdown(
+                            content = message.text,
+                            modifier = Modifier.wrapContentSize(),
+                            loading = { Text(text = message.text) },
+                        )
                     }
                 }
             }
