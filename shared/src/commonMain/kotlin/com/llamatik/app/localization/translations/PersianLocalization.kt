@@ -323,7 +323,7 @@ internal object PersianLocalization : Localization {
     override val serverFallbackConfirm = "استفاده از محلی"
     override val serverFallbackDismiss = "لغو"
     override val serverGeneratingOnServer = "در حال تولید روی سرور…"
-    override val serverConnectionSettings = "سرور"
+    override val serverConnectionSettings = "اتصال به سرور"
     override val serverNoModelLoaded = "سرور متصل است اما هیچ مدل متنی بارگذاری نشده — تولید به‌صورت محلی انجام می‌شود"
     override val serverUnreachableForGeneration = "دسترسی به سرور ممکن نشد — تولید به‌صورت محلی انجام می‌شود"
     override val serverUnencryptedWarningTitle = "اتصال رمزگذاری نشده است"

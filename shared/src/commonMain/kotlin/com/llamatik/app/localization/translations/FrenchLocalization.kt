@@ -325,7 +325,7 @@ Vos priorités :
     override val serverFallbackConfirm = "Utiliser en local"
     override val serverFallbackDismiss = "Annuler"
     override val serverGeneratingOnServer = "Génération sur le serveur…"
-    override val serverConnectionSettings = "Serveur"
+    override val serverConnectionSettings = "Se connecter au serveur"
     override val serverNoModelLoaded = "Serveur connecté mais aucun modèle de texte chargé — génération en local"
     override val serverUnreachableForGeneration = "Impossible de joindre le serveur — génération en local"
     override val serverUnencryptedWarningTitle = "Connexion non chiffrée"

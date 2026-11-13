@@ -311,7 +311,7 @@ interface Localization {
     val serverFallbackConfirm: String get() = "Use Local"
     val serverFallbackDismiss: String get() = "Cancel"
     val serverGeneratingOnServer: String get() = "Generating on server…"
-    val serverConnectionSettings: String get() = "Server"
+    val serverConnectionSettings: String get() = "Connect to Server"
     val serverNoModelLoaded: String get() = "Server connected but no text model loaded — generating locally"
     val serverUnreachableForGeneration: String get() = "Could not reach server — generating locally"
     val serverUnencryptedWarningTitle: String get() = "Connection not encrypted"

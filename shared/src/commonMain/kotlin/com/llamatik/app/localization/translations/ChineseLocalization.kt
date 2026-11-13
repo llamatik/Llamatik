@@ -325,7 +325,7 @@ internal object ChineseLocalization : Localization {
     override val serverFallbackConfirm = "使用本地"
     override val serverFallbackDismiss = "取消"
     override val serverGeneratingOnServer = "正在服务器上生成…"
-    override val serverConnectionSettings = "服务器"
+    override val serverConnectionSettings = "连接到服务器"
     override val serverNoModelLoaded = "服务器已连接，但未加载文本模型 — 将在本地生成"
     override val serverUnreachableForGeneration = "无法连接服务器 — 将在本地生成"
     override val serverUnencryptedWarningTitle = "连接未加密"

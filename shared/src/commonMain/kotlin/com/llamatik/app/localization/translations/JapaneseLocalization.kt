@@ -323,7 +323,7 @@ internal object JapaneseLocalization : Localization {
     override val serverFallbackConfirm = "ローカルを使用"
     override val serverFallbackDismiss = "キャンセル"
     override val serverGeneratingOnServer = "サーバーで生成中…"
-    override val serverConnectionSettings = "サーバー"
+    override val serverConnectionSettings = "サーバーに接続"
     override val serverNoModelLoaded = "サーバーに接続しましたが、テキストモデルが読み込まれていません — ローカルで生成します"
     override val serverUnreachableForGeneration = "サーバーに接続できません — ローカルで生成します"
     override val serverUnencryptedWarningTitle = "接続は暗号化されていません"

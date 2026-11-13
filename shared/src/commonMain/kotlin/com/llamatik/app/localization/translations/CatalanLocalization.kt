@@ -324,7 +324,7 @@ internal object CatalanLocalization : Localization {
     override val serverFallbackConfirm = "Usa local"
     override val serverFallbackDismiss = "Cancel·la"
     override val serverGeneratingOnServer = "Generant al servidor…"
-    override val serverConnectionSettings = "Servidor"
+    override val serverConnectionSettings = "Connectar al servidor"
     override val serverNoModelLoaded = "Servidor connectat però sense cap model de text carregat — generant en local"
     override val serverUnreachableForGeneration = "No s'ha pogut contactar amb el servidor — generant en local"
     override val serverUnencryptedWarningTitle = "Connexió no xifrada"

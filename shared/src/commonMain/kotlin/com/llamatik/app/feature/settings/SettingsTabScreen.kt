@@ -184,7 +184,7 @@ class SettingsTabScreen : Screen {
                         if (onOpenShareDevice != null) {
                             Spacer(Modifier.size(16.dp))
                             SettingsRow(
-                                icon = LlamatikIcons.Server,
+                                icon = LlamatikIcons.Share,
                                 label = localization.shareDeviceTitle,
                                 buttonLabel = localization.configure,
                                 onClick = onOpenShareDevice

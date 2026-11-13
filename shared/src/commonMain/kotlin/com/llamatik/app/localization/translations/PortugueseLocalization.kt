@@ -320,7 +320,7 @@ internal object PortugueseLocalization : Localization {
     override val serverFallbackConfirm = "Usar local"
     override val serverFallbackDismiss = "Cancelar"
     override val serverGeneratingOnServer = "Gerando no servidor…"
-    override val serverConnectionSettings = "Servidor"
+    override val serverConnectionSettings = "Conectar ao servidor"
     override val serverNoModelLoaded = "Servidor conectado, mas sem modelo de texto carregado — gerando localmente"
     override val serverUnreachableForGeneration = "Não foi possível acessar o servidor — gerando localmente"
     override val serverUnencryptedWarningTitle = "Conexão não criptografada"

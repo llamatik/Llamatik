@@ -323,7 +323,7 @@ internal object HindiLocalization : Localization {
     override val serverFallbackConfirm = "लोकल उपयोग करें"
     override val serverFallbackDismiss = "रद्द करें"
     override val serverGeneratingOnServer = "सर्वर पर जनरेट हो रहा है…"
-    override val serverConnectionSettings = "सर्वर"
+    override val serverConnectionSettings = "सर्वर से कनेक्ट करें"
     override val serverNoModelLoaded = "सर्वर कनेक्टेड है लेकिन कोई टेक्स्ट मॉडल लोड नहीं है — लोकल रूप से जनरेट किया जा रहा है"
     override val serverUnreachableForGeneration = "सर्वर तक नहीं पहुँचा जा सका — लोकल रूप से जनरेट किया जा रहा है"
     override val serverUnencryptedWarningTitle = "कनेक्शन एन्क्रिप्टेड नहीं है"

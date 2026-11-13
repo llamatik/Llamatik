@@ -324,7 +324,7 @@ internal object RussianLocalization : Localization {
     override val serverFallbackConfirm = "Локально"
     override val serverFallbackDismiss = "Отмена"
     override val serverGeneratingOnServer = "Генерация на сервере…"
-    override val serverConnectionSettings = "Сервер"
+    override val serverConnectionSettings = "Подключиться к серверу"
     override val serverNoModelLoaded = "Сервер подключён, но текстовая модель не загружена — генерация выполняется локально"
     override val serverUnreachableForGeneration = "Не удалось связаться с сервером — генерация выполняется локально"
     override val serverUnencryptedWarningTitle = "Соединение не зашифровано"
