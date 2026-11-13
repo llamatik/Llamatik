@@ -97,7 +97,7 @@ jobs:
   publish:
     name: Publish to Maven Central
     needs: build-native
-    runs-on: macos-15
+    runs-on: macos-latest
     permissions:
       contents: read
       packages: write
