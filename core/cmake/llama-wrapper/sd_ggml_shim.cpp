@@ -32,6 +32,21 @@ struct ggml_tensor * ggml_quantize_i8_convrot(
     return ggml_cont(ctx, a);
 }
 
+// ggml_diag_mask_inf() was removed from llama.cpp's ggml in v1.0.0 (stable-diffusion.cpp
+// still calls it with n_past == 0 to build a causal mask). Equivalent: a + (-big on the strict
+// upper triangle). A large finite value is used instead of -INFINITY to avoid 0 * -inf = NaN
+// in ggml_scale; it saturates to -inf when converted to F16 and is irrelevant after softmax.
+struct ggml_tensor * ggml_diag_mask_inf(
+        struct ggml_context * ctx,
+        struct ggml_tensor  * a,
+        int                   n_past)
+{
+    GGML_ASSERT(n_past == 0 && "sd_ggml_shim: ggml_diag_mask_inf only supports n_past == 0");
+    struct ggml_tensor * ones  = ggml_fill(ctx, a, 1.0f);
+    struct ggml_tensor * upper = ggml_tri(ctx, ones, GGML_TRI_TYPE_UPPER);
+    return ggml_add(ctx, a, ggml_scale(ctx, upper, -1e30f));
+}
+
 #if defined(__GNUC__) || defined(__clang__)
 // ggml_graph_view() is an internal ggml function (declared in ggml-impl.h, not GGML_API).
 // stable-diffusion.cpp's ggml_compat.cpp (ggml_backend_graph_compute_async_range) calls it.
