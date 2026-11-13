@@ -28,6 +28,11 @@ set(GGML_OPENMP OFF CACHE BOOL "" FORCE)
 
 add_subdirectory("${LLAMA_CPP_DIR}" "${CMAKE_BINARY_DIR}/llama")
 
+# Emscripten's INT64_C is `long` but int64_t is `long long`; llama.cpp mixes them in std::max({...}).
+if(EMSCRIPTEN)
+  target_compile_options(llama PRIVATE -include "${CMAKE_CURRENT_LIST_DIR}/compat/int64_c_fix.h")
+endif()
+
 # ---- whisper.cpp optional ----
 set(HAVE_WHISPER OFF)
 if(EXISTS "${WHISPER_CPP_DIR}/CMakeLists.txt")
