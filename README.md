@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://central.sonatype.com/artifact/com.llamatik/library"><img src="https://img.shields.io/maven-central/v/com.llamatik/library.svg" alt="maven central badge"/></a>
+  <a href="https://central.sonatype.com/artifact/com.llamatik/core"><img src="https://img.shields.io/maven-central/v/com.llamatik/core.svg" alt="maven central badge"/></a>
   <img src="https://img.shields.io/badge/Kotlin-Multiplatform-blueviolet" alt="kmp badge"/>
   <img src="https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop%20%7C%20WASM-green" alt="platforms badge"/>
   <img src="https://img.shields.io/badge/LLM-llama.cpp-orange" alt="llama.cpp badge"/>
@@ -117,7 +117,7 @@ A production-ready agentic runtime for host-app integration:
 Fully **on-device**, optionally remote — all behind a **unified Kotlin API**.
 
 No Python.  
-No required servers (a self-hosted server is optional).  
+No required servers (a self-hosted server is optional, and the app can itself share its models with your other devices).  
 Your models, your data, your device.
 
 Designed for **privacy-first**, **offline-capable**, and **cross-platform** AI applications on Android, iOS, Desktop, and WASM.
@@ -184,6 +184,7 @@ Designed for **privacy-first**, **offline-capable**, and **cross-platform** AI a
 - ✅ No data exfiltration by default — models and data never leave the device
 - ⚠️ If you choose to connect the app to a Llamatik Server, your prompts are sent to that server. Connections are currently **unencrypted (plain HTTP)** and not 100% secure — avoid sending sensitive data over untrusted networks. Encrypted connections are planned.
 - ✅ Optional remote inference via the built-in HTTP client for hybrid deployments
+- ✅ **Share this device** — serve your loaded models to other Llamatik devices on your network, with per-device approval (Android, Desktop, iOS)
 
 ### 🧩 Kotlin Multiplatform
 - ✅ Shared API across **Android, iOS, Desktop (JVM), and WASM**
@@ -238,6 +239,9 @@ The **Llamatik App** showcases:
      │                                                 │               agent/, framework/,
      │                                                 │               assistant/, http/
      │                                                 │
+     ├── impl ──► :host        (EmbeddedServer: "Share this device" — Android service, Desktop, iOS)
+     │              └──► :server-lib   → com.llamatik:server (engine-agnostic Ktor inference API + pairing)
+     │
      └── api  ──────────────────────────────────────── └── api ──► :core     → com.llamatik:core
                                                                         LlamaBridge     (llama.cpp)
                                                                         WhisperBridge   (whisper.cpp)
@@ -251,6 +255,8 @@ The dependency chain is strictly layered — each module only depends on modules
 |---|---|---|
 | `:composeApp` | `:shared` | — (app) |
 | `:shared` | `:core` (api), `:sdk` (api), `:sdk-agent` (impl) | — (app) |
+| `:host` | `:server-lib`, `:core` (api) | — (app) |
+| `:server-lib` | `:core` (api) | `com.llamatik:server` |
 | `:sdk-agent` | `:sdk` (api), `:core` (api) | `com.llamatik:sdk-agent` |
 | `:sdk` | `:core` (api) | `com.llamatik:sdk` |
 | `:core` | — | `com.llamatik:core` |
@@ -1070,7 +1076,7 @@ Visit the repository for full setup instructions, configuration options, and usa
 
 The Llamatik app can use a Llamatik Server for generation, with or without a local model:
 
-- **Settings → Server**: add a server manually by IP and port, or scan the local network (Llamatik Server advertises itself via mDNS as `_llamatik._tcp`); saved servers can be reconnected in one tap.
+- **Settings → Connect to Server**: add a server manually by IP and port, or scan the local network (Llamatik Server advertises itself via mDNS as `_llamatik._tcp`); saved servers can be reconnected in one tap.
 - Capability chips show what the server has loaded (text, image, vision, video, audio).
 - Chat works with only a server connected; responses are streamed.
 - A status dot in the chat toolbar shows the server state: green (online), yellow (reachable but no text model), red (unreachable).
@@ -1079,6 +1085,19 @@ The Llamatik app can use a Llamatik Server for generation, with or without a loc
 > **Security note:** server connections are currently **not encrypted**. The app warns you before connecting. Be careful about what you send and avoid sharing passwords or sensitive information. Encrypted and unencrypted modes will both be supported in the future.
 
 Details: https://docs.llamatik.com/guides/connecting-to-a-server/
+
+### Share this device
+
+The app can also act as a server for your other Llamatik devices. Turn on **Settings → Share this device** to let other devices on the network send prompts to this one and use the models you have loaded.
+
+- Supported on **Android** (foreground service), **Desktop** and **iOS** (foreground only). Web (Wasm) cannot host.
+- Shares text generation and embeddings. Admin endpoints are disabled for remote clients, and a busy host answers `503 Retry-After`.
+- **Each device must be approved by you** before it can connect; approvals persist and can be revoked.
+- Settings shows how many devices are connected under the row (and whether the host is generating for them), and the chat toolbar shows a share icon: grey (nobody connected), green with a count (connected), pulsing orange (generating for another device).
+
+> **Security note:** traffic between devices is **not encrypted**. Only approve devices you trust on a network you trust.
+
+Details: https://docs.llamatik.com/guides/share-this-device/
 
 ---
 

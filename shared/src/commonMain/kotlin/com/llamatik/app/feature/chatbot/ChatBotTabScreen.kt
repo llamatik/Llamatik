@@ -77,6 +77,8 @@ import com.llamatik.app.feature.chatbot.viewmodel.ServerRoutingSkipReason
 import com.llamatik.app.feature.chathistory.PendingSessionRepository
 import com.llamatik.app.feature.models.ModelsTabScreen
 import com.llamatik.app.feature.server.ServerHealth
+import com.llamatik.app.feature.sharing.ShareDeviceRepository
+import com.llamatik.app.feature.sharing.SharingStatusIndicator
 import com.llamatik.app.localization.Localization
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.localization.getLanguageCode
@@ -352,6 +354,10 @@ class ChatBotTabScreen : Screen {
                             if (hasServer) {
                                 ServerStatusDot(serverHealth)
                             }
+                            val sharingStatus by remember {
+                                KoinPlatform.getKoin().get<ShareDeviceRepository>()
+                            }.status.collectAsState()
+                            SharingStatusIndicator(sharingStatus, localization)
                             IconButton(
                                 onClick = {
                                     showSuggestions.value = false
@@ -740,7 +746,11 @@ class ChatBotTabScreen : Screen {
                     // While streaming, the markdown library re-parses asynchronously on every
                     // token and shows an empty "loading" box in between, which makes the bubble
                     // flicker. Render plain text until generation finishes, then switch to Markdown.
-                    if (message.isFromMe || showLoading) {
+                    if (message.isFromMe) {
+                        // The user bubble uses the (light orange) inversePrimary background, so
+                        // the default light content color is unreadable in dark mode.
+                        Text(text = message.text, color = MaterialTheme.colorScheme.onPrimary)
+                    } else if (showLoading) {
                         Text(text = message.text)
                     } else {
                         Markdown(
@@ -840,9 +850,7 @@ class ChatBotTabScreen : Screen {
     ) {
         if (state.latestNews.isNotEmpty()) {
             Row(
-                modifier = Modifier
-                    .widthIn(max = 800.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -862,7 +870,7 @@ class ChatBotTabScreen : Screen {
             }
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.Start,
             ) {
                 items(state.latestNews.size) { index ->
                     val item = state.latestNews[index]

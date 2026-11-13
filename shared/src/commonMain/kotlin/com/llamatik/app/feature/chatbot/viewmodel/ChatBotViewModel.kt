@@ -59,6 +59,7 @@ import com.llamatik.core.platform.MultimodalCapabilities
 import com.llamatik.core.platform.SdProgress
 import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
+import com.llamatik.host.LoadedModels
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
 import com.russhwolf.settings.Settings
 import io.github.vinceglb.filekit.FileKit
@@ -143,6 +144,20 @@ class ChatBotViewModel(
         )
     )
     val state = _state.asStateFlow()
+
+    init {
+        // Only the main chat (not companion chats) tells the embedded server what is loaded, so
+        // "Share this device" reflects the model the user actually has active.
+        if (serverConnectionRepository != null) {
+            screenModelScope.launch {
+                _state.collect { s ->
+                    LoadedModels.generation.value = s.selectedGenerateModelName.takeIf { s.isGenerateModelLoaded }
+                    LoadedModels.embedding.value = s.selectedEmbedModelName.takeIf { s.isEmbedModelLoaded }
+                    LoadedModels.isGenerating.value = s.isGenerating
+                }
+            }
+        }
+    }
 
     /** True while a Llamatik server is connected, so chat can work without a local model. */
     val hasActiveServer: StateFlow<Boolean> =
@@ -237,7 +252,11 @@ class ChatBotViewModel(
     private fun resolveAndMigratePath(model: LlamaModel): String? {
         val pathFromState = model.localPath
         val pathFromStorage = getModelsUseCase.getSavedModelPath(model.name).takeIf { it.isNotEmpty() }
-        val rawPath = pathFromState ?: pathFromStorage
+        // Prefer the persisted path: it is updated when a file is migrated to the persistent
+        // models dir, whereas model.localPath may still hold the pre-migration (now missing)
+        // temp path. Using the stale one made the second resolve in a row delete the saved
+        // path and trigger a fresh download.
+        val rawPath = pathFromStorage ?: pathFromState
         if (rawPath.isNullOrBlank()) return null
 
         // On WASM there is nothing to "migrate" in a filesystem sense — we store by key.

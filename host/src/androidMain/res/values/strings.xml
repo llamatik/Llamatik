@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="llamatik_host_channel">Sharing this device</string>
+    <string name="llamatik_host_title">Sharing this device</string>
+    <string name="llamatik_host_starting">Starting…</string>
+    <string name="llamatik_host_running">Other devices can connect at %1$s</string>
+    <string name="llamatik_host_pending">%1$s wants to use this device — tap to review</string>
+    <string name="llamatik_host_stop">Stop</string>
+</resources>

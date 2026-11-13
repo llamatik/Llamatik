@@ -22,6 +22,9 @@ import com.llamatik.network.client.dto.ModelFinetuneTypeResponse
 import com.llamatik.network.client.dto.ModelsStatusResponse
 import com.llamatik.network.client.dto.MultimodalInitRequest
 import com.llamatik.network.client.dto.OkResponse
+import com.llamatik.network.client.dto.PairingRequestBody
+import com.llamatik.network.client.dto.PairingRequestResponse
+import com.llamatik.network.client.dto.PairingStatusResponse
 import com.llamatik.network.client.dto.SessionResult
 import com.llamatik.network.client.dto.SseEventDto
 import com.llamatik.network.client.dto.StableDiffusionInitRequest
@@ -38,11 +41,14 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
@@ -56,7 +62,7 @@ import kotlinx.serialization.json.Json
 
 class LlamatikServerClient(
     val config: LlamatikServerConfig,
-    private val httpClient: HttpClient = defaultHttpClient(),
+    private val httpClient: HttpClient = defaultHttpClient(config.accessToken),
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -259,6 +265,33 @@ class LlamatikServerClient(
         httpClient.get("${config.baseUrl}/models").body<ModelsStatusResponse>()
     }.getOrNull()
 
+    /** Whether this client is allowed to use the server, needs approval, or can't reach it. */
+    enum class AccessProbe { AUTHORIZED, PAIRING_REQUIRED, UNREACHABLE }
+
+    suspend fun probeAccess(): AccessProbe = runCatching {
+        when (httpClient.get("${config.baseUrl}/models").status) {
+            HttpStatusCode.Unauthorized -> AccessProbe.PAIRING_REQUIRED
+            HttpStatusCode.OK -> AccessProbe.AUTHORIZED
+            else -> AccessProbe.UNREACHABLE
+        }
+    }.getOrElse { AccessProbe.UNREACHABLE }
+
+    /**
+     * Asks the server's owner to approve this device. Returns the request id to poll with
+     * [pollPairing], or null when the server refused (e.g. too many pending requests).
+     */
+    suspend fun requestPairing(clientId: String, clientName: String): String? = runCatching {
+        val response = httpClient.post("${config.baseUrl}/pairing/request") {
+            setBody(PairingRequestBody(clientId, clientName))
+        }
+        if (response.status.isSuccess()) response.body<PairingRequestResponse>().requestId else null
+    }.getOrNull()
+
+    /** Result of polling a pairing request. [token] is non-null once, when approved. */
+    suspend fun pollPairing(requestId: String): PairingStatusResponse? = runCatching {
+        httpClient.get("${config.baseUrl}/pairing/$requestId").body<PairingStatusResponse>()
+    }.getOrNull()
+
     /** Convenience shortcut: check whether the loaded SD model supports video. */
     suspend fun supportsVideoGeneration(): Boolean = runCatching {
         httpClient.get("${config.baseUrl}/stablediffusion/supportsVideo")
@@ -294,13 +327,14 @@ class LlamatikServerClient(
     }
 
     companion object {
-        fun defaultHttpClient(): HttpClient = HttpClient {
+        fun defaultHttpClient(accessToken: String? = null): HttpClient = HttpClient {
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true })
             }
             // Without a default Content-Type, ktor cannot pick a serializer for setBody(...)
             defaultRequest {
                 contentType(ContentType.Application.Json)
+                if (!accessToken.isNullOrBlank()) header(HttpHeaders.Authorization, "Bearer $accessToken")
             }
         }
     }

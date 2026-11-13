@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.llamatik.core.platform.GenStream
 import com.llamatik.core.platform.LlamaBridge
 import com.llamatik.core.platform.LlamaSession
+import com.llamatik.host.LocalInferenceActivity
 import kotlin.math.min
 
 /**
@@ -65,6 +66,16 @@ object ChatRunner {
         var done = false
         var tokenCount = 0
 
+        // Tell the embedded server (if sharing is on) that the bridge is busy with our own request.
+        var busyReleased = false
+        fun releaseBusy() {
+            if (!busyReleased) {
+                busyReleased = true
+                LocalInferenceActivity.end()
+            }
+        }
+        LocalInferenceActivity.begin()
+
         // Thin wrapper that enforces consistent stop logic above the JNI layer.
         val guard = object : GenStream {
             override fun onDelta(text: String) {
@@ -77,12 +88,14 @@ object ChatRunner {
                 // Client-side stop: cheap suffix check
                 if (shouldStop(acc, stop)) {
                     done = true
+                    releaseBusy()
                     onComplete(trimAtStop(acc.toString(), stop))
                     return
                 }
 
                 if (tokenCount >= maxTokens) {
                     done = true
+                    releaseBusy()
                     onComplete(acc.toString())
                     return
                 }
@@ -91,6 +104,7 @@ object ChatRunner {
             }
 
             override fun onComplete() {
+                releaseBusy()
                 if (!done) {
                     done = true
                     onComplete(acc.toString())
@@ -98,6 +112,7 @@ object ChatRunner {
             }
 
             override fun onError(message: String) {
+                releaseBusy()
                 if (!done) {
                     done = true
                     onError(message)
@@ -106,10 +121,15 @@ object ChatRunner {
         }
 
         // Let the engine do its thing; we keep the semantics above it.
-        when {
-            session != null -> session.stream(prompt, guard)
-            continueKvCache -> LlamaBridge.generateContinueStream(prompt, guard)
-            else -> LlamaBridge.generateStream(prompt, guard)
+        try {
+            when {
+                session != null -> session.stream(prompt, guard)
+                continueKvCache -> LlamaBridge.generateContinueStream(prompt, guard)
+                else -> LlamaBridge.generateStream(prompt, guard)
+            }
+        } catch (t: Throwable) {
+            releaseBusy()
+            throw t
         }
     }
 
