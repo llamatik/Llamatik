@@ -200,6 +200,34 @@ jobs:
         run: |
           ./gradlew :composeApp:packageReleaseDistributionForCurrentOS --no-daemon --stacktrace --info
 
+      # ---------- Omarchy / Arch package ----------
+      - name: Build Arch (pacman) package for Omarchy
+        if: ${{ runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEB="$(find composeApp/build -type f -iname '*.deb' | head -n1)"
+          [ -n "$DEB" ] || { echo "No .deb found"; exit 1; }
+          VERSION="$(dpkg-deb -f "$DEB" Version | sed 's/-.*//')"
+          echo "Repackaging $DEB as version $VERSION"
+
+          WORK="$RUNNER_TEMP/arch-build"
+          rm -rf "$WORK" && mkdir -p "$WORK"
+          cp packaging/arch/PKGBUILD "$WORK/"
+          cp "$DEB" "$WORK/llamatik.deb"
+          chmod -R a+rwX "$WORK"
+
+          docker run --rm -v "$WORK:/build" -e LLAMATIK_VERSION="$VERSION" archlinux:latest bash -euxc '
+            pacman -Syu --noconfirm --needed base-devel libarchive
+            useradd -m builder
+            chown -R builder /build
+            cd /build
+            su builder -c "LLAMATIK_VERSION=$LLAMATIK_VERSION makepkg --nodeps --noconfirm"
+          '
+
+          mkdir -p composeApp/build/arch
+          cp -v "$WORK"/*.pkg.tar.zst composeApp/build/arch/
+
       # ---------- Collect artifacts ----------
       - name: Collect artifacts (Linux/macOS)
         if: ${{ runner.os != 'Windows' }}
@@ -211,7 +239,7 @@ jobs:
 
           find composeApp/build -type f \( \
             -iname "*.dmg" -o -iname "*.pkg" -o -iname "*.zip" -o -iname "*.tar.gz" -o \
-            -iname "*.deb" -o -iname "*.rpm" -o -iname "*.AppImage" -o \
+            -iname "*.deb" -o -iname "*.pkg.tar.zst" -o -iname "*.rpm" -o -iname "*.AppImage" -o \
             -iname "*.msi" -o -iname "*.exe" \
           \) -exec cp -v "{}" "$OUT/" \; || true
 
