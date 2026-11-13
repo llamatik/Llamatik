@@ -21,7 +21,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
-import java.util.Base64
+import kotlin.io.encoding.Base64
 
 private const val SD = "$API_VERSION/stablediffusion"
 private const val SD_INIT = "$SD/init"
@@ -74,7 +74,7 @@ fun Route.stableDiffusionRoutes(service: StableDiffusionServicePort = StableDiff
                 if (bytes.isEmpty()) {
                     call.respond(HttpStatusCode.InternalServerError, "Image generation produced no output")
                 } else {
-                    call.respond(ImageResponse(imageBase64 = Base64.getEncoder().encodeToString(bytes)))
+                    call.respond(ImageResponse(imageBase64 = Base64.encode(bytes)))
                 }
             },
             onFailure = { call.respond(HttpStatusCode.BadRequest, it.sanitizedMessage()) }
@@ -86,7 +86,7 @@ fun Route.stableDiffusionRoutes(service: StableDiffusionServicePort = StableDiff
         // Decode before calling into native — an invalid base64 string must return 400,
         // not 500 from an uncaught IllegalArgumentException deep in the stack.
         val initBytes = try {
-            Base64.getDecoder().decode(req.initImageBase64)
+            Base64.decode(req.initImageBase64)
         } catch (e: IllegalArgumentException) {
             call.respond(HttpStatusCode.BadRequest, "Invalid base64 image data")
             return@post
@@ -108,7 +108,7 @@ fun Route.stableDiffusionRoutes(service: StableDiffusionServicePort = StableDiff
                 if (bytes.isEmpty()) {
                     call.respond(HttpStatusCode.InternalServerError, "Image generation produced no output")
                 } else {
-                    call.respond(ImageResponse(imageBase64 = Base64.getEncoder().encodeToString(bytes)))
+                    call.respond(ImageResponse(imageBase64 = Base64.encode(bytes)))
                 }
             },
             onFailure = { call.respond(HttpStatusCode.BadRequest, it.sanitizedMessage()) }
@@ -148,7 +148,7 @@ fun Route.stableDiffusionRoutes(service: StableDiffusionServicePort = StableDiff
                 if (bytes.isEmpty()) {
                     call.respond(HttpStatusCode.InternalServerError, "Video generation produced no output")
                 } else {
-                    call.respond(VideoResponse(videoBase64 = Base64.getEncoder().encodeToString(bytes)))
+                    call.respond(VideoResponse(videoBase64 = Base64.encode(bytes)))
                 }
             },
             onFailure = { call.respond(HttpStatusCode.BadRequest, it.sanitizedMessage()) }

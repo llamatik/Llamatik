@@ -24,7 +24,13 @@ kotlin {
     wasmJs { browser() }
 
     sourceSets {
-        // The same server implementation is compiled for Android and desktop.
+        // The same server implementation (Ktor CIO + Llamatik-Server library) is compiled for every
+        // target that can host. WASM cannot: a browser cannot open a listening socket.
+        val serverShared = "src/serverShared/kotlin"
+        androidMain { kotlin.srcDir(serverShared) }
+        jvmMain { kotlin.srcDir(serverShared) }
+        iosMain { kotlin.srcDir(serverShared) }
+        // java.net-based pieces shared by Android and desktop.
         val jvmShared = "src/jvmShared/kotlin"
         androidMain { kotlin.srcDir(jvmShared) }
         jvmMain { kotlin.srcDir(jvmShared) }
@@ -42,6 +48,11 @@ kotlin {
         }
 
         jvmMain.dependencies {
+            implementation(project(":server-lib"))
+            implementation(libs.ktor.server.cio)
+        }
+
+        iosMain.dependencies {
             implementation(project(":server-lib"))
             implementation(libs.ktor.server.cio)
         }

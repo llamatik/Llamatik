@@ -30,15 +30,15 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondTextWriter
+import io.ktor.server.response.respondBytesWriter
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.trySendBlocking
+import com.llamatik.util.blockingDispatcher
+import com.llamatik.util.sendBlocking
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 
@@ -266,17 +266,17 @@ private inline fun <reified T : Any> Route.postSseStream(
     post(path) {
         val req = call.receive<T>()
 
-        call.respondTextWriter(contentType = ContentType.Text.EventStream) {
+        call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
             val deltas = Channel<String>(capacity = STREAM_DELTA_BUFFER_CAPACITY)
             val done = Channel<Unit>(capacity = 1)
             val errors = Channel<String>(capacity = 1)
             val cb = Sse.genStreamCallback(
-                onDelta = { deltas.trySendBlocking(it).isSuccess },
+                onDelta = { deltas.sendBlocking(it) },
                 onDone = { done.trySend(Unit).isSuccess },
                 onError = { errors.trySend(it).isSuccess }
             )
 
-            val streamJob = CoroutineScope(currentCoroutineContext()).launch(Dispatchers.IO) {
+            val streamJob = CoroutineScope(currentCoroutineContext()).launch(blockingDispatcher) {
                 try {
                     stream(req, cb)
                 } catch (e: CancellationException) {

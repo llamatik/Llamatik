@@ -16,17 +16,17 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondTextWriter
+import io.ktor.server.response.respondBytesWriter
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.trySendBlocking
+import com.llamatik.util.blockingDispatcher
+import com.llamatik.util.sendBlocking
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
-import java.util.Base64
+import kotlin.io.encoding.Base64
 
 private const val VLM = "$API_VERSION/multimodal"
 private const val VLM_INIT = "$VLM/init"
@@ -58,23 +58,23 @@ fun Route.multimodalRoutes(service: MultimodalServicePort = MultimodalService) {
         // Decode before entering the SSE writer — an invalid base64 string must return 400,
         // not leave an empty stream or an uncaught exception after headers are sent.
         val imageBytes = try {
-            Base64.getDecoder().decode(req.imageBase64)
+            Base64.decode(req.imageBase64)
         } catch (e: IllegalArgumentException) {
             call.respond(HttpStatusCode.BadRequest, "Invalid base64 image data")
             return@post
         }
 
-        call.respondTextWriter(contentType = ContentType.Text.EventStream) {
+        call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
             val deltas = Channel<String>(capacity = 64)
             val done = Channel<Unit>(capacity = 1)
             val errors = Channel<String>(capacity = 1)
             val cb: GenStream = Sse.genStreamCallback(
-                onDelta = { deltas.trySendBlocking(it).isSuccess },
+                onDelta = { deltas.sendBlocking(it) },
                 onDone = { done.trySend(Unit).isSuccess },
                 onError = { errors.trySend(it).isSuccess }
             )
 
-            val streamJob = CoroutineScope(currentCoroutineContext()).launch(Dispatchers.IO) {
+            val streamJob = CoroutineScope(currentCoroutineContext()).launch(blockingDispatcher) {
                 try {
                     service.analyzeImageBytesStream(imageBytes, req.prompt, cb)
                 } catch (e: CancellationException) {

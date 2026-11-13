@@ -17,18 +17,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.net.Inet4Address
-import java.net.NetworkInterface
 
-/** Android + desktop implementation: Ktor CIO serving the Llamatik-Server library. */
+/** Android, desktop and iOS implementation: Ktor CIO serving the Llamatik-Server library. */
 actual class EmbeddedServer actual constructor(
     store: HostDeviceStore,
     private val isLocalBusy: () -> Boolean,
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val lock = Any()
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val pairing = PairingManager(
         store = object : DeviceStore {
@@ -40,8 +38,8 @@ actual class EmbeddedServer actual constructor(
     private val serverConfig = LlamatikServerConfigHolder()
 
     private val _state = MutableStateFlow<EmbeddedServerState>(EmbeddedServerState.Stopped)
-    private var engine: io.ktor.server.engine.EmbeddedServer<*, *>? = null
-    private var advertised = false
+    private val engine = MutableStateFlow<io.ktor.server.engine.EmbeddedServer<*, *>?>(null)
+    private val advertised = MutableStateFlow(false)
 
     actual val isSupported: Boolean = true
     actual val state: StateFlow<EmbeddedServerState> get() = _state
@@ -55,10 +53,11 @@ actual class EmbeddedServer actual constructor(
     actual val totalRequests: StateFlow<Long> get() = serverConfig.metrics.totalRequests
 
     actual fun start(config: HostConfig) {
-        synchronized(lock) {
-            if (_state.value is EmbeddedServerState.Starting || _state.value is EmbeddedServerState.Running) return
-            _state.value = EmbeddedServerState.Starting
+        // Atomic check-and-set so two quick taps cannot start two servers.
+        val previous = _state.getAndUpdate {
+            if (it is EmbeddedServerState.Starting || it is EmbeddedServerState.Running) it else EmbeddedServerState.Starting
         }
+        if (previous is EmbeddedServerState.Starting || previous is EmbeddedServerState.Running) return
         scope.launch {
             @Suppress("TooGenericExceptionCaught")
             try {
@@ -78,11 +77,11 @@ actual class EmbeddedServer actual constructor(
                     installLlamatikServer(libConfig)
                 }
                 server.start(wait = false)
-                synchronized(lock) { engine = server }
+                engine.value = server
 
                 if (config.advertise) {
                     runCatching { NodeDiscovery.startAdvertising(config.port, config.serviceName) }
-                        .onSuccess { advertised = true }
+                        .onSuccess { advertised.value = true }
                 }
 
                 _state.value = EmbeddedServerState.Running(config.port, localIpAddresses())
@@ -93,10 +92,9 @@ actual class EmbeddedServer actual constructor(
     }
 
     actual fun stop() {
-        val running = synchronized(lock) { engine.also { engine = null } }
-        if (advertised) {
+        val running = engine.getAndUpdate { null }
+        if (advertised.getAndUpdate { false }) {
             runCatching { NodeDiscovery.stopAdvertising() }
-            advertised = false
         }
         if (running == null) {
             _state.value = EmbeddedServerState.Stopped
@@ -130,12 +128,3 @@ actual class EmbeddedServer actual constructor(
 private class LlamatikServerConfigHolder {
     val metrics = com.llamatik.ServerMetrics()
 }
-
-private fun localIpAddresses(): List<String> = runCatching {
-    NetworkInterface.getNetworkInterfaces().toList()
-        .filter { it.isUp && !it.isLoopback && !it.isVirtual }
-        .flatMap { it.inetAddresses.toList() }
-        .filterIsInstance<Inet4Address>()
-        .filter { !it.isLoopbackAddress }
-        .mapNotNull { it.hostAddress }
-}.getOrDefault(emptyList())

@@ -50,7 +50,8 @@ interface HostDeviceStore {
 /**
  * Serves this device's already-loaded models to other Llamatik devices.
  *
- * Supported on Android and desktop ([isSupported]); on other platforms [start] reports an error.
+ * Supported on Android, iOS and desktop ([isSupported]); on WASM (a browser cannot listen on a socket)
+ * [start] reports an error.
  * The HTTP API is the Llamatik-Server library's, restricted to text generation and embeddings,
  * with admin endpoints disabled and per-device approval required.
  */
@@ -118,3 +119,6 @@ object LocalInferenceActivity {
 
     fun end() = running.update { (it - 1).coerceAtLeast(0) }
 }
+
+/** IPv4 addresses other devices can reach this one on (loopback excluded). */
+internal expect fun localIpAddresses(): List<String>

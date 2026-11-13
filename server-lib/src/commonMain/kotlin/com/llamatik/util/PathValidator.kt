@@ -1,7 +1,6 @@
 package com.llamatik.util
 
-import java.nio.file.InvalidPathException
-import java.nio.file.Path
+import kotlin.concurrent.Volatile
 
 /**
  * Validates caller-supplied filesystem paths before they reach native JNI bridges.
@@ -24,15 +23,15 @@ import java.nio.file.Path
  */
 object PathValidator {
 
-    private fun envPath(name: String): Path? = System.getenv(name)
+    private fun envPath(name: String): String? = envVar(name)
         ?.takeIf { it.isNotBlank() }
-        ?.let { Path.of(it).toAbsolutePath().normalize() }
+        ?.let { normalizeAbsolutePath(it) }
 
     @Volatile
-    private var modelsDir: Path? = envPath("MODELS_DIR")
+    private var modelsDir: String? = envPath("MODELS_DIR")
 
     @Volatile
-    private var sessionsDir: Path? = envPath("SESSIONS_DIR") ?: modelsDir?.resolve("sessions")
+    private var sessionsDir: String? = envPath("SESSIONS_DIR") ?: modelsDir?.let { it + pathSeparator + "sessions" }
 
     /**
      * Overrides the environment-derived directories. Embedding hosts (e.g. the Llamatik app)
@@ -40,11 +39,11 @@ object PathValidator {
      * [com.llamatik.LlamatikServerConfig]. `null` disables containment for that kind of path.
      */
     fun configure(modelsDir: String?, sessionsDir: String?) {
-        val models = modelsDir?.takeIf { it.isNotBlank() }?.let { Path.of(it).toAbsolutePath().normalize() }
+        val models = modelsDir?.takeIf { it.isNotBlank() }?.let { normalizeAbsolutePath(it) }
         this.modelsDir = models
         this.sessionsDir = sessionsDir?.takeIf { it.isNotBlank() }
-            ?.let { Path.of(it).toAbsolutePath().normalize() }
-            ?: models?.resolve("sessions")
+            ?.let { normalizeAbsolutePath(it) }
+            ?: models?.let { it + pathSeparator + "sessions" }
     }
 
     /**
@@ -61,20 +60,21 @@ object PathValidator {
      */
     fun validateSessionPath(raw: String): String = validate(raw, sessionsDir, "session")
 
-    private fun validate(raw: String, allowedDir: Path?, label: String): String {
+    private fun validate(raw: String, allowedDir: String?, label: String): String {
         if (raw.contains('\u0000')) throw IllegalArgumentException("Invalid $label path")
 
         val resolved = try {
-            Path.of(raw).toAbsolutePath().normalize()
-        } catch (e: InvalidPathException) {
+            normalizeAbsolutePath(raw)
+        } catch (e: IllegalArgumentException) {
             throw IllegalArgumentException("Invalid $label path")
         }
 
-        if (allowedDir != null && !resolved.startsWith(allowedDir)) {
+        // Segment-wise containment (`/models-evil` is not inside `/models`).
+        if (allowedDir != null && resolved != allowedDir && !resolved.startsWith(allowedDir.trimEnd('/', '\\') + pathSeparator)) {
             throw IllegalArgumentException("$label path is outside the allowed directory")
         }
 
-        return resolved.toString()
+        return resolved
     }
 
     /**

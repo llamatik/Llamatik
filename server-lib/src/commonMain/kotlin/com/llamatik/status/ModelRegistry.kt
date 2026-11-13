@@ -1,6 +1,6 @@
 package com.llamatik.status
 
-import java.nio.file.Path
+import kotlin.concurrent.Volatile
 
 /**
  * In-memory registry of which inference models are currently loaded.
@@ -172,5 +172,5 @@ object ModelRegistry {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private fun fileName(path: String): String = Path.of(path).fileName.toString()
+    private fun fileName(path: String): String = path.trimEnd('/', '\\').substringAfterLast('/').substringAfterLast('\\')
 }

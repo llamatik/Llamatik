@@ -1,11 +1,11 @@
 package com.llamatik.util
 
 import com.llamatik.core.platform.GenStream
+import io.ktor.utils.io.ByteWriteChannel
+import io.ktor.utils.io.writeStringUtf8
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.selects.select
 import kotlinx.serialization.json.JsonPrimitive
-import java.io.Flushable
-import java.io.Writer
 
 /**
  * Minimal utilities for Server-Sent Events (SSE) streaming.
@@ -36,16 +36,14 @@ object Sse {
     }
 
     suspend fun pipe(
-        writer: Writer,
+        writer: ByteWriteChannel,
         deltas: Channel<String>,
         done: Channel<Unit>,
         errors: Channel<String>
     ) {
-        fun Writer.writeEvent(json: String) {
-            write("data: ")
-            write(json)
-            write("\n\n")
-            (this as? Flushable)?.flush()
+        suspend fun ByteWriteChannel.writeEvent(json: String) {
+            writeStringUtf8("data: $json\n\n")
+            flush()
         }
 
         while (true) {
