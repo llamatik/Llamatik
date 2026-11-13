@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
@@ -33,6 +34,7 @@ import com.llamatik.app.platform.RootNavigatorRepository
 import com.llamatik.app.platform.RootSnackbarHostStateRepository
 import com.llamatik.app.ui.components.LLamatikNavigationBar
 import com.llamatik.app.ui.components.LlamatikNavigationBarItem
+import com.llamatik.app.ui.components.LlamatikNavigationDefaults
 import com.llamatik.app.ui.theme.LlamatikTheme
 import com.llamatik.app.ui.theme.Typography
 import org.koin.core.parameter.ParametersHolder
@@ -58,41 +60,54 @@ fun MainScreenView() {
         val rootNavigatorRepository = setupRootNavigator(rootNavigator, LocalTabNavigator.current)
         val rootSnackbarHostStateRepository = setupRootSnackbarHostState(snackbarHostState)
 
-        Box(
-            modifier = androidx.compose.ui.Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.TopCenter,
-        ) {
+        // Scaffold fills the whole window; only the *content* and nav items are capped
+        // and centered, so wide desktop/web windows don't look like a cropped phone screen.
+        Scaffold(
+            modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            snackbarHost = { SnackbarHost(rootSnackbarHostStateRepository.snackbarHostState) },
+            bottomBar = {
+                Box(
+                    modifier = androidx.compose.ui.Modifier
+                        .fillMaxWidth()
+                        .background(LlamatikNavigationDefaults.navigationContainerColor()),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    LLamatikNavigationBar(
+                        modifier = androidx.compose.ui.Modifier.widthIn(max = NAV_BAR_MAX_WIDTH),
+                    ) {
+                        TabNavigationItem(ChatBotTab, rootNavigatorRepository)
+                        TabNavigationItem(ChatHistoryTab, rootNavigatorRepository)
+                        //TabNavigationItem(CompanionTab, rootNavigatorRepository)
+                        TabNavigationItem(SettingsTab, rootNavigatorRepository)
+                    }
+                }
+            },
+        ) { paddingValues ->
             Box(
                 modifier = androidx.compose.ui.Modifier
-                    .widthIn(max = 600.dp)
-                    .fillMaxHeight(),
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.TopCenter,
             ) {
-                Scaffold(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground,
-                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                    snackbarHost = { SnackbarHost(rootSnackbarHostStateRepository.snackbarHostState) },
-                    bottomBar = {
-                        LLamatikNavigationBar {
-                            TabNavigationItem(ChatBotTab, rootNavigatorRepository)
-                            TabNavigationItem(ChatHistoryTab, rootNavigatorRepository)
-                            //TabNavigationItem(CompanionTab, rootNavigatorRepository)
-                            TabNavigationItem(SettingsTab, rootNavigatorRepository)
-                        }
-                    },
-                ) { paddingValues ->
-                    Box(modifier = androidx.compose.ui.Modifier.padding(paddingValues)) {
-                        SlideTransition(LocalNavigator.currentOrThrow) { screen ->
-                            screen.Content()
-                        }
+                Box(
+                    modifier = androidx.compose.ui.Modifier
+                        .widthIn(max = CONTENT_MAX_WIDTH)
+                        .fillMaxHeight(),
+                ) {
+                    SlideTransition(LocalNavigator.currentOrThrow) { screen ->
+                        screen.Content()
                     }
                 }
             }
         }
     }
 }
+
+private val CONTENT_MAX_WIDTH = 1280.dp
+private val NAV_BAR_MAX_WIDTH = 600.dp
 
 fun setupRootNavigator(
     rootNavigator: Navigator,

@@ -740,7 +740,11 @@ class ChatBotTabScreen : Screen {
                     // While streaming, the markdown library re-parses asynchronously on every
                     // token and shows an empty "loading" box in between, which makes the bubble
                     // flicker. Render plain text until generation finishes, then switch to Markdown.
-                    if (message.isFromMe || showLoading) {
+                    if (message.isFromMe) {
+                        // The user bubble uses the (light orange) inversePrimary background, so
+                        // the default light content color is unreadable in dark mode.
+                        Text(text = message.text, color = MaterialTheme.colorScheme.onPrimary)
+                    } else if (showLoading) {
                         Text(text = message.text)
                     } else {
                         Markdown(
@@ -840,9 +844,7 @@ class ChatBotTabScreen : Screen {
     ) {
         if (state.latestNews.isNotEmpty()) {
             Row(
-                modifier = Modifier
-                    .widthIn(max = 800.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -862,7 +864,7 @@ class ChatBotTabScreen : Screen {
             }
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.Start,
             ) {
                 items(state.latestNews.size) { index ->
                     val item = state.latestNews[index]

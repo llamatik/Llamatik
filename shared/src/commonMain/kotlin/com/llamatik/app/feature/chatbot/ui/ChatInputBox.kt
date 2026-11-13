@@ -103,7 +103,9 @@ fun ChatInputBox(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
+        // Center the (width-capped) input column on wide windows
+        contentAlignment = Alignment.TopCenter
     ) {
         val isGenerating = state.isGenerating
 
