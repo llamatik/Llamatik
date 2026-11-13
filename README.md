@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://central.sonatype.com/artifact/com.llamatik/library"><img src="https://img.shields.io/maven-central/v/com.llamatik/library.svg" alt="maven central badge"/></a>
+  <a href="https://central.sonatype.com/artifact/com.llamatik/core"><img src="https://img.shields.io/maven-central/v/com.llamatik/core.svg" alt="maven central badge"/></a>
   <img src="https://img.shields.io/badge/Kotlin-Multiplatform-blueviolet" alt="kmp badge"/>
   <img src="https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop%20%7C%20WASM-green" alt="platforms badge"/>
   <img src="https://img.shields.io/badge/LLM-llama.cpp-orange" alt="llama.cpp badge"/>
