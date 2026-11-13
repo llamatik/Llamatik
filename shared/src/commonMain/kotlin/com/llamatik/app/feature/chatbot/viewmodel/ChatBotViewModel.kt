@@ -252,7 +252,11 @@ class ChatBotViewModel(
     private fun resolveAndMigratePath(model: LlamaModel): String? {
         val pathFromState = model.localPath
         val pathFromStorage = getModelsUseCase.getSavedModelPath(model.name).takeIf { it.isNotEmpty() }
-        val rawPath = pathFromState ?: pathFromStorage
+        // Prefer the persisted path: it is updated when a file is migrated to the persistent
+        // models dir, whereas model.localPath may still hold the pre-migration (now missing)
+        // temp path. Using the stale one made the second resolve in a row delete the saved
+        // path and trigger a fresh download.
+        val rawPath = pathFromStorage ?: pathFromState
         if (rawPath.isNullOrBlank()) return null
 
         // On WASM there is nothing to "migrate" in a filesystem sense — we store by key.

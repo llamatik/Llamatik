@@ -129,18 +129,18 @@ actual class LlamatikTempFile actual constructor(fileName: String) {
 
 private const val MIN_VALID_MODEL_SIZE = 1024L * 1024L // 1 MB
 
-// Returns true if the file starts with GGUF magic or safetensors magic.
+// Returns true if the file starts with a known model magic: GGUF, legacy GGML-family
+// (Whisper .bin files are "ggml" = bytes "lmgg"), or safetensors.
 // Rejects HTTP error bodies (e.g. 15-byte 404 responses) and other junk.
 private fun hasValidModelMagic(file: File): Boolean {
     if (file.length() < 9) return false
     val magic = ByteArray(9)
     return try {
-        FileInputStream(file).use { fis -> fis.read(magic) == 9 } &&
-            // GGUF: "GGUF" at offset 0
-            (magic[0] == 'G'.code.toByte() && magic[1] == 'G'.code.toByte() &&
-             magic[2] == 'U'.code.toByte() && magic[3] == 'F'.code.toByte() ||
-             // safetensors: uint64 header-length at offset 0, then '{' at offset 8
-             magic[8] == '{'.code.toByte())
+        if (FileInputStream(file).use { fis -> fis.read(magic) } != 9) return false
+        val head = String(magic, 0, 4, Charsets.ISO_8859_1)
+        head in setOf("GGUF", "lmgg", "fmgg", "tjgg", "ggml", "ggmf", "ggjt") ||
+            // safetensors: uint64 header-length at offset 0, then '{' at offset 8
+            magic[8] == '{'.code.toByte()
     } catch (_: Exception) {
         false
     }
