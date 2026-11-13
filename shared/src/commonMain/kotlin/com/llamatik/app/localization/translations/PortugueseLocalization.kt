@@ -352,4 +352,10 @@ internal object PortugueseLocalization : Localization {
     override val serverWaitingForApproval = "A aguardar aprovação no outro dispositivo…"
     override val serverPairingDenied = "O outro dispositivo negou o acesso"
     override val serverPairingExpired = "O pedido não foi aprovado a tempo"
+    override val shareDeviceStatusIdle = "A partilhar · nenhum dispositivo ligado"
+    override val shareDeviceStatusConnected = "A partilhar · {count} ligados"
+    override val shareDeviceStatusGenerating = "A partilhar · {count} ligados · a gerar para eles"
+    override val shareDeviceStatusChipIdle = "A partilhar este dispositivo, ninguém ligado"
+    override val shareDeviceStatusChipConnected = "{count} ligados a este dispositivo"
+    override val shareDeviceStatusChipGenerating = "A gerar para outro dispositivo"
 }

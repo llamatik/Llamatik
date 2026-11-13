@@ -53,7 +53,9 @@ import com.llamatik.app.feature.debugmenu.viewmodel.DebugMenuViewModel
 import com.llamatik.app.feature.models.ModelsTabScreen
 import com.llamatik.app.feature.server.ServerConnectionRepository
 import com.llamatik.app.feature.server.ServerSettingsScreen
+import com.llamatik.app.feature.sharing.ShareDeviceRepository
 import com.llamatik.app.feature.sharing.ShareDeviceScreen
+import com.llamatik.app.feature.sharing.subtitle
 import com.llamatik.app.localization.AvailableLanguages
 import com.llamatik.app.localization.SetLanguage
 import com.llamatik.app.localization.displayName
@@ -107,6 +109,7 @@ class SettingsTabScreen : Screen {
         val showAgentModeInfo = remember { mutableStateOf(false) }
         val serverRepository = remember { KoinPlatform.getKoin().get<ServerConnectionRepository>() }
         val activeServer by serverRepository.activeServer.collectAsState()
+        val sharingStatus by remember { KoinPlatform.getKoin().get<ShareDeviceRepository>() }.status.collectAsState()
 
         if (state.currentLanguage != getCurrentLanguage()) {
             SetLanguage(state.currentLanguage)
@@ -186,6 +189,7 @@ class SettingsTabScreen : Screen {
                             SettingsRow(
                                 icon = LlamatikIcons.Share,
                                 label = localization.shareDeviceTitle,
+                                subtitle = sharingStatus.subtitle(localization),
                                 buttonLabel = localization.configure,
                                 onClick = onOpenShareDevice
                             )

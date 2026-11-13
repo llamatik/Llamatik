@@ -357,4 +357,10 @@ internal object ChineseLocalization : Localization {
     override val serverWaitingForApproval = "正在等待另一台设备批准…"
     override val serverPairingDenied = "另一台设备拒绝了访问"
     override val serverPairingExpired = "请求未在规定时间内获批"
+    override val shareDeviceStatusIdle = "共享中 · 没有设备连接"
+    override val shareDeviceStatusConnected = "共享中 · {count} 台已连接"
+    override val shareDeviceStatusGenerating = "共享中 · {count} 台已连接 · 正在为其生成"
+    override val shareDeviceStatusChipIdle = "正在共享此设备，暂无连接"
+    override val shareDeviceStatusChipConnected = "{count} 台设备已连接到此设备"
+    override val shareDeviceStatusChipGenerating = "正在为其他设备生成"
 }

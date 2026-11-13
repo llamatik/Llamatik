@@ -356,4 +356,10 @@ Le tue priorità:
     override val serverWaitingForApproval = "In attesa di approvazione sull'altro dispositivo…"
     override val serverPairingDenied = "L'altro dispositivo ha negato l'accesso"
     override val serverPairingExpired = "La richiesta non è stata approvata in tempo"
+    override val shareDeviceStatusIdle = "Condivisione attiva · nessun dispositivo connesso"
+    override val shareDeviceStatusConnected = "Condivisione attiva · {count} connessi"
+    override val shareDeviceStatusGenerating = "Condivisione attiva · {count} connessi · generazione in corso per loro"
+    override val shareDeviceStatusChipIdle = "Condivisione di questo dispositivo, nessuno connesso"
+    override val shareDeviceStatusChipConnected = "{count} connessi a questo dispositivo"
+    override val shareDeviceStatusChipGenerating = "Generazione per un altro dispositivo"
 }

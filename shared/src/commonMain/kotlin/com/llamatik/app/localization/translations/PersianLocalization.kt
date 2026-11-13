@@ -355,4 +355,10 @@ internal object PersianLocalization : Localization {
     override val serverWaitingForApproval = "در انتظار تأیید در دستگاه دیگر…"
     override val serverPairingDenied = "دستگاه دیگر دسترسی را رد کرد"
     override val serverPairingExpired = "درخواست به‌موقع تأیید نشد"
+    override val shareDeviceStatusIdle = "در حال اشتراک‌گذاری · دستگاهی متصل نیست"
+    override val shareDeviceStatusConnected = "در حال اشتراک‌گذاری · {count} متصل"
+    override val shareDeviceStatusGenerating = "در حال اشتراک‌گذاری · {count} متصل · در حال تولید برای آن‌ها"
+    override val shareDeviceStatusChipIdle = "این دستگاه به اشتراک گذاشته شده، کسی متصل نیست"
+    override val shareDeviceStatusChipConnected = "{count} دستگاه به این دستگاه متصل است"
+    override val shareDeviceStatusChipGenerating = "در حال تولید برای دستگاه دیگر"
 }

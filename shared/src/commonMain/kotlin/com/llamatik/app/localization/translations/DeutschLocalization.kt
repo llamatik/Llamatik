@@ -358,4 +358,10 @@ Deine Prioritäten:
     override val serverWaitingForApproval = "Warte auf Genehmigung auf dem anderen Gerät…"
     override val serverPairingDenied = "Das andere Gerät hat den Zugriff verweigert"
     override val serverPairingExpired = "Die Anfrage wurde nicht rechtzeitig genehmigt"
+    override val shareDeviceStatusIdle = "Wird geteilt · kein Gerät verbunden"
+    override val shareDeviceStatusConnected = "Wird geteilt · {count} verbunden"
+    override val shareDeviceStatusGenerating = "Wird geteilt · {count} verbunden · generiert für sie"
+    override val shareDeviceStatusChipIdle = "Dieses Gerät wird geteilt, niemand verbunden"
+    override val shareDeviceStatusChipConnected = "{count} mit diesem Gerät verbunden"
+    override val shareDeviceStatusChipGenerating = "Generiert für ein anderes Gerät"
 }

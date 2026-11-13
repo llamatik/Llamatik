@@ -355,4 +355,10 @@ internal object HindiLocalization : Localization {
     override val serverWaitingForApproval = "दूसरे डिवाइस पर मंज़ूरी की प्रतीक्षा है…"
     override val serverPairingDenied = "दूसरे डिवाइस ने पहुँच अस्वीकार कर दी"
     override val serverPairingExpired = "अनुरोध समय पर स्वीकृत नहीं हुआ"
+    override val shareDeviceStatusIdle = "साझा हो रहा है · कोई डिवाइस कनेक्ट नहीं"
+    override val shareDeviceStatusConnected = "साझा हो रहा है · {count} कनेक्टेड"
+    override val shareDeviceStatusGenerating = "साझा हो रहा है · {count} कनेक्टेड · उनके लिए जनरेट हो रहा है"
+    override val shareDeviceStatusChipIdle = "यह डिवाइस साझा हो रहा है, कोई कनेक्टेड नहीं"
+    override val shareDeviceStatusChipConnected = "इस डिवाइस से {count} कनेक्टेड"
+    override val shareDeviceStatusChipGenerating = "दूसरे डिवाइस के लिए जनरेट हो रहा है"
 }

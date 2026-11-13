@@ -355,4 +355,10 @@ internal object JapaneseLocalization : Localization {
     override val serverWaitingForApproval = "もう一方のデバイスでの承認を待っています…"
     override val serverPairingDenied = "もう一方のデバイスがアクセスを拒否しました"
     override val serverPairingExpired = "リクエストが時間内に承認されませんでした"
+    override val shareDeviceStatusIdle = "共有中 · 接続中のデバイスなし"
+    override val shareDeviceStatusConnected = "共有中 · {count} 台接続中"
+    override val shareDeviceStatusGenerating = "共有中 · {count} 台接続中 · 生成中"
+    override val shareDeviceStatusChipIdle = "このデバイスを共有中（接続なし）"
+    override val shareDeviceStatusChipConnected = "{count} 台がこのデバイスに接続中"
+    override val shareDeviceStatusChipGenerating = "他のデバイスのために生成中"
 }

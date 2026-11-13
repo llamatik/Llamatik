@@ -356,4 +356,10 @@ internal object CatalanLocalization : Localization {
     override val serverWaitingForApproval = "Esperant l'aprovació a l'altre dispositiu…"
     override val serverPairingDenied = "L'altre dispositiu ha denegat l'accés"
     override val serverPairingExpired = "La sol·licitud no s'ha aprovat a temps"
+    override val shareDeviceStatusIdle = "Compartint · cap dispositiu connectat"
+    override val shareDeviceStatusConnected = "Compartint · {count} connectats"
+    override val shareDeviceStatusGenerating = "Compartint · {count} connectats · generant per a ells"
+    override val shareDeviceStatusChipIdle = "Compartint aquest dispositiu, ningú connectat"
+    override val shareDeviceStatusChipConnected = "{count} connectats a aquest dispositiu"
+    override val shareDeviceStatusChipGenerating = "Generant per a un altre dispositiu"
 }

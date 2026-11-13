@@ -77,6 +77,8 @@ import com.llamatik.app.feature.chatbot.viewmodel.ServerRoutingSkipReason
 import com.llamatik.app.feature.chathistory.PendingSessionRepository
 import com.llamatik.app.feature.models.ModelsTabScreen
 import com.llamatik.app.feature.server.ServerHealth
+import com.llamatik.app.feature.sharing.ShareDeviceRepository
+import com.llamatik.app.feature.sharing.SharingStatusIndicator
 import com.llamatik.app.localization.Localization
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.localization.getLanguageCode
@@ -352,6 +354,10 @@ class ChatBotTabScreen : Screen {
                             if (hasServer) {
                                 ServerStatusDot(serverHealth)
                             }
+                            val sharingStatus by remember {
+                                KoinPlatform.getKoin().get<ShareDeviceRepository>()
+                            }.status.collectAsState()
+                            SharingStatusIndicator(sharingStatus, localization)
                             IconButton(
                                 onClick = {
                                     showSuggestions.value = false

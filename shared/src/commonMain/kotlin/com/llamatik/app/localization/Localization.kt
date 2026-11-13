@@ -349,6 +349,12 @@ interface Localization {
     val shareDeviceWarning: String get() =
         "Traffic between devices is not encrypted. Only approve devices you trust on a network you trust. " +
             "Generating for others uses your battery and may heat the device."
+    val shareDeviceStatusIdle: String get() = "Sharing · no devices connected"
+    val shareDeviceStatusConnected: String get() = "Sharing · {count} connected"
+    val shareDeviceStatusGenerating: String get() = "Sharing · {count} connected · generating for them"
+    val shareDeviceStatusChipIdle: String get() = "Sharing this device, nobody connected"
+    val shareDeviceStatusChipConnected: String get() = "{count} connected to this device"
+    val shareDeviceStatusChipGenerating: String get() = "Generating for another device"
     val serverWaitingForApproval: String get() = "Waiting for approval on the other device…"
     val serverPairingDenied: String get() = "The other device denied access"
     val serverPairingExpired: String get() = "The request was not approved in time"

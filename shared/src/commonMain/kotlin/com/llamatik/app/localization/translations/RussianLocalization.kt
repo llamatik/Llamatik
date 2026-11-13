@@ -356,4 +356,10 @@ internal object RussianLocalization : Localization {
     override val serverWaitingForApproval = "Ожидание одобрения на другом устройстве…"
     override val serverPairingDenied = "Другое устройство отклонило доступ"
     override val serverPairingExpired = "Запрос не был одобрен вовремя"
+    override val shareDeviceStatusIdle = "Общий доступ включён · нет подключённых устройств"
+    override val shareDeviceStatusConnected = "Общий доступ включён · подключено: {count}"
+    override val shareDeviceStatusGenerating = "Общий доступ включён · подключено: {count} · идёт генерация для них"
+    override val shareDeviceStatusChipIdle = "Устройство доступно другим, никто не подключён"
+    override val shareDeviceStatusChipConnected = "Подключено к этому устройству: {count}"
+    override val shareDeviceStatusChipGenerating = "Генерация для другого устройства"
 }
