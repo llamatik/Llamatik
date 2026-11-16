@@ -61,6 +61,7 @@ import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
 import com.llamatik.host.LoadedModels
 import com.llamatik.network.client.LlamatikServerClient
+import com.llamatik.network.client.StreamExpiredException
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
 import com.russhwolf.settings.Settings
 import io.github.vinceglb.filekit.FileKit
@@ -2441,8 +2442,7 @@ class ChatBotViewModel(
                         val contextBlock = ""
                         var attempt = 0
                         var serverSucceeded = false
-                        // Set after a reconnect so the partial text of the dropped stream is
-                        // replaced (the server restarts the generation from scratch).
+                        // Set after a restart so the partial text of the expired stream is replaced.
                         var resetOnNextChunk = false
                         while (!serverSucceeded) {
                             try {
@@ -2466,11 +2466,15 @@ class ChatBotViewModel(
                                 throw e
                             } catch (e: Exception) {
                                 if (activeRequestId != requestId) return@withContext // user cancelled
+                                // Dropped connections are already resumed by the client (several
+                                // retries with backoff). Only a stream the server can no longer
+                                // resume is worth restarting; anything else means the server is gone.
+                                val restartable = e is StreamExpiredException
                                 attempt++
                                 Logger.w("ChatBotViewModel") {
                                     "Server stream interrupted (attempt $attempt/$SERVER_RECONNECT_ATTEMPTS): ${e.message}"
                                 }
-                                if (attempt > SERVER_RECONNECT_ATTEMPTS || !reconnectToServer(serverClient, attempt)) {
+                                if (!restartable || attempt > SERVER_RECONNECT_ATTEMPTS || !reconnectToServer(serverClient, attempt)) {
                                     acc.clear()
                                     activeRequestId = null
                                     if (_conversation.value.size >= 2) {

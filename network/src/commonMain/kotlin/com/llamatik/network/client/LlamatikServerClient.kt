@@ -54,16 +54,20 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readUTF8Line
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
+import kotlin.random.Random
 
 class LlamatikServerClient(
     val config: LlamatikServerConfig,
     private val httpClient: HttpClient = defaultHttpClient(config.accessToken),
+    private val retryPolicy: StreamRetryPolicy = StreamRetryPolicy(),
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -80,54 +84,29 @@ class LlamatikServerClient(
             setBody(GenerateRequest(prompt))
         }.body<GenerateResponse>().text
 
-    fun streamGenerate(prompt: String): Flow<String> = channelFlow {
-        httpClient.preparePost("${config.baseUrl}/generation/stream") {
-            setBody(GenerateRequest(prompt))
-        }.execute { response ->
-            parseSse(response.bodyAsChannel())
-        }
-    }
+    fun streamGenerate(prompt: String): Flow<String> =
+        resumableSse("/generation/stream", GenerateRequest(prompt))
 
     fun streamGenerateWithContext(
         systemPrompt: String,
         contextBlock: String,
         userPrompt: String,
-    ): Flow<String> = channelFlow {
-        httpClient.preparePost("${config.baseUrl}/generation/streamWithContext") {
-            setBody(GenerateWithContextRequest(systemPrompt, contextBlock, userPrompt))
-        }.execute { response ->
-            parseSse(response.bodyAsChannel())
-        }
-    }
+    ): Flow<String> =
+        resumableSse("/generation/streamWithContext", GenerateWithContextRequest(systemPrompt, contextBlock, userPrompt))
 
-    fun streamContinue(prompt: String): Flow<String> = channelFlow {
-        httpClient.preparePost("${config.baseUrl}/generation/continueStream") {
-            setBody(GenerateContinueRequest(prompt))
-        }.execute { response ->
-            parseSse(response.bodyAsChannel())
-        }
-    }
+    fun streamContinue(prompt: String): Flow<String> =
+        resumableSse("/generation/continueStream", GenerateContinueRequest(prompt))
 
-    fun streamGenerateJson(prompt: String, jsonSchema: String? = null): Flow<String> = channelFlow {
-        httpClient.preparePost("${config.baseUrl}/generation/jsonStream") {
-            setBody(GenerateJsonRequest(prompt, jsonSchema))
-        }.execute { response ->
-            parseSse(response.bodyAsChannel())
-        }
-    }
+    fun streamGenerateJson(prompt: String, jsonSchema: String? = null): Flow<String> =
+        resumableSse("/generation/jsonStream", GenerateJsonRequest(prompt, jsonSchema))
 
     fun streamGenerateJsonWithContext(
         systemPrompt: String,
         contextBlock: String,
         userPrompt: String,
         jsonSchema: String? = null,
-    ): Flow<String> = channelFlow {
-        httpClient.preparePost("${config.baseUrl}/generation/jsonStreamWithContext") {
-            setBody(GenerateJsonWithContextRequest(systemPrompt, contextBlock, userPrompt, jsonSchema))
-        }.execute { response ->
-            parseSse(response.bodyAsChannel())
-        }
-    }
+    ): Flow<String> =
+        resumableSse("/generation/jsonStreamWithContext", GenerateJsonWithContextRequest(systemPrompt, contextBlock, userPrompt, jsonSchema))
 
     suspend fun updateParams(params: UpdateParamsRequest): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/generation/params") {
@@ -197,13 +176,8 @@ class LlamatikServerClient(
         }.body<InitModelResponse>().ok
     }.getOrElse { false }
 
-    fun streamAnalyzeImage(imageBase64: String, prompt: String): Flow<String> = channelFlow {
-        httpClient.preparePost("${config.baseUrl}/multimodal/analyzeStream") {
-            setBody(AnalyzeImageRequest(imageBase64, prompt))
-        }.execute { response ->
-            parseSse(response.bodyAsChannel())
-        }
-    }
+    fun streamAnalyzeImage(imageBase64: String, prompt: String): Flow<String> =
+        resumableSse("/multimodal/analyzeStream", AnalyzeImageRequest(imageBase64, prompt))
 
     suspend fun cancelMultimodal(): Boolean = runCatching {
         httpClient.post("${config.baseUrl}/multimodal/cancel").body<OkResponse>().ok
@@ -302,33 +276,97 @@ class LlamatikServerClient(
     // --- SSE parser ---
 
     /**
-     * Parses an SSE stream. Throws [StreamInterruptedException] when the connection ends or stalls
-     * before the server sent its `done` event, so callers can reconnect instead of treating a
-     * truncated response as a successful one.
+     * Streams a server-sent-events endpoint and transparently survives connection drops.
+     *
+     * Every stream gets a client-chosen id. When the connection fails or stalls, the request is
+     * re-sent with the same id and `Last-Event-ID` so the server replays what was missed and
+     * continues the still-running generation, with no duplicated or lost text. Up to
+     * [StreamRetryPolicy.maxAttempts] consecutive failures are tolerated (the counter resets
+     * whenever progress is made).
+     *
+     * Throws [StreamExpiredException] when the server can no longer resume (restarted, session
+     * expired, or an older server without resume support): the caller may restart the request,
+     * discarding the partial text. Throws the last connection error when retries are exhausted.
      */
-    private suspend fun ProducerScope<String>.parseSse(byteChannel: ByteReadChannel) {
+    private inline fun <reified T : Any> resumableSse(path: String, body: T): Flow<String> = channelFlow {
+        val streamId = newStreamId()
+        var received = 0
+        var failures = 0
+        while (true) {
+            val receivedBefore = received
+            try {
+                httpClient.preparePost("${config.baseUrl}$path") {
+                    header(STREAM_ID_HEADER, streamId)
+                    if (received > 0) header(LAST_EVENT_ID_HEADER, received.toString())
+                    setBody(body)
+                }.execute { response ->
+                    if (response.status == HttpStatusCode.Gone) throw StreamExpiredException("Stream expired on server")
+                    if (!response.status.isSuccess()) {
+                        throw RemoteInferenceException("Server responded ${response.status.value}")
+                    }
+                    // A server without resume support would restart the generation from scratch.
+                    if (received > 0 && response.headers[STREAM_RESUME_HEADER] != "1") {
+                        throw StreamExpiredException("Server does not support resuming streams")
+                    }
+                    parseSse(response.bodyAsChannel()) { received = it }
+                }
+                return@channelFlow
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: RemoteInferenceException) {
+                throw e
+            } catch (e: StreamExpiredException) {
+                throw e
+            } catch (e: Exception) {
+                if (received > receivedBefore) failures = 0
+                failures++
+                if (failures > retryPolicy.maxAttempts) throw e
+                Logger.w(e) { "Stream $path interrupted after $received events (retry $failures/${retryPolicy.maxAttempts})" }
+                delay(retryPolicy.delayFor(failures))
+            }
+        }
+    }
+
+    /**
+     * Parses an SSE stream, reporting the id of each processed event via [onEventId]. Throws
+     * [StreamInterruptedException] when the connection ends or stalls before the server sent its
+     * `done` event, so a truncated response is never mistaken for a complete one.
+     */
+    private suspend fun ProducerScope<String>.parseSse(
+        byteChannel: ByteReadChannel,
+        onEventId: (Int) -> Unit,
+    ) {
         var finished = false
+        var pendingId: Int? = null
         try {
             while (isActive) {
                 // Wrapped in a list so a null line (EOF) is distinguishable from a timeout.
-                val read = withTimeoutOrNull(STREAM_IDLE_TIMEOUT_MS) { listOf(byteChannel.readUTF8Line()) }
+                val read = withTimeoutOrNull(retryPolicy.idleTimeoutMs) { listOf(byteChannel.readUTF8Line()) }
                     ?: throw StreamInterruptedException("Stream stalled")
                 val line = read[0] ?: break
-                if (line.startsWith("data: ")) {
+                if (line.startsWith("id:")) {
+                    pendingId = line.removePrefix("id:").trim().toIntOrNull()
+                } else if (line.startsWith("data: ")) {
                     val data = line.removePrefix("data: ").trim()
                     if (data.isEmpty()) continue
                     try {
                         val event = json.decodeFromString<SseEventDto>(data)
+                        // Record progress before emitting so a drop right after never duplicates text.
+                        pendingId?.let(onEventId)
                         when (event.event) {
                             "delta" -> event.text?.let { send(it) }
-                            "done" -> { finished = true; break }
-                            "error" -> error(event.message ?: "Remote inference error")
+                            "done" -> finished = true
+                            "error" -> throw RemoteInferenceException(event.message ?: "Remote inference error")
                         }
-                    } catch (e: IllegalStateException) {
+                        if (finished) break
+                    } catch (e: RemoteInferenceException) {
+                        throw e
+                    } catch (e: CancellationException) {
                         throw e
                     } catch (_: Exception) {
                         // skip malformed SSE line
                     }
+                    pendingId = null
                 }
             }
         } finally {
@@ -337,9 +375,10 @@ class LlamatikServerClient(
         if (!finished && isActive) throw StreamInterruptedException("Connection closed before generation finished")
     }
 
-    companion object {
-        private const val STREAM_IDLE_TIMEOUT_MS = 120_000L
+    private fun newStreamId(): String =
+        Random.nextLong().toULong().toString(16) + Random.nextLong().toULong().toString(16)
 
+    companion object {
         fun defaultHttpClient(accessToken: String? = null): HttpClient = HttpClient {
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true })
@@ -353,5 +392,28 @@ class LlamatikServerClient(
     }
 }
 
+/** Reconnect behaviour for dropped streams. */
+data class StreamRetryPolicy(
+    /** Consecutive failed reconnects tolerated before giving up. Resets after any progress. */
+    val maxAttempts: Int = 4,
+    val baseDelayMs: Long = 1_000L,
+    val maxDelayMs: Long = 8_000L,
+    /** A stream with no data for this long is considered dead (e.g. silent network switch). */
+    val idleTimeoutMs: Long = 120_000L,
+) {
+    internal fun delayFor(failure: Int): Long =
+        (baseDelayMs shl (failure - 1).coerceIn(0, 10)).coerceAtMost(maxDelayMs)
+}
+
 /** The SSE connection dropped or stalled before the server reported completion. */
 class StreamInterruptedException(message: String) : Exception(message)
+
+/** The server cannot resume this stream; the request has to be restarted from scratch. */
+class StreamExpiredException(message: String) : Exception(message)
+
+/** The server reported a failure for this request. Not retried: it would fail again. */
+class RemoteInferenceException(message: String) : Exception(message)
+
+internal const val STREAM_ID_HEADER = "X-Stream-Id"
+internal const val LAST_EVENT_ID_HEADER = "Last-Event-ID"
+internal const val STREAM_RESUME_HEADER = "X-Stream-Resume"
