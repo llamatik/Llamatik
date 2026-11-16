@@ -58,6 +58,7 @@ import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 
 class LlamatikServerClient(
@@ -300,10 +301,19 @@ class LlamatikServerClient(
 
     // --- SSE parser ---
 
+    /**
+     * Parses an SSE stream. Throws [StreamInterruptedException] when the connection ends or stalls
+     * before the server sent its `done` event, so callers can reconnect instead of treating a
+     * truncated response as a successful one.
+     */
     private suspend fun ProducerScope<String>.parseSse(byteChannel: ByteReadChannel) {
+        var finished = false
         try {
-            while (!byteChannel.isClosedForRead && isActive) {
-                val line = byteChannel.readUTF8Line() ?: break
+            while (isActive) {
+                // Wrapped in a list so a null line (EOF) is distinguishable from a timeout.
+                val read = withTimeoutOrNull(STREAM_IDLE_TIMEOUT_MS) { listOf(byteChannel.readUTF8Line()) }
+                    ?: throw StreamInterruptedException("Stream stalled")
+                val line = read[0] ?: break
                 if (line.startsWith("data: ")) {
                     val data = line.removePrefix("data: ").trim()
                     if (data.isEmpty()) continue
@@ -311,7 +321,7 @@ class LlamatikServerClient(
                         val event = json.decodeFromString<SseEventDto>(data)
                         when (event.event) {
                             "delta" -> event.text?.let { send(it) }
-                            "done" -> break
+                            "done" -> { finished = true; break }
                             "error" -> error(event.message ?: "Remote inference error")
                         }
                     } catch (e: IllegalStateException) {
@@ -324,9 +334,12 @@ class LlamatikServerClient(
         } finally {
             byteChannel.cancel(null)
         }
+        if (!finished && isActive) throw StreamInterruptedException("Connection closed before generation finished")
     }
 
     companion object {
+        private const val STREAM_IDLE_TIMEOUT_MS = 120_000L
+
         fun defaultHttpClient(accessToken: String? = null): HttpClient = HttpClient {
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true })
@@ -339,3 +352,6 @@ class LlamatikServerClient(
         }
     }
 }
+
+/** The SSE connection dropped or stalled before the server reported completion. */
+class StreamInterruptedException(message: String) : Exception(message)

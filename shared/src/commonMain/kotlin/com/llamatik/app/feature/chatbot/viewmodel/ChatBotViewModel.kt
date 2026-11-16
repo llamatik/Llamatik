@@ -60,14 +60,17 @@ import com.llamatik.core.platform.SdProgress
 import com.llamatik.core.platform.StableDiffusionBridge
 import com.llamatik.core.platform.WhisperBridge
 import com.llamatik.host.LoadedModels
+import com.llamatik.network.client.LlamatikServerClient
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
 import com.russhwolf.settings.Settings
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -90,6 +93,7 @@ import kotlin.random.Random
 import kotlin.time.Clock.System
 import kotlin.time.ExperimentalTime
 
+private const val SERVER_RECONNECT_ATTEMPTS = 4
 private const val PRIVACY_CHATBOT_VIEWED_KEY = "privacy_chatbot_viewed_key"
 private const val INITIAL_DOWNLOAD_REQUESTED_KEY = "initial_download_requested_key"
 private const val USER_SKIPPED_SETUP_KEY = "user_skipped_setup_key"
@@ -2435,56 +2439,61 @@ class ChatBotViewModel(
                     if (serverClient != null && liveServerStatus?.generation?.loaded == true) {
                         val systemPrompt = currentSystemPrompt()
                         val contextBlock = ""
+                        var attempt = 0
                         var serverSucceeded = false
-                        try {
-                            withTimeoutOrNull(30_000L) {
+                        // Set after a reconnect so the partial text of the dropped stream is
+                        // replaced (the server restarts the generation from scratch).
+                        var resetOnNextChunk = false
+                        while (!serverSucceeded) {
+                            try {
                                 serverClient.streamGenerateWithContext(
                                     systemPrompt = systemPrompt,
                                     contextBlock = contextBlock,
                                     userPrompt = input,
                                 ).collect { chunk ->
                                     if (activeRequestId != requestId) return@collect
+                                    if (resetOnNextChunk) {
+                                        acc.clear()
+                                        resetOnNextChunk = false
+                                    }
                                     acc.append(chunk)
                                     _conversation.value = _conversation.value.dropLast(1) +
                                         ChatUiModel.Message(acc.toString(), ChatUiModel.Author.bot)
                                     _sideEffects.trySend(ChatBotSideEffects.ScrollToBottom)
                                 }
                                 serverSucceeded = true
-                                kvCacheValid = false
-                                activeRequestId = null
-                                _conversation.value = _conversation.value.dropLast(1) +
-                                    ChatUiModel.Message(acc.toString(), ChatUiModel.Author.bot)
-                                _state.value = _state.value.copy(isGenerating = false)
-                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
-                            } ?: run {
-                                // Timeout — restore conversation and offer local fallback
-                                if (_conversation.value.size >= 2) {
-                                    _conversation.value = _conversation.value.dropLast(2)
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (e: Exception) {
+                                if (activeRequestId != requestId) return@withContext // user cancelled
+                                attempt++
+                                Logger.w("ChatBotViewModel") {
+                                    "Server stream interrupted (attempt $attempt/$SERVER_RECONNECT_ATTEMPTS): ${e.message}"
                                 }
-                                activeRequestId = null
-                                _sideEffects.trySend(
-                                    ChatBotSideEffects.OnServerGenerationFailed(input, GenerationMode.TEXT)
-                                )
-                                _state.value = _state.value.copy(isGenerating = false)
-                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
-                            }
-                            return@withContext
-                        } catch (e: Exception) {
-                            Logger.e(e) { "Server generation failed, offering local fallback" }
-                            if (!serverSucceeded) {
-                                acc.clear()
-                                activeRequestId = null
-                                if (_conversation.value.size >= 2) {
-                                    _conversation.value = _conversation.value.dropLast(2)
+                                if (attempt > SERVER_RECONNECT_ATTEMPTS || !reconnectToServer(serverClient, attempt)) {
+                                    acc.clear()
+                                    activeRequestId = null
+                                    if (_conversation.value.size >= 2) {
+                                        _conversation.value = _conversation.value.dropLast(2)
+                                    }
+                                    _sideEffects.trySend(
+                                        ChatBotSideEffects.OnServerGenerationFailed(input, GenerationMode.TEXT)
+                                    )
+                                    _state.value = _state.value.copy(isGenerating = false)
+                                    _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                                    return@withContext
                                 }
-                                _sideEffects.trySend(
-                                    ChatBotSideEffects.OnServerGenerationFailed(input, GenerationMode.TEXT)
-                                )
-                                _state.value = _state.value.copy(isGenerating = false)
-                                _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
-                                return@withContext
+                                resetOnNextChunk = true
                             }
                         }
+                        if (activeRequestId != requestId) return@withContext
+                        kvCacheValid = false
+                        activeRequestId = null
+                        _conversation.value = _conversation.value.dropLast(1) +
+                            ChatUiModel.Message(acc.toString(), ChatUiModel.Author.bot)
+                        _state.value = _state.value.copy(isGenerating = false)
+                        _sideEffects.trySend(ChatBotSideEffects.OnMessageLoaded)
+                        return@withContext
                     }
                     // --- End server routing ---
 
@@ -2811,6 +2820,23 @@ class ChatBotViewModel(
     private fun currentGenerateModel(): LlamaModel? {
         val state = _state.value
         return state.generateModels.firstOrNull { it.name == state.selectedGenerateModelName }
+    }
+
+    /**
+     * Waits (with backoff) for the server to be reachable again with a generation model loaded and
+     * cancels any orphaned generation still running there. Returns false if the server is gone or
+     * lost its model, in which case the caller should offer the local fallback.
+     */
+    private suspend fun reconnectToServer(client: LlamatikServerClient, attempt: Int): Boolean {
+        delay(1_000L shl (attempt - 1).coerceIn(0, 3))
+        val status = runCatching { client.getModelsStatus() }.getOrNull() ?: run {
+            // One more chance after a short pause, e.g. during a Wi-Fi/cellular switch.
+            delay(2_000L)
+            runCatching { client.getModelsStatus() }.getOrNull()
+        } ?: return false
+        if (status.generation?.loaded != true) return false
+        runCatching { client.cancelGeneration() }
+        return true
     }
 
     private fun currentSystemPrompt(): String {
