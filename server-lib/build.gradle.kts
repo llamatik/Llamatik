@@ -41,8 +41,15 @@ kotlin {
     }
 }
 
+// Maven Central requires a -javadoc.jar on every publication. KMP publications ship none by
+// default, so attach an empty one (Central only checks that it exists).
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     publications.withType<MavenPublication>().configureEach {
+        artifact(javadocJar)
         // Keep the published coordinates `com.llamatik:server[-jvm|-iosarm64|...]`.
         artifactId = artifactId.replaceFirst("server-lib", "server")
         pom {
@@ -78,4 +85,11 @@ signing {
         useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications)
     }
+}
+
+// All KMP publications share the same javadoc jar, so each Sign task writes an output (the .asc)
+// that other publications' publish tasks consume. Gradle 9 rejects that as an implicit dependency;
+// make every publish task wait for all signing tasks.
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    dependsOn(tasks.withType<Sign>())
 }

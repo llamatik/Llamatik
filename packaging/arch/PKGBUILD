@@ -1,0 +1,43 @@
+# Repackages the jpackage-produced .deb (llamatik_<ver>-1_amd64.deb) as a
+# pacman package for Arch Linux / Omarchy. Expects the .deb next to this file
+# and the version in $LLAMATIK_VERSION.
+pkgname=llamatik
+pkgver=${LLAMATIK_VERSION:?LLAMATIK_VERSION must be set}
+pkgrel=1
+pkgdesc="Llamatik - local LLM, VLM and image generation desktop app"
+arch=('x86_64')
+url="https://github.com/ferranpons/Llamatik"
+license=('custom')
+depends=('gtk3' 'alsa-lib' 'libxtst' 'libxrender' 'libxi' 'libxrandr' 'libxkbcommon-x11')
+options=('!strip' '!debug')
+source=("llamatik.deb")
+sha256sums=('SKIP')
+
+package() {
+  bsdtar -xf llamatik.deb data.tar.*
+  bsdtar -xf data.tar.* -C "$pkgdir"
+
+  # jpackage installs to /opt/llamatik; expose the launcher on PATH
+  install -d "$pkgdir/usr/bin"
+  ln -s /opt/llamatik/bin/Llamatik "$pkgdir/usr/bin/llamatik"
+
+  # Desktop entry + icon
+  local icon
+  icon=$(find "$pkgdir/opt/llamatik" -iname '*.png' | head -n1 || true)
+  if [ -n "$icon" ]; then
+    install -Dm644 "$icon" "$pkgdir/usr/share/pixmaps/llamatik.png"
+  fi
+  install -Dm644 /dev/stdin "$pkgdir/usr/share/applications/llamatik.desktop" <<DESKTOP
+[Desktop Entry]
+Type=Application
+Name=Llamatik
+Comment=$pkgdesc
+Exec=/opt/llamatik/bin/Llamatik
+Icon=llamatik
+Terminal=false
+Categories=Utility;Development;
+DESKTOP
+
+  # Drop Debian-specific integration files
+  rm -rf "$pkgdir/opt/llamatik/lib/"*.desktop
+}

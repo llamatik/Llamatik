@@ -796,6 +796,13 @@ signing {
     }
 }
 
+// All KMP publications share the same javadoc jar, so each Sign task writes an output (the .asc)
+// that other publications' publish tasks consume. Gradle 9 rejects that as an implicit dependency;
+// make every publish task wait for all signing tasks.
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    dependsOn(tasks.withType<Sign>())
+}
+
 afterEvaluate {
     tasks.named("publish") {
         dependsOn(
