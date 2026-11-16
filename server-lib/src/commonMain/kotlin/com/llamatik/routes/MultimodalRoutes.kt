@@ -5,27 +5,17 @@ import com.llamatik.api.AnalyzeImageRequest
 import com.llamatik.api.InitModelResponse
 import com.llamatik.api.MultimodalInitRequest
 import com.llamatik.api.OkResponse
-import com.llamatik.core.platform.GenStream
 import com.llamatik.multimodal.MultimodalService
 import com.llamatik.multimodal.MultimodalServicePort
 import com.llamatik.status.ModelRegistry
 import com.llamatik.util.PathValidator
-import com.llamatik.util.Sse
+import com.llamatik.util.respondResumableStream
 import com.llamatik.util.sanitizedMessage
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondBytesWriter
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.Channel
-import com.llamatik.util.blockingDispatcher
-import com.llamatik.util.sendBlocking
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.launch
 import kotlin.io.encoding.Base64
 
 private const val VLM = "$API_VERSION/multimodal"
@@ -64,31 +54,8 @@ fun Route.multimodalRoutes(service: MultimodalServicePort = MultimodalService) {
             return@post
         }
 
-        call.respondBytesWriter(contentType = ContentType.Text.EventStream) {
-            val deltas = Channel<String>(capacity = 64)
-            val done = Channel<Unit>(capacity = 1)
-            val errors = Channel<String>(capacity = 1)
-            val cb: GenStream = Sse.genStreamCallback(
-                onDelta = { deltas.sendBlocking(it) },
-                onDone = { done.trySend(Unit).isSuccess },
-                onError = { errors.trySend(it).isSuccess }
-            )
-
-            val streamJob = CoroutineScope(currentCoroutineContext()).launch(blockingDispatcher) {
-                try {
-                    service.analyzeImageBytesStream(imageBytes, req.prompt, cb)
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Throwable) {
-                    errors.trySend(e.message ?: "VLM streaming failed")
-                }
-            }
-
-            try {
-                Sse.pipe(writer = this, deltas = deltas, done = done, errors = errors)
-            } finally {
-                streamJob.cancel()
-            }
+        call.respondResumableStream(onAbandon = { service.cancelAnalysis() }) { cb ->
+            service.analyzeImageBytesStream(imageBytes, req.prompt, cb)
         }
     }
 

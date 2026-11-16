@@ -1078,9 +1078,9 @@ The Llamatik app can use a Llamatik Server for generation, with or without a loc
 
 - **Settings → Connect to Server**: add a server manually by IP and port, or scan the local network (Llamatik Server advertises itself via mDNS as `_llamatik._tcp`); saved servers can be reconnected in one tap.
 - Capability chips show what the server has loaded (text, image, vision, video, audio).
-- Chat works with only a server connected; responses are streamed.
+- Chat works with only a server connected; responses are streamed, and a dropped connection mid-response is resumed automatically (the server replays what you missed) instead of switching to the local model.
 - A status dot in the chat toolbar shows the server state: green (online), yellow (reachable but no text model), red (unreachable).
-- If the server fails or has no text model, the app falls back to local generation.
+- If the server stays unreachable after several reconnect attempts or has no text model, the app falls back to local generation.
 
 > **Security note:** server connections are currently **not encrypted**. The app warns you before connecting. Be careful about what you send and avoid sharing passwords or sensitive information. Encrypted and unencrypted modes will both be supported in the future.
 
