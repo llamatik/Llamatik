@@ -41,8 +41,15 @@ kotlin {
     }
 }
 
+// Maven Central requires a -javadoc.jar on every publication. KMP publications ship none by
+// default, so attach an empty one (Central only checks that it exists).
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     publications.withType<MavenPublication>().configureEach {
+        artifact(javadocJar)
         // Keep the published coordinates `com.llamatik:server[-jvm|-iosarm64|...]`.
         artifactId = artifactId.replaceFirst("server-lib", "server")
         pom {
