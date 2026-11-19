@@ -1,129 +1,129 @@
 ---
-title: "Introducing Llamatik Code: A Privacy-First AI Coding Assistant for IntelliJ and Android Studio"
+title: "Presentamos Llamatik Code: un asistente de programación con IA que prioriza la privacidad para IntelliJ y Android Studio"
 date: 2026-05-14T00:00:00-05:00
-description: "Llamatik Code is a local-first AI coding assistant for IntelliJ-based IDEs. All inference runs on your machine using GGUF models — no cloud, no API keys, no data leaving your device."
+description: "Llamatik Code es un asistente de programación con IA, local por diseño, para los IDE basados en IntelliJ. Toda la inferencia se ejecuta en tu equipo con modelos GGUF: sin nube, sin claves de API y sin que tus datos salgan de tu dispositivo."
 image: "images/blog/llamatik_code_landing_image.png"
 tags: ["Llamatik Code", "IntelliJ", "Android Studio", "AI", "Privacy", "llama.cpp", "GGUF", "Local AI"]
 showDate: true
 draft: false
 ---
 
-We have been building Llamatik as a platform for private, on-device AI since day one. Today we are bringing that same philosophy to your IDE.
+Desde el primer día hemos construido Llamatik como una plataforma de IA privada y en el dispositivo. Hoy llevamos esa misma filosofía a tu IDE.
 
-**Llamatik Code** is now available on the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/31304-llamatik-code) — a fully local, privacy-first AI coding assistant for IntelliJ IDEA, Android Studio, and the entire JetBrains IDE family.
+**Llamatik Code** ya está disponible en el [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/31304-llamatik-code): un asistente de programación con IA totalmente local y que prioriza la privacidad, para IntelliJ IDEA, Android Studio y toda la familia de IDE de JetBrains.
 
-No cloud. No API keys. No data leaving your machine. Just your local GGUF model, running inside your IDE.
-
----
-
-## Why local AI in your IDE?
-
-Most AI coding assistants work the same way: your code is sent to a remote server, a cloud model processes it, and the result comes back. That works — but it comes with trade-offs:
-
-- Your code and context leave your machine on every request
-- You depend on network connectivity and third-party uptime
-- Subscription costs scale with usage
-- Enterprise and regulated environments often can't use cloud AI at all
-
-Llamatik Code takes a different approach. Everything runs on-device using [llama.cpp](https://github.com/ggerganov/llama.cpp) — the same battle-tested runtime powering the Llamatik mobile and desktop apps. You load a GGUF model once, and from that point your IDE has a fully capable AI assistant that never phones home.
+Sin nube. Sin claves de API. Sin que tus datos salgan de tu equipo. Solo tu modelo GGUF local, ejecutándose dentro de tu IDE.
 
 ---
 
-## What Llamatik Code can do
+## ¿Por qué IA local en tu IDE?
 
-### Ask Mode — chat about anything, no file changes
+La mayoría de los asistentes de programación con IA funcionan igual: tu código se envía a un servidor remoto, un modelo en la nube lo procesa y el resultado vuelve a ti. Funciona, pero tiene contrapartidas:
 
-Ask questions, explore APIs, get explanations, generate snippets. Ask Mode is a full conversational interface with persistent multi-session history and awareness of your current files, selected text, and project structure.
+- Tu código y su contexto salen de tu equipo en cada petición
+- Dependes de la conexión de red y de la disponibilidad de terceros
+- El coste de las suscripciones crece con el uso
+- Los entornos empresariales y regulados a menudo no pueden usar IA en la nube
 
-Ask Mode is **unlimited in the free tier** — no daily cap, no credits.
+Llamatik Code adopta otro enfoque. Todo se ejecuta en el dispositivo con [llama.cpp](https://github.com/ggerganov/llama.cpp), el mismo runtime probado en miles de situaciones que impulsa las apps de Llamatik para móvil y escritorio. Cargas un modelo GGUF una vez y, a partir de ese momento, tu IDE cuenta con un asistente de IA plenamente capaz que nunca se conecta a ningún servidor.
 
-### Agent Mode — let the model drive code changes
+---
 
-Agent Mode goes further. You describe what you want in natural language, and the agent proposes code edits, shows you a diff, and waits for your approval before touching any file.
+## Qué puede hacer Llamatik Code
 
-The agent is project-aware: it understands your file structure, can navigate across files, and chains multiple tool calls to complete multi-step tasks. The free tier includes single-session agent tasks. Pro unlocks parallel multi-task execution and **Aggressive Mode** — where the agent can make autonomous decisions without prompting for approval at each step.
+### Ask Mode: chatea sobre lo que quieras, sin modificar archivos
 
-### Multi-file editing (Pro)
+Haz preguntas, explora APIs, obtén explicaciones y genera fragmentos de código. Ask Mode es una interfaz conversacional completa, con historial persistente de varias sesiones y conocimiento de tus archivos actuales, del texto seleccionado y de la estructura de tu proyecto.
 
-Apply code changes across multiple files at once. Useful for refactors, API migrations, and anything that spans more than one file.
+Ask Mode es **ilimitado en el plan gratuito**: sin tope diario, sin créditos.
 
-### MCP Server Integration
+### Agent Mode: deja que el modelo lleve las riendas de los cambios de código
 
-Llamatik Code supports the [Model Context Protocol](https://modelcontextprotocol.io/), letting you connect the agent to external tools and services. The free tier supports one MCP server with manual action approval. Pro unlocks unlimited MCP servers and auto-approval.
+Agent Mode va más allá. Describes lo que quieres en lenguaje natural y el agente propone cambios en el código, te muestra un diff y espera tu aprobación antes de tocar ningún archivo.
 
-### External Knowledge — web search built in
+El agente conoce tu proyecto: entiende la estructura de archivos, puede moverse entre ellos y encadena varias llamadas a herramientas para completar tareas de varios pasos. El plan gratuito incluye tareas de agente de una sola sesión. Pro desbloquea la ejecución paralela de varias tareas y el **Aggressive Mode**, en el que el agente puede tomar decisiones de forma autónoma sin pedir aprobación en cada paso.
 
-Since version 1.5.0, Llamatik Code includes an External Knowledge system that lets the model search the web and read documentation without any API key.
+### Edición de varios archivos (Pro)
 
-It uses DuckDuckGo under the hood and understands developer intent:
+Aplica cambios de código en varios archivos a la vez. Resulta útil para refactorizaciones, migraciones de APIs y cualquier cambio que afecte a más de un archivo.
 
-- Questions about Kotlin or Coroutines → searches kotlinlang.org
-- Questions about Android or Compose → searches developer.android.com
-- Error messages → searches GitHub Issues
-- Library questions → searches package registries and changelogs
+### Integración con servidores MCP
 
-Each result comes with structured citations — source type, confidence level, and direct URL. The model plans multi-step research workflows automatically and synthesizes findings into a coherent answer.
+Llamatik Code es compatible con el [Model Context Protocol](https://modelcontextprotocol.io/), que te permite conectar el agente con herramientas y servicios externos. El plan gratuito admite un servidor MCP con aprobación manual de las acciones. Pro desbloquea servidores MCP ilimitados y la aprobación automática.
 
-The free tier includes 5 searches per day (5 results each). Pro raises this to 50 searches per day with 10 results each and up to 10 private documentation sources.
+### Conocimiento externo: búsqueda web integrada
+
+Desde la versión 1.5.0, Llamatik Code incluye un sistema de conocimiento externo (External Knowledge) que permite al modelo buscar en la web y leer documentación sin ninguna clave de API.
+
+Usa DuckDuckGo por debajo y entiende la intención del desarrollador:
+
+- Preguntas sobre Kotlin o Coroutines → busca en kotlinlang.org
+- Preguntas sobre Android o Compose → busca en developer.android.com
+- Mensajes de error → busca en GitHub Issues
+- Preguntas sobre bibliotecas → busca en registros de paquetes y changelogs
+
+Cada resultado incluye citas estructuradas: tipo de fuente, nivel de confianza y URL directa. El modelo planifica automáticamente flujos de investigación de varios pasos y sintetiza los hallazgos en una respuesta coherente.
+
+El plan gratuito incluye 5 búsquedas al día (5 resultados cada una). Pro lo eleva a 50 búsquedas al día con 10 resultados cada una y hasta 10 fuentes de documentación privadas.
 
 ### Code Health Monitor
 
-A background analysis mode that surfaces code quality issues. Free users can run it manually; Pro unlocks advanced automated modes.
+Un modo de análisis en segundo plano que detecta problemas de calidad del código. Los usuarios gratuitos pueden ejecutarlo manualmente; Pro desbloquea modos automáticos avanzados.
 
 ---
 
-## Free vs Pro
+## Gratis frente a Pro
 
-| Feature | Free | Pro |
+| Función | Gratis | Pro |
 |---|---|---|
-| Ask Mode (chat) | Unlimited | Unlimited |
-| Agent sessions | Single session | Multi-task, parallel |
-| Aggressive agent mode | — | ✓ |
-| Multi-file code application | — | ✓ |
-| MCP servers | 1, manual approval | Unlimited, auto-approval |
-| External Knowledge searches/day | 5 | 50 |
-| Results per search | 5 | 10 |
-| Private docs sources | 1 | 10 |
-| Code Health Monitor | Manual | Advanced automated |
+| Ask Mode (chat) | Ilimitado | Ilimitado |
+| Sesiones de agente | Una sola sesión | Multitarea, en paralelo |
+| Modo de agente agresivo | — | ✓ |
+| Aplicación de código en varios archivos | — | ✓ |
+| Servidores MCP | 1, aprobación manual | Ilimitados, aprobación automática |
+| Búsquedas de conocimiento externo/día | 5 | 50 |
+| Resultados por búsqueda | 5 | 10 |
+| Fuentes de documentación privadas | 1 | 10 |
+| Code Health Monitor | Manual | Automático avanzado |
 
-Pro subscriptions are available at [llamatik.com](https://www.llamatik.com).
-
----
-
-## Getting started
-
-**Requirements:**
-- IntelliJ IDEA 2026.1 or any JetBrains IDE on platform build 252+
-- macOS, Linux, or Windows (64-bit, JDK 21+)
-- A GGUF model file stored locally
-
-**Installation:**
-1. Open your IDE → Settings → Plugins → Marketplace
-2. Search for **Llamatik Code** and install it
-3. Restart the IDE
-
-**Model setup:**
-1. Go to Settings → Llamatik Code → Inference
-2. Point it at your local `.gguf` file
-3. Adjust context size and thread count for your hardware
-
-Any llama.cpp-compatible GGUF model works. For most development tasks, a 7B Q4_K_M or Q5_K_M quantized instruct model is a good starting point. For heavier agent work or complex codebases, a 13B–14B model offers noticeably better reasoning.
-
-Full setup instructions and model recommendations are in the [documentation](https://docs.llamatik.com/llamatik-code/).
+Las suscripciones Pro están disponibles en [llamatik.com](https://www.llamatik.com).
 
 ---
 
-## Built on the Llamatik engine
+## Primeros pasos
 
-Llamatik Code is powered by the same Kotlin-first llama.cpp integration that drives the Llamatik mobile and desktop apps. That means the same inference quality, the same GGUF compatibility, and the same privacy guarantees — whether you are chatting on your phone or editing code in your IDE.
+**Requisitos:**
+- IntelliJ IDEA 2026.1 o cualquier IDE de JetBrains con build de plataforma 252+
+- macOS, Linux o Windows (64 bits, JDK 21+)
+- Un archivo de modelo GGUF almacenado en local
 
-External network access only ever happens through explicitly configured MCP servers or External Knowledge searches. Nothing else leaves your machine.
+**Instalación:**
+1. Abre tu IDE → Settings → Plugins → Marketplace
+2. Busca **Llamatik Code** e instálalo
+3. Reinicia el IDE
+
+**Configuración del modelo:**
+1. Ve a Settings → Llamatik Code → Inference
+2. Indica la ruta de tu archivo `.gguf` local
+3. Ajusta el tamaño de contexto y el número de hilos según tu hardware
+
+Funciona cualquier modelo GGUF compatible con llama.cpp. Para la mayoría de las tareas de desarrollo, un modelo instruct de 7B cuantizado en Q4_K_M o Q5_K_M es un buen punto de partida. Para un trabajo de agente más exigente o para bases de código complejas, un modelo de 13B–14B ofrece un razonamiento claramente mejor.
+
+Las instrucciones completas de configuración y las recomendaciones de modelos están en la [documentación](https://docs.llamatik.com/llamatik-code/).
 
 ---
 
-## Install it today
+## Construido sobre el motor de Llamatik
 
-Llamatik Code is available now on the JetBrains Marketplace.
+Llamatik Code funciona con la misma integración de llama.cpp, pensada primero para Kotlin, que impulsa las apps de Llamatik para móvil y escritorio. Eso significa la misma calidad de inferencia, la misma compatibilidad con GGUF y las mismas garantías de privacidad, tanto si chateas en tu móvil como si editas código en tu IDE.
 
-→ [Install Llamatik Code](https://plugins.jetbrains.com/plugin/31304-llamatik-code)  
-→ [Read the documentation](https://docs.llamatik.com/llamatik-code/)
+El acceso externo a la red solo se produce a través de servidores MCP configurados de forma explícita o de búsquedas de conocimiento externo. Nada más sale de tu equipo.
+
+---
+
+## Instálalo hoy
+
+Llamatik Code ya está disponible en el JetBrains Marketplace.
+
+→ [Instalar Llamatik Code](https://plugins.jetbrains.com/plugin/31304-llamatik-code)  
+→ [Leer la documentación](https://docs.llamatik.com/llamatik-code/)

@@ -1,9 +1,9 @@
 ---
-title: "Llamatik Wins a 2026 Kotlin Foundation Grant"
+title: "Llamatik が 2026 年 Kotlin Foundation Grant を受賞"
 date: 2026-11-09T00:00:00-05:00
-description: "Llamatik has been selected as a 2026 Kotlin Foundation Grant winner. Discover how this recognition will help advance on-device AI, Kotlin Multiplatform development, and local AI agents."
+description: "Llamatik が 2026 年の Kotlin Foundation Grant の受賞プロジェクトに選ばれました。この評価が、オンデバイス AI、Kotlin Multiplatform 開発、ローカル AI エージェントの前進にどう役立つのかをご紹介します。"
 image: "images/blog/kotlin-foundation-grant-2026.png"
-image_alt: "Llamatik logo next to the text 'Llamatik — Kotlin Foundation Grant Winner 2026'"
+image_alt: "Llamatik のロゴと、テキスト「Llamatik — Kotlin Foundation Grant Winner 2026」"
 author: "Llamatik Team"
 categories: ["Announcements"]
 tags: ["Kotlin", "Kotlin Multiplatform", "Kotlin Foundation", "Open Source", "On-Device AI"]
@@ -11,105 +11,105 @@ showDate: true
 draft: false
 ---
 
-We're excited to announce that **Llamatik has been selected as one of the five winners of the 2026 Kotlin Foundation Grants Program**, receiving a **$6,000 grant** to support the project's continued development.
+**Llamatik が 2026 年 Kotlin Foundation Grants Program の5つの受賞プロジェクトの1つに選ばれ**、プロジェクトの継続的な開発を支援する **6,000 ドルの助成金**を受け取ることになりました。ご報告できることをうれしく思います。
 
-This recognition marks an important milestone for Llamatik and reinforces our mission to make on-device AI more accessible to developers through Kotlin Multiplatform.
+この評価は Llamatik にとって重要なマイルストーンであり、Kotlin Multiplatform を通じてオンデバイス AI を開発者にとってより身近なものにするという私たちのミッションを後押ししてくれます。
 
-We would like to sincerely thank the Kotlin Foundation for recognizing the project's potential and supporting the open-source ecosystem.
+プロジェクトの可能性を認め、オープンソースのエコシステムを支えてくださった Kotlin Foundation に、心から感謝いたします。
 
-## What Is Llamatik?
+## Llamatik とは
 
-Llamatik is an **open-source Kotlin Multiplatform ecosystem for running AI models directly on devices**, making it easier for developers to integrate local AI capabilities into their applications.
+Llamatik は、**AI モデルをデバイス上で直接実行するための、オープンソースの Kotlin Multiplatform エコシステム**です。開発者がローカル AI の機能を自分のアプリに組み込みやすくします。
 
-Built around Kotlin Multiplatform and native inference technologies such as [llama.cpp](https://github.com/ggml-org/llama.cpp), Llamatik enables developers to explore local AI across Android, iOS, Desktop, and Web.
+Kotlin Multiplatform と、[llama.cpp](https://github.com/ggml-org/llama.cpp) などのネイティブ推論技術を土台に、Llamatik は Android、iOS、デスクトップ、Web にまたがるローカル AI を開発者が探求できるようにします。
 
-Our mission is to make AI:
+私たちのミッションは、AI を次のようなものにすることです。
 
-- **Private:** Allowing data to remain on the user's device.
-- **Accessible:** Providing developers with open-source tools to build AI-powered applications.
-- **Offline-capable:** Reducing dependency on continuous internet connectivity.
-- **Sustainable:** Encouraging efficient use of existing hardware and reducing unnecessary cloud dependency.
+- **プライベート:** データをユーザーのデバイス上にとどめられます。
+- **アクセスしやすい:** AI を活用したアプリを作るためのオープンソースのツールを、開発者に提供します。
+- **オフライン対応:** 常時インターネットに接続する必要性を減らします。
+- **持続可能:** 既存のハードウェアを効率よく使い、不要なクラウド依存を減らすことを後押しします。
 
-We believe developers should have the freedom to build intelligent applications without relying exclusively on external AI services.
+開発者は、外部の AI サービスだけに頼らずにインテリジェントなアプリを作る自由を持つべきだと、私たちは考えています。
 
-## What This Grant Means for Llamatik
+## この助成金が Llamatik にもたらすもの
 
-The Kotlin Foundation's support will help accelerate the development of Llamatik and strengthen the foundations of its ecosystem.
+Kotlin Foundation の支援により、Llamatik の開発が加速し、エコシステムの土台が強化されます。
 
-Our main priorities include:
+主な優先事項は次のとおりです。
 
-### 1. Improving the Kotlin Multiplatform SDK
+### 1. Kotlin Multiplatform SDK の改善
 
-We're continuing to improve the developer experience of integrating local AI into Kotlin Multiplatform applications.
+ローカル AI を Kotlin Multiplatform アプリに組み込む際の開発者体験の改善を続けています。
 
-This includes:
+具体的には次のとおりです。
 
-- Refining and simplifying public APIs.
-- Improving [documentation](https://docs.llamatik.com) and practical examples.
-- Strengthening SDK architecture and maintainability.
-- Making local inference easier to integrate into real-world applications.
+- 公開 API の見直しと簡素化。
+- [ドキュメント](https://docs.llamatik.com)と実践的なサンプルの充実。
+- SDK のアーキテクチャと保守性の強化。
+- ローカル推論を実際のアプリに組み込みやすくすること。
 
-Our goal is to make adding on-device AI capabilities as straightforward as possible for Kotlin developers.
+目標は、Kotlin 開発者がオンデバイス AI の機能を、できるだけ簡単に追加できるようにすることです。
 
-### 2. Expanding Multiplatform Support
+### 2. マルチプラットフォーム対応の拡充
 
-One of Llamatik's core goals is to provide a consistent experience across multiple platforms.
+Llamatik の中核となる目標の1つは、複数のプラットフォームで一貫した体験を提供することです。
 
-We'll continue improving compatibility, performance, and native integration across Android, iOS, Desktop, and Web, while taking advantage of each platform's capabilities.
+各プラットフォームの特性を生かしながら、Android、iOS、デスクトップ、Web にわたって、互換性、パフォーマンス、ネイティブとの統合を引き続き改善していきます。
 
-### 3. Advancing Local AI Agents
+### 3. ローカル AI エージェントの推進
 
-Running a language model locally is only the first step.
+言語モデルをローカルで動かすのは、最初の一歩にすぎません。
 
-We're building the foundations for **local AI agents** capable of executing tools, performing tasks, and interacting with applications directly on users' devices.
+私たちは、ツールを実行し、タスクをこなし、ユーザーのデバイス上でアプリと直接やり取りできる**ローカル AI エージェント**の基盤を築いています。
 
-Our long-term goal is to empower developers to create intelligent assistants and autonomous workflows that can operate locally whenever possible.
+長期的な目標は、可能なかぎりローカルで動作するインテリジェントなアシスタントや自律的なワークフローを、開発者が作れるようにすることです。
 
-### 4. Strengthening the Open-Source Ecosystem
+### 4. オープンソースエコシステムの強化
 
-Llamatik is an open-source project, and we believe its future should remain open and developer-driven.
+Llamatik はオープンソースのプロジェクトであり、その未来もオープンで、開発者主導であり続けるべきだと考えています。
 
-The grant will help us invest in the project's long-term quality, documentation, tooling, and developer experience.
+この助成金は、プロジェクトの長期的な品質、ドキュメント、ツール、開発者体験への投資に役立てます。
 
-We want Llamatik to become a useful foundation for developers exploring the next generation of local AI applications.
+Llamatik を、次世代のローカル AI アプリを模索する開発者にとって役立つ基盤にしたいと考えています。
 
-## Looking Ahead: Beyond Individual Devices
+## これから:個々のデバイスの先へ
 
-Our vision extends beyond running language models on a single smartphone or computer.
+私たちのビジョンは、1台のスマートフォンやコンピューターで言語モデルを動かすことにとどまりません。
 
-We're also exploring ways for devices to discover one another, share computing resources, and collaborate on AI-powered tasks.
+デバイス同士が互いを見つけ、計算リソースを共有し、AI を使ったタスクで協力し合う方法も探っています。
 
-Imagine a network of smartphones, laptops, and desktops working together to execute local AI workloads, potentially making use of hardware that would otherwise remain idle.
+スマートフォン、ノートPC、デスクトップがネットワークを組み、ローカルの AI ワークロードを一緒に実行する様子を想像してみてください。そうすれば、使われないままになっていたハードウェアを活用できるかもしれません。
 
-This is an experimental, longer-term direction, but one that aligns with our belief in **accessible, distributed, and sustainable AI**.
+これは実験的で、より長期的な方向性ですが、**誰もが使え、分散型で、持続可能な AI** という私たちの信念に沿うものです。
 
-## Thank You to the Kotlin Community
+## Kotlin コミュニティの皆さんへ
 
-We're incredibly grateful to the **Kotlin Foundation** for selecting Llamatik as a grant recipient.
+Llamatik を助成金の受賞プロジェクトに選んでくださった **Kotlin Foundation** に、心から感謝しています。
 
-We also want to thank everyone who has contributed to the project, reported issues, shared feedback, or simply shown interest in what we're building.
+また、プロジェクトに貢献してくださった方、Issue を報告してくださった方、フィードバックを寄せてくださった方、そして私たちの取り組みに関心を寄せてくださったすべての方にも感謝します。
 
-Open-source projects grow through their communities, and every contribution matters.
+オープンソースのプロジェクトはコミュニティとともに成長します。一つひとつの貢献が大切です。
 
-Congratulations to all the other recipients of the 2026 Kotlin Foundation Grants Program!
+2026 年 Kotlin Foundation Grants Program のほかの受賞者の皆さん、おめでとうございます。
 
-## What's Next?
+## 次のステップ
 
-This grant represents an important milestone, but it's only one step in Llamatik's journey.
+この助成金は重要なマイルストーンですが、Llamatik の旅の一歩にすぎません。
 
-Our focus remains on building a robust, developer-friendly ecosystem for on-device AI, improving Kotlin Multiplatform integration, and exploring the possibilities of local AI agents.
+私たちは引き続き、オンデバイス AI のための堅牢で開発者にやさしいエコシステムの構築、Kotlin Multiplatform との統合の改善、そしてローカル AI エージェントの可能性の探求に注力します。
 
-There's still a lot to build, and we're excited about what's ahead.
+作るべきものはまだたくさんあり、これからの展開にわくわくしています。
 
-**The future of AI doesn't have to live entirely in the cloud.**
+**AI の未来は、すべてがクラウドにある必要はありません。**
 
-Let's build it together. 🦙
+一緒に作っていきましょう。🦙
 
 ---
 
-### Learn More
+### さらに詳しく
 
-- [Kotlin Foundation Grants Program — 2026 Winners](https://kotlinfoundation.org/news/grants-program-winners-26/)
-- [Llamatik on GitHub](https://github.com/llamatik/Llamatik)
-- [Llamatik Documentation](https://docs.llamatik.com)
-- [Llamatik Website](https://www.llamatik.com/)
+- [Kotlin Foundation Grants Program — 2026 年の受賞者](https://kotlinfoundation.org/news/grants-program-winners-26/)
+- [GitHub の Llamatik](https://github.com/llamatik/Llamatik)
+- [Llamatik ドキュメント](https://docs.llamatik.com)
+- [Llamatik の Web サイト](https://www.llamatik.com/)

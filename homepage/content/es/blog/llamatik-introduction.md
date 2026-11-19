@@ -1,64 +1,65 @@
 ---
-title: "Introducing Llamatik Offline LLMs for Kotlin Multiplatform"
+title: "Presentamos Llamatik: LLM sin conexión para Kotlin Multiplatform"
 date: 2025-07-22T09:00:00-05:00
-description: "Meet Llamatik — a multiplatform Kotlin library to run llama.cpp locally on Android, iOS, and desktop, complete with an HTTP server."
+description: "Conoce Llamatik, una biblioteca multiplataforma de Kotlin para ejecutar llama.cpp en local en Android, iOS y escritorio, con servidor HTTP incluido."
 image: "images/blog/a-pair-of-llamas-in-a-field-with-clouds-and-mountain.svg"
 tags: ["Kotlin", "Multiplatform", "LLM", "llama.cpp", "Offline AI"]
 showDate: true
 draft: false
 ---
 
-🦙 Introducing Llamatik: Offline LLMs for Kotlin Multiplatform
+🦙 Presentamos Llamatik: LLM sin conexión para Kotlin Multiplatform
 
-We’re thrilled to introduce Llamatik — an open-source Kotlin Multiplatform library that brings local
-Large Language Models (LLMs) to Android, iOS, desktop, and beyond using the power of llama.cpp.
+Estamos encantados de presentar Llamatik, una biblioteca de código abierto de Kotlin Multiplatform que lleva los
+grandes modelos de lenguaje (LLM) locales a Android, iOS, escritorio y más allá, gracias a la potencia de llama.cpp.
 
-Llamatik makes it simple and efficient to integrate offline, on-device inference and embeddings into
-your KMP apps, whether you’re building an AI assistant, a RAG chatbot, or an edge intelligence tool.
-
-⸻
-
-✨ Why Llamatik?
-
-While the AI ecosystem is rich with APIs, most Kotlin developers are still tied to cloud-based
-models. That means latency, privacy risks, and ongoing costs.
-
-We believe the future of AI is:
-
-• 🔐 Private: Your data stays on-device.
-
-• 📱 Multiplatform: One codebase for Android, iOS, macOS, Linux, and Windows.
-
-• ⚡ Performant: Built for small, quantized models that run fast on consumer hardware.
-
-Llamatik bridges the gap between llama.cpp’s C++ backend and Kotlin’s modern multiplatform tooling —
-giving you total control over your models and your data.
+Llamatik hace que integrar inferencia y embeddings sin conexión, directamente en el dispositivo, sea sencillo y
+eficiente en tus apps KMP, tanto si estás creando un asistente de IA, un chatbot con RAG o una herramienta de
+inteligencia en el borde.
 
 ⸻
 
-💡 What Can You Do with It?
+✨ ¿Por qué Llamatik?
 
-With Llamatik, you can:
+Aunque el ecosistema de IA está lleno de APIs, la mayoría de los desarrolladores de Kotlin siguen atados a modelos
+en la nube. Eso supone latencia, riesgos para la privacidad y costes continuos.
 
-• 🧠 Run quantized LLMs like Phi-2, Mistral, or TinyLlama completely offline.
+Creemos que el futuro de la IA es:
 
-• 🔍 Generate embeddings using models like nomic-embed-text or bge-small locally.
+• 🔐 Privado: tus datos se quedan en el dispositivo.
 
-• ⚡ Launch your own HTTP inference server using Ktor — fully self-contained, built into Llamatik,
-and powered by llama.cpp.
+• 📱 Multiplataforma: una sola base de código para Android, iOS, macOS, Linux y Windows.
 
-• 🌐 Connect to remote llama.cpp endpoints (like llama-cpp-python, llama-server, or Ollama) with the
-bundled HTTP client.
+• ⚡ Eficiente: pensado para modelos pequeños y cuantizados que funcionan rápido en hardware de consumo.
 
-• 🔁 Use the same API across Android, iOS, and other native platforms — no platform-specific code
-needed.
+Llamatik tiende un puente entre el backend en C++ de llama.cpp y las modernas herramientas multiplataforma de
+Kotlin, y te da control total sobre tus modelos y tus datos.
 
 ⸻
 
-🌐 Built-in HTTP Inference Server
+💡 ¿Qué puedes hacer con Llamatik?
 
-Llamatik includes a ready-to-use Ktor-based HTTP server that wraps your local llama.cpp models. You
-can spin it up with a single call and expose endpoints like:
+Con Llamatik puedes:
+
+• 🧠 Ejecutar LLM cuantizados como Phi-2, Mistral o TinyLlama completamente sin conexión.
+
+• 🔍 Generar embeddings en local con modelos como nomic-embed-text o bge-small.
+
+• ⚡ Lanzar tu propio servidor de inferencia HTTP con Ktor, totalmente autónomo, integrado en Llamatik y
+con la tecnología de llama.cpp.
+
+• 🌐 Conectarte a endpoints remotos de llama.cpp (como llama-cpp-python, llama-server u Ollama) con el
+cliente HTTP incluido.
+
+• 🔁 Usar la misma API en Android, iOS y otras plataformas nativas, sin código específico para cada
+plataforma.
+
+⸻
+
+🌐 Servidor de inferencia HTTP integrado
+
+Llamatik incluye un servidor HTTP basado en Ktor, listo para usar, que envuelve tus modelos locales de llama.cpp.
+Puedes ponerlo en marcha con una sola llamada y exponer endpoints como:
 
 POST /v1/chat/completions
 
@@ -66,35 +67,35 @@ POST /v1/embeddings
 
 GET /v1/models
 
-This makes it easy to:
+Esto facilita:
 
-• 🔗 Connect your own apps (or other devices) to a shared local model
+• 🔗 Conectar tus propias apps (u otros dispositivos) a un modelo local compartido
 
-• 🧪 Use OpenAI-compatible tooling (e.g. LangChain, LlamaIndex) with your local server
+• 🧪 Usar con tu servidor local herramientas compatibles con OpenAI (por ejemplo, LangChain o LlamaIndex)
 
-• ⚙️ Integrate into your own edge deployments or experiments
+• ⚙️ Integrarlo en tus propios despliegues o experimentos en el borde
 
-No Python needed. No Docker required. Just Kotlin + Llamatik.
-
-⸻
-
-📦 What’s Inside?
-
-• 🦙 Native bindings to llama.cpp for Kotlin/Native targets (no JNI or JNI-only limitations).
-
-• 🧠 Multi-model context manager (for simultaneous generation + embeddings).
-
-• 🛰️ Optional HTTP client and server.
-
-• 🧱 Model loading, prompt building, and memory-efficient execution tailored for mobile.
-
-• 🛠️ Simple, extensible API — built for Kotlin, not adapted from Python.
+Sin Python. Sin Docker. Solo Kotlin + Llamatik.
 
 ⸻
 
-📢 Get Involved
+📦 ¿Qué incluye?
 
-Llamatik is open-source and community-driven. Whether you’re building AI-first apps or simply
-exploring what’s possible offline, we’d love to hear from you.
+• 🦙 Bindings nativos a llama.cpp para targets Kotlin/Native (sin JNI ni las limitaciones de depender solo de JNI).
 
-🔗 [GitHub Repo](https://github.com/ferranpons/Llamatik)
+• 🧠 Gestor de contexto multimodelo (para generación y embeddings simultáneos).
+
+• 🛰️ Cliente y servidor HTTP opcionales.
+
+• 🧱 Carga de modelos, construcción de prompts y ejecución eficiente en memoria, pensada para móviles.
+
+• 🛠️ API sencilla y extensible, creada para Kotlin y no adaptada desde Python.
+
+⸻
+
+📢 Participa
+
+Llamatik es de código abierto y está impulsado por la comunidad. Tanto si estás creando apps centradas en la IA
+como si simplemente quieres explorar lo que es posible sin conexión, nos encantará saber de ti.
+
+🔗 [Repositorio de GitHub](https://github.com/ferranpons/Llamatik)

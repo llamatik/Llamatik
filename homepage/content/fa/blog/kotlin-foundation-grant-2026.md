@@ -1,9 +1,9 @@
 ---
-title: "Llamatik Wins a 2026 Kotlin Foundation Grant"
+title: "Llamatik برنده‌ی کمک‌هزینه‌ی Kotlin Foundation در سال 2026 شد"
 date: 2026-11-09T00:00:00-05:00
-description: "Llamatik has been selected as a 2026 Kotlin Foundation Grant winner. Discover how this recognition will help advance on-device AI, Kotlin Multiplatform development, and local AI agents."
+description: "Llamatik به‌عنوان یکی از برندگان کمک‌هزینه‌ی Kotlin Foundation در سال 2026 انتخاب شده است. ببینید این موفقیت چگونه به پیشرفت هوش مصنوعی روی دستگاه، توسعه‌ی Kotlin Multiplatform و عامل‌های هوش مصنوعی محلی کمک خواهد کرد."
 image: "images/blog/kotlin-foundation-grant-2026.png"
-image_alt: "Llamatik logo next to the text 'Llamatik — Kotlin Foundation Grant Winner 2026'"
+image_alt: "لوگوی Llamatik در کنار متن «Llamatik — برنده‌ی کمک‌هزینه‌ی Kotlin Foundation در 2026»"
 author: "Llamatik Team"
 categories: ["Announcements"]
 tags: ["Kotlin", "Kotlin Multiplatform", "Kotlin Foundation", "Open Source", "On-Device AI"]
@@ -11,105 +11,105 @@ showDate: true
 draft: false
 ---
 
-We're excited to announce that **Llamatik has been selected as one of the five winners of the 2026 Kotlin Foundation Grants Program**, receiving a **$6,000 grant** to support the project's continued development.
+با خوشحالی اعلام می‌کنیم که **Llamatik به‌عنوان یکی از پنج برنده‌ی برنامه‌ی کمک‌هزینه‌ی Kotlin Foundation در سال 2026 انتخاب شده است** و **کمک‌هزینه‌ای 6,000 دلاری** برای حمایت از ادامه‌ی توسعه‌ی پروژه دریافت می‌کند.
 
-This recognition marks an important milestone for Llamatik and reinforces our mission to make on-device AI more accessible to developers through Kotlin Multiplatform.
+این موفقیت نقطه‌عطفی مهم برای Llamatik است و مأموریت ما را برای دسترس‌پذیرتر کردن هوش مصنوعی روی دستگاه برای توسعه‌دهندگان، از طریق Kotlin Multiplatform، تقویت می‌کند.
 
-We would like to sincerely thank the Kotlin Foundation for recognizing the project's potential and supporting the open-source ecosystem.
+از صمیم قلب از Kotlin Foundation سپاسگزاریم که توانایی بالقوه‌ی پروژه را دید و از اکوسیستم متن‌باز حمایت کرد.
 
-## What Is Llamatik?
+## Llamatik چیست؟
 
-Llamatik is an **open-source Kotlin Multiplatform ecosystem for running AI models directly on devices**, making it easier for developers to integrate local AI capabilities into their applications.
+Llamatik یک **اکوسیستم متن‌باز Kotlin Multiplatform برای اجرای مدل‌های هوش مصنوعی مستقیماً روی دستگاه‌هاست** و یکپارچه‌کردن قابلیت‌های هوش مصنوعی محلی در برنامه‌ها را برای توسعه‌دهندگان آسان‌تر می‌کند.
 
-Built around Kotlin Multiplatform and native inference technologies such as [llama.cpp](https://github.com/ggml-org/llama.cpp), Llamatik enables developers to explore local AI across Android, iOS, Desktop, and Web.
+Llamatik که بر پایه‌ی Kotlin Multiplatform و فناوری‌های استنتاج نیتیو مانند [llama.cpp](https://github.com/ggml-org/llama.cpp) ساخته شده، به توسعه‌دهندگان امکان می‌دهد هوش مصنوعی محلی را روی Android، iOS، دسکتاپ و وب بیازمایند.
 
-Our mission is to make AI:
+مأموریت ما این است که هوش مصنوعی:
 
-- **Private:** Allowing data to remain on the user's device.
-- **Accessible:** Providing developers with open-source tools to build AI-powered applications.
-- **Offline-capable:** Reducing dependency on continuous internet connectivity.
-- **Sustainable:** Encouraging efficient use of existing hardware and reducing unnecessary cloud dependency.
+- **خصوصی** باشد: داده‌ها روی دستگاه کاربر بمانند.
+- **در دسترس** باشد: ابزارهای متن‌باز برای ساخت برنامه‌های مبتنی بر هوش مصنوعی در اختیار توسعه‌دهندگان قرار گیرد.
+- **آفلاین‌پذیر** باشد: وابستگی به اتصال دائمی اینترنت کاهش یابد.
+- **پایدار** باشد: استفاده‌ی کارآمد از سخت‌افزار موجود را تشویق کند و وابستگی غیرضروری به فضای ابری را کم کند.
 
-We believe developers should have the freedom to build intelligent applications without relying exclusively on external AI services.
+ما معتقدیم توسعه‌دهندگان باید آزادی داشته باشند برنامه‌های هوشمند بسازند، بی‌آنکه فقط به سرویس‌های هوش مصنوعی بیرونی تکیه کنند.
 
-## What This Grant Means for Llamatik
+## این کمک‌هزینه برای Llamatik چه معنایی دارد
 
-The Kotlin Foundation's support will help accelerate the development of Llamatik and strengthen the foundations of its ecosystem.
+حمایت Kotlin Foundation به تسریع توسعه‌ی Llamatik و تقویت زیربنای اکوسیستم آن کمک می‌کند.
 
-Our main priorities include:
+اولویت‌های اصلی ما از این قرارند:
 
-### 1. Improving the Kotlin Multiplatform SDK
+### 1. بهبود SDK مربوط به Kotlin Multiplatform
 
-We're continuing to improve the developer experience of integrating local AI into Kotlin Multiplatform applications.
+به بهبود تجربه‌ی توسعه‌دهنده در یکپارچه‌کردن هوش مصنوعی محلی با برنامه‌های Kotlin Multiplatform ادامه می‌دهیم.
 
-This includes:
+این شامل موارد زیر است:
 
-- Refining and simplifying public APIs.
-- Improving [documentation](https://docs.llamatik.com) and practical examples.
-- Strengthening SDK architecture and maintainability.
-- Making local inference easier to integrate into real-world applications.
+- اصلاح و ساده‌سازی APIهای عمومی.
+- بهبود [مستندات](https://docs.llamatik.com) و مثال‌های عملی.
+- تقویت معماری SDK و قابلیت نگهداری آن.
+- آسان‌تر کردن یکپارچه‌سازی استنتاج محلی در برنامه‌های واقعی.
 
-Our goal is to make adding on-device AI capabilities as straightforward as possible for Kotlin developers.
+هدف ما این است که افزودن قابلیت‌های هوش مصنوعی روی دستگاه برای توسعه‌دهندگان Kotlin تا حد ممکن ساده باشد.
 
-### 2. Expanding Multiplatform Support
+### 2. گسترش پشتیبانی چندپلتفرمی
 
-One of Llamatik's core goals is to provide a consistent experience across multiple platforms.
+یکی از اهداف اصلی Llamatik ارائه‌ی تجربه‌ای یکپارچه روی پلتفرم‌های مختلف است.
 
-We'll continue improving compatibility, performance, and native integration across Android, iOS, Desktop, and Web, while taking advantage of each platform's capabilities.
+سازگاری، کارایی و یکپارچگی نیتیو را روی Android، iOS، دسکتاپ و وب بهبود می‌دهیم و در عین حال از قابلیت‌های هر پلتفرم بهره می‌گیریم.
 
-### 3. Advancing Local AI Agents
+### 3. پیشبرد عامل‌های هوش مصنوعی محلی
 
-Running a language model locally is only the first step.
+اجرای محلی یک مدل زبانی فقط نخستین گام است.
 
-We're building the foundations for **local AI agents** capable of executing tools, performing tasks, and interacting with applications directly on users' devices.
+ما زیربنای **عامل‌های هوش مصنوعی محلی** را می‌سازیم؛ عامل‌هایی که می‌توانند ابزارها را اجرا کنند، کارها را انجام دهند و مستقیماً روی دستگاه کاربران با برنامه‌ها تعامل داشته باشند.
 
-Our long-term goal is to empower developers to create intelligent assistants and autonomous workflows that can operate locally whenever possible.
+هدف بلندمدت ما توانمندسازی توسعه‌دهندگان برای ساخت دستیارهای هوشمند و گردش‌کارهای خودگردانی است که در حد امکان به‌صورت محلی اجرا شوند.
 
-### 4. Strengthening the Open-Source Ecosystem
+### 4. تقویت اکوسیستم متن‌باز
 
-Llamatik is an open-source project, and we believe its future should remain open and developer-driven.
+Llamatik پروژه‌ای متن‌باز است و باور داریم آینده‌ی آن باید باز و توسعه‌دهنده‌محور بماند.
 
-The grant will help us invest in the project's long-term quality, documentation, tooling, and developer experience.
+این کمک‌هزینه به ما کمک می‌کند در کیفیت بلندمدت پروژه، مستندات، ابزارها و تجربه‌ی توسعه‌دهنده سرمایه‌گذاری کنیم.
 
-We want Llamatik to become a useful foundation for developers exploring the next generation of local AI applications.
+می‌خواهیم Llamatik به پایه‌ای مفید برای توسعه‌دهندگانی تبدیل شود که نسل بعدی برنامه‌های هوش مصنوعی محلی را می‌کاوند.
 
-## Looking Ahead: Beyond Individual Devices
+## نگاه به آینده: فراتر از دستگاه‌های منفرد
 
-Our vision extends beyond running language models on a single smartphone or computer.
+چشم‌انداز ما فراتر از اجرای مدل‌های زبانی روی یک گوشی یا رایانه است.
 
-We're also exploring ways for devices to discover one another, share computing resources, and collaborate on AI-powered tasks.
+همچنین در حال بررسی راه‌هایی هستیم تا دستگاه‌ها یکدیگر را پیدا کنند، منابع محاسباتی را به اشتراک بگذارند و در کارهای مبتنی بر هوش مصنوعی همکاری کنند.
 
-Imagine a network of smartphones, laptops, and desktops working together to execute local AI workloads, potentially making use of hardware that would otherwise remain idle.
+شبکه‌ای از گوشی‌ها، لپ‌تاپ‌ها و رایانه‌های رومیزی را تصور کنید که برای اجرای بارهای کاری هوش مصنوعی محلی با هم کار می‌کنند و شاید از سخت‌افزاری بهره می‌برند که در غیر این صورت بیکار می‌ماند.
 
-This is an experimental, longer-term direction, but one that aligns with our belief in **accessible, distributed, and sustainable AI**.
+این مسیر آزمایشی و بلندمدت است، اما با باور ما به **هوش مصنوعی در دسترس، توزیع‌شده و پایدار** هم‌خوان است.
 
-## Thank You to the Kotlin Community
+## سپاس از جامعه‌ی Kotlin
 
-We're incredibly grateful to the **Kotlin Foundation** for selecting Llamatik as a grant recipient.
+عمیقاً سپاسگزار **Kotlin Foundation** هستیم که Llamatik را به‌عنوان دریافت‌کننده‌ی کمک‌هزینه برگزید.
 
-We also want to thank everyone who has contributed to the project, reported issues, shared feedback, or simply shown interest in what we're building.
+همچنین از همه‌ی کسانی تشکر می‌کنیم که در پروژه مشارکت کردند، مشکلات را گزارش دادند، بازخورد دادند یا صرفاً به آنچه می‌سازیم علاقه نشان دادند.
 
-Open-source projects grow through their communities, and every contribution matters.
+پروژه‌های متن‌باز با جامعه‌شان رشد می‌کنند و هر مشارکتی اهمیت دارد.
 
-Congratulations to all the other recipients of the 2026 Kotlin Foundation Grants Program!
+به همه‌ی دیگر دریافت‌کنندگان برنامه‌ی کمک‌هزینه‌ی Kotlin Foundation در سال 2026 تبریک می‌گوییم!
 
-## What's Next?
+## گام بعدی چیست؟
 
-This grant represents an important milestone, but it's only one step in Llamatik's journey.
+این کمک‌هزینه نقطه‌عطفی مهم است، اما تنها یک گام در مسیر Llamatik به شمار می‌آید.
 
-Our focus remains on building a robust, developer-friendly ecosystem for on-device AI, improving Kotlin Multiplatform integration, and exploring the possibilities of local AI agents.
+تمرکز ما همچنان بر ساخت اکوسیستمی مستحکم و دوستدار توسعه‌دهنده برای هوش مصنوعی روی دستگاه، بهبود یکپارچگی با Kotlin Multiplatform و کاوش امکانات عامل‌های هوش مصنوعی محلی است.
 
-There's still a lot to build, and we're excited about what's ahead.
+هنوز کارهای زیادی برای ساختن مانده و از آنچه پیش رو داریم هیجان‌زده‌ایم.
 
-**The future of AI doesn't have to live entirely in the cloud.**
+**آینده‌ی هوش مصنوعی لازم نیست یکسره در فضای ابری باشد.**
 
-Let's build it together. 🦙
+بیایید با هم آن را بسازیم. 🦙
 
 ---
 
-### Learn More
+### بیشتر بدانید
 
-- [Kotlin Foundation Grants Program — 2026 Winners](https://kotlinfoundation.org/news/grants-program-winners-26/)
-- [Llamatik on GitHub](https://github.com/llamatik/Llamatik)
-- [Llamatik Documentation](https://docs.llamatik.com)
-- [Llamatik Website](https://www.llamatik.com/)
+- [برنامه‌ی کمک‌هزینه‌ی Kotlin Foundation — برندگان 2026](https://kotlinfoundation.org/news/grants-program-winners-26/)
+- [Llamatik در GitHub](https://github.com/llamatik/Llamatik)
+- [مستندات Llamatik](https://docs.llamatik.com)
+- [وب‌سایت Llamatik](https://www.llamatik.com/)

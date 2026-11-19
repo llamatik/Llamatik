@@ -1,154 +1,154 @@
 ---
-title: "Introducing the Llamatik App an Offline AI Chat on Your Mobile Device"
+title: "Llamatik 应用发布：在你的手机上离线使用 AI 聊天"
 date: 2025-11-25T09:00:00-05:00
-description: "We are excited to announce the launch of the Llamatik App, a fully offline AI chatbot designed to showcase the power and versatility of the Llamatik Kotlin Multiplatform library. Whether you are a developer curious about on-device AI or a user who wants a private, fast, and modern chatbot experience, the Llamatik app brings the full potential of lightweight LLMs directly to your mobile device."
+description: "我们很高兴宣布 Llamatik 应用正式发布。这是一款完全离线的 AI 聊天机器人，旨在展示 Llamatik Kotlin Multiplatform 库的强大与灵活。无论你是对端侧 AI 感兴趣的开发者，还是想要私密、快速、现代化聊天体验的用户，Llamatik 应用都能把轻量级 LLM 的全部潜力直接带到你的手机上。"
 image: "images/blog/llamatik_new_app_hero.png"
 tags: ["Kotlin", "Multiplatform", "LLM", "llama.cpp", "Offline AI", "App"]
 showDate: true
 draft: false
 ---
 
-🚀 Introducing the Llamatik App: Offline AI Chat on Your Mobile Device
+🚀 Llamatik 应用发布：在你的手机上离线使用 AI 聊天
 
-We’re excited to announce the launch of the Llamatik App, a fully offline AI chatbot designed to showcase the power and versatility of the Llamatik Kotlin Multiplatform library.
-Whether you’re a developer curious about on-device AI or a user who wants a private, fast, and modern chatbot experience, the Llamatik app brings the full potential of lightweight LLMs directly to your mobile device.
-
-⸻
-
-🔍 What Is Llamatik?
-
-Llamatik is a Kotlin Multiplatform library that allows developers to run local Large Language Models (LLMs) and vector embeddings across Android, iOS, Desktop, and Web platforms.
-
-With the release of the Llamatik app, you can now experience everything the library can do — without writing a single line of code.
-
-The app serves as a live demo, a sandbox, and a reference implementation for developers building local AI experiences.
+我们很高兴宣布 Llamatik 应用正式发布。这是一款完全离线的 AI 聊天机器人，旨在展示 Llamatik Kotlin Multiplatform 库的强大与灵活。
+无论你是对端侧 AI 感兴趣的开发者，还是想要私密、快速、现代化聊天体验的用户，Llamatik 应用都能把轻量级 LLM 的全部潜力直接带到你的手机上。
 
 ⸻
 
-⚡ What the Llamatik App Can Do
+🔍 什么是 Llamatik？
 
-🧠 Fully Local AI Chat
+Llamatik 是一个 Kotlin Multiplatform 库，让开发者可以在 Android、iOS、桌面端和 Web 平台上运行本地大语言模型（LLM）和向量嵌入。
 
-All text generation runs 100% on your device using quantized open-source models.
-There is no cloud, no server, and no data sent anywhere.
-This makes Llamatik:
-•	Private
-•	Fast
-•	Always available
-•	Compliant with strict privacy environments
+有了 Llamatik 应用，你现在无需写一行代码，就能体验这个库的全部能力。
 
-The chat interface is simple, clean, and built with Jetpack Compose Multiplatform.
+这款应用既是实时演示和试验场，也是开发者构建本地 AI 体验的参考实现。
 
 ⸻
 
-📦 Built-In Model Downloader
+⚡ Llamatik 应用能做什么
 
-The app includes direct download support for several optimized models, including:
+🧠 完全本地的 AI 聊天
+
+所有文本生成都使用量化的开源模型，100% 在你的设备上运行。
+没有云端，没有服务器，也不会把数据发送到任何地方。
+这让 Llamatik：
+•	私密
+•	快速
+•	随时可用
+•	符合严格的隐私合规环境要求
+
+聊天界面简洁清爽，使用 Jetpack Compose Multiplatform 构建。
+
+⸻
+
+📦 内置模型下载器
+
+应用直接支持下载多个经过优化的模型，包括：
 •	Gemma 3 270M
-•	SmolVLM 256M / 500M (Vision + Language)
+•	SmolVLM 256M / 500M（视觉 + 语言）
 •	Phi-1.5
-•	Qwen 2.5 5B (quantized)
-•	Llama 3.2 1B (quantized)
+•	Qwen 2.5 5B（量化）
+•	Llama 3.2 1B（量化）
 
-All models come in GGUF format and are compatible with the llama.cpp backend integrated in Llamatik.
+所有模型均为 GGUF 格式，与 Llamatik 集成的 llama.cpp 后端兼容。
 
-You can download, switch, and manage models directly from the app.
-
-⸻
-
-🎯 Smart Suggestions & Quick Actions
-
-To make the experience more intuitive, the app provides:
-•	Suggested prompts
-•	Quick actions
-•	Clean and responsive UI
-•	A selectable model pill over the input box
-•	Built-in onboarding
-
-These small touches make the app great for both beginners and power users.
+你可以直接在应用中下载、切换和管理模型。
 
 ⸻
 
-🔐 Privacy First
+🎯 智能建议与快捷操作
 
-Every generation happens locally.
-Your conversations:
-•	Are not collected
-•	Are not stored externally
-•	Are not logged or sent to a server
+为了让体验更直观，应用提供了：
+•	建议提示词
+•	快捷操作
+•	简洁、响应迅速的界面
+•	输入框上方可选择的模型标签
+•	内置的新手引导
 
-Even model inference is done offline using llama.cpp compiled for mobile.
-
-The only telemetry in the app is Firebase Analytics and Crashlytics, used strictly for error tracking and anonymous usage insights.
-
-⸻
-
-🧩 A Showcase of Llamatik Library Features
-
-The app demonstrates several key capabilities of the underlying library:
-
-✔ Kotlin Multiplatform support
-
-Build once, run on Android, iOS, Desktop, Web.
-
-✔ On-device LLM inference
-
-Through a custom C/C++ bridge to llama.cpp.
-
-✔ Embedding generation
-
-Compatible with models like nomic-embed-text-v1.5.
-
-✔ Vector store support
-
-Create local semantic search or RAG-like features with lightweight vector stores.
-
-✔ Model management
-
-Download, load, unload, switch, and generate across multiple quantized models.
-
-✔ High-level ChatRunner utilities
-
-Easy to stream, generate, and handle AI conversation logic.
-
-For developers reading this: the Llamatik app is built entirely on top of the open-source library — and its codebase is a practical example of real-world KMP local AI integration.
+这些小细节让应用对新手和高级用户都很友好。
 
 ⸻
 
-📱 Why an App?
+🔐 隐私优先
 
-While the Llamatik library is already powerful, we wanted a way for:
-•	Developers to see the library in action
-•	Users to experiment with local AI
-•	The community to test models easily
-•	Anyone to experience offline AI assistants without setup
-•	Newcomers to understand how a cross-platform AI app is structured
+每一次生成都在本地完成。
+你的对话：
+•	不会被收集
+•	不会存储在外部
+•	不会被记录，也不会发送到服务器
 
-The Llamatik app gives you a complete, polished environment to explore what local LLMs can do on a phone.
+就连模型推理也是使用为移动端编译的 llama.cpp 离线完成的。
 
-⸻
-
-🗺 What’s Coming Next?
-
-We’re already working on:
-•	🔍 Integrated vector search for PDFs and documents
-•	📁 Local model import from file storage
-•	🌐 More model providers and sizes
-•	🎛 Advanced chat settings (temperature, top-k, etc.)
-•	🧱 On-device RAG pipelines
-•	🛠 Developer samples & tutorials
-
-Your feedback will help shape the roadmap — so please share your thoughts!
+应用中唯一的遥测是 Firebase Analytics 和 Crashlytics，仅用于错误追踪和匿名的使用情况分析。
 
 ⸻
 
-🐪 Try Llamatik Today
+🧩 Llamatik 库功能一览
 
-You can now download the [Llamatik app on Google Play](https://play.google.com/store/apps/details?id=com.llamatik.app.android) and soon on the iOS App Store.
+应用展示了底层库的几项关键能力：
 
-It’s free, open, offline, and built with privacy and performance in mind.
+✔ 支持 Kotlin Multiplatform
 
-Whether you’re a developer building new AI-powered features or a user wanting a fast, local AI assistant — Llamatik is here for you.
+一次构建，即可运行在 Android、iOS、桌面端和 Web 上。
 
-👉 Explore. Learn. Build.
-👉 Experience what’s possible when AI runs entirely on your device.
+✔ 端侧 LLM 推理
+
+通过自定义的 C/C++ 桥接层对接 llama.cpp。
+
+✔ 嵌入生成
+
+兼容 nomic-embed-text-v1.5 等模型。
+
+✔ 向量存储支持
+
+借助轻量级向量存储，构建本地语义搜索或类 RAG 功能。
+
+✔ 模型管理
+
+在多个量化模型之间下载、加载、卸载、切换并生成内容。
+
+✔ 高层 ChatRunner 工具
+
+轻松处理流式输出、生成和 AI 对话逻辑。
+
+写给开发者：Llamatik 应用完全构建在开源库之上，它的代码库就是真实 KMP 本地 AI 集成的实用范例。
+
+⸻
+
+📱 为什么要做一款应用？
+
+虽然 Llamatik 库本身已经足够强大，但我们还是希望：
+•	开发者能看到这个库的实际运行效果
+•	用户能体验本地 AI
+•	社区能轻松测试各种模型
+•	任何人无需任何配置就能体验离线 AI 助手
+•	新手能了解跨平台 AI 应用是如何组织的
+
+Llamatik 应用为你提供了一个完整、精致的环境，来探索本地 LLM 在手机上能做些什么。
+
+⸻
+
+🗺 接下来有什么？
+
+我们已经在着手开发：
+•	🔍 面向 PDF 和文档的集成向量搜索
+•	📁 从文件存储中导入本地模型
+•	🌐 更多模型来源和规格
+•	🎛 高级聊天设置（temperature、top-k 等）
+•	🧱 端侧 RAG 流水线
+•	🛠 开发者示例与教程
+
+你的反馈将帮助我们制定路线图，所以请随时分享你的想法！
+
+⸻
+
+🐪 立即体验 Llamatik
+
+你现在可以在 [Google Play 下载 Llamatik 应用](https://play.google.com/store/apps/details?id=com.llamatik.app.android)，iOS App Store 版本也即将上线。
+
+它免费、开放、可离线使用，在设计上兼顾隐私与性能。
+
+无论你是正在构建 AI 新功能的开发者，还是想要一个快速、本地 AI 助手的用户，Llamatik 都为你而来。
+
+👉 探索，学习，构建。
+👉 体验 AI 完全运行在你设备上的无限可能。

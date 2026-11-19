@@ -1,9 +1,9 @@
 ---
-title: "Llamatik Wins a 2026 Kotlin Foundation Grant"
+title: "Llamatik gewinnt einen Kotlin Foundation Grant 2026"
 date: 2026-11-09T00:00:00-05:00
-description: "Llamatik has been selected as a 2026 Kotlin Foundation Grant winner. Discover how this recognition will help advance on-device AI, Kotlin Multiplatform development, and local AI agents."
+description: "Llamatik wurde als Gewinner eines Kotlin Foundation Grants 2026 ausgewählt. Erfahre, wie diese Auszeichnung KI auf dem Gerät, die Entwicklung mit Kotlin Multiplatform und lokale KI-Agenten voranbringt."
 image: "images/blog/kotlin-foundation-grant-2026.png"
-image_alt: "Llamatik logo next to the text 'Llamatik — Kotlin Foundation Grant Winner 2026'"
+image_alt: "Llamatik-Logo neben dem Text 'Llamatik — Kotlin Foundation Grant Winner 2026'"
 author: "Llamatik Team"
 categories: ["Announcements"]
 tags: ["Kotlin", "Kotlin Multiplatform", "Kotlin Foundation", "Open Source", "On-Device AI"]
@@ -11,105 +11,105 @@ showDate: true
 draft: false
 ---
 
-We're excited to announce that **Llamatik has been selected as one of the five winners of the 2026 Kotlin Foundation Grants Program**, receiving a **$6,000 grant** to support the project's continued development.
+Wir freuen uns riesig, bekannt zu geben: **Llamatik wurde als einer von fünf Gewinnern des Kotlin Foundation Grants Program 2026 ausgewählt** und erhält einen **Grant über 6.000 US-Dollar**, der die Weiterentwicklung des Projekts unterstützt.
 
-This recognition marks an important milestone for Llamatik and reinforces our mission to make on-device AI more accessible to developers through Kotlin Multiplatform.
+Diese Auszeichnung ist ein wichtiger Meilenstein für Llamatik und bestärkt uns in unserer Mission, KI auf dem Gerät für Entwickler dank Kotlin Multiplatform zugänglicher zu machen.
 
-We would like to sincerely thank the Kotlin Foundation for recognizing the project's potential and supporting the open-source ecosystem.
+Wir danken der Kotlin Foundation von Herzen dafür, das Potenzial des Projekts zu erkennen und das Open-Source-Ökosystem zu unterstützen.
 
-## What Is Llamatik?
+## Was ist Llamatik?
 
-Llamatik is an **open-source Kotlin Multiplatform ecosystem for running AI models directly on devices**, making it easier for developers to integrate local AI capabilities into their applications.
+Llamatik ist ein **Open-Source-Ökosystem auf Basis von Kotlin Multiplatform, um KI-Modelle direkt auf Geräten auszuführen**. So können Entwickler lokale KI-Funktionen leichter in ihre Anwendungen integrieren.
 
-Built around Kotlin Multiplatform and native inference technologies such as [llama.cpp](https://github.com/ggml-org/llama.cpp), Llamatik enables developers to explore local AI across Android, iOS, Desktop, and Web.
+Auf Basis von Kotlin Multiplatform und nativer Inferenz-Technologie wie [llama.cpp](https://github.com/ggml-org/llama.cpp) ermöglicht Llamatik Entwicklern, lokale KI auf Android, iOS, Desktop und im Web zu erkunden.
 
-Our mission is to make AI:
+Unsere Mission ist es, KI so zu gestalten:
 
-- **Private:** Allowing data to remain on the user's device.
-- **Accessible:** Providing developers with open-source tools to build AI-powered applications.
-- **Offline-capable:** Reducing dependency on continuous internet connectivity.
-- **Sustainable:** Encouraging efficient use of existing hardware and reducing unnecessary cloud dependency.
+- **Privat:** Daten bleiben auf dem Gerät der Nutzer.
+- **Zugänglich:** Entwickler erhalten Open-Source-Tools, um KI-gestützte Anwendungen zu bauen.
+- **Offline-fähig:** Weniger Abhängigkeit von einer dauerhaften Internetverbindung.
+- **Nachhaltig:** Vorhandene Hardware wird effizient genutzt und unnötige Cloud-Abhängigkeit vermieden.
 
-We believe developers should have the freedom to build intelligent applications without relying exclusively on external AI services.
+Wir sind überzeugt: Entwickler sollten die Freiheit haben, intelligente Anwendungen zu bauen, ohne sich ausschließlich auf externe KI-Dienste verlassen zu müssen.
 
-## What This Grant Means for Llamatik
+## Was dieser Grant für Llamatik bedeutet
 
-The Kotlin Foundation's support will help accelerate the development of Llamatik and strengthen the foundations of its ecosystem.
+Die Unterstützung der Kotlin Foundation hilft uns, die Entwicklung von Llamatik zu beschleunigen und das Fundament des Ökosystems zu stärken.
 
-Our main priorities include:
+Unsere wichtigsten Schwerpunkte:
 
-### 1. Improving the Kotlin Multiplatform SDK
+### 1. Das Kotlin-Multiplatform-SDK verbessern
 
-We're continuing to improve the developer experience of integrating local AI into Kotlin Multiplatform applications.
+Wir verbessern kontinuierlich die Developer Experience, wenn es darum geht, lokale KI in Kotlin-Multiplatform-Anwendungen zu integrieren.
 
-This includes:
+Dazu gehört:
 
-- Refining and simplifying public APIs.
-- Improving [documentation](https://docs.llamatik.com) and practical examples.
-- Strengthening SDK architecture and maintainability.
-- Making local inference easier to integrate into real-world applications.
+- Öffentliche APIs überarbeiten und vereinfachen.
+- Die [Dokumentation](https://docs.llamatik.com) und praxisnahe Beispiele verbessern.
+- Die SDK-Architektur und ihre Wartbarkeit stärken.
+- Lokale Inferenz leichter in reale Anwendungen integrierbar machen.
 
-Our goal is to make adding on-device AI capabilities as straightforward as possible for Kotlin developers.
+Unser Ziel: KI-Funktionen auf dem Gerät sollen für Kotlin-Entwickler so unkompliziert wie möglich einzubauen sein.
 
-### 2. Expanding Multiplatform Support
+### 2. Die Multiplattform-Unterstützung ausbauen
 
-One of Llamatik's core goals is to provide a consistent experience across multiple platforms.
+Eines der Kernziele von Llamatik ist ein konsistentes Erlebnis über mehrere Plattformen hinweg.
 
-We'll continue improving compatibility, performance, and native integration across Android, iOS, Desktop, and Web, while taking advantage of each platform's capabilities.
+Wir verbessern weiter Kompatibilität, Performance und native Integration auf Android, iOS, Desktop und im Web und nutzen dabei die Stärken jeder einzelnen Plattform.
 
-### 3. Advancing Local AI Agents
+### 3. Lokale KI-Agenten voranbringen
 
-Running a language model locally is only the first step.
+Ein Sprachmodell lokal auszuführen ist nur der erste Schritt.
 
-We're building the foundations for **local AI agents** capable of executing tools, performing tasks, and interacting with applications directly on users' devices.
+Wir legen das Fundament für **lokale KI-Agenten**, die Tools ausführen, Aufgaben erledigen und direkt auf den Geräten der Nutzer mit Anwendungen interagieren können.
 
-Our long-term goal is to empower developers to create intelligent assistants and autonomous workflows that can operate locally whenever possible.
+Langfristig wollen wir Entwickler befähigen, intelligente Assistenten und autonome Workflows zu bauen, die möglichst lokal laufen.
 
-### 4. Strengthening the Open-Source Ecosystem
+### 4. Das Open-Source-Ökosystem stärken
 
-Llamatik is an open-source project, and we believe its future should remain open and developer-driven.
+Llamatik ist ein Open-Source-Projekt, und wir finden, seine Zukunft sollte offen und von Entwicklern getragen bleiben.
 
-The grant will help us invest in the project's long-term quality, documentation, tooling, and developer experience.
+Der Grant hilft uns, in die langfristige Qualität, Dokumentation, das Tooling und die Developer Experience des Projekts zu investieren.
 
-We want Llamatik to become a useful foundation for developers exploring the next generation of local AI applications.
+Llamatik soll zu einer nützlichen Grundlage für alle werden, die die nächste Generation lokaler KI-Anwendungen erkunden.
 
-## Looking Ahead: Beyond Individual Devices
+## Ein Blick nach vorn: jenseits einzelner Geräte
 
-Our vision extends beyond running language models on a single smartphone or computer.
+Unsere Vision reicht über das Ausführen von Sprachmodellen auf einem einzelnen Smartphone oder Computer hinaus.
 
-We're also exploring ways for devices to discover one another, share computing resources, and collaborate on AI-powered tasks.
+Wir erforschen auch Wege, wie Geräte sich gegenseitig finden, Rechenleistung teilen und bei KI-gestützten Aufgaben zusammenarbeiten können.
 
-Imagine a network of smartphones, laptops, and desktops working together to execute local AI workloads, potentially making use of hardware that would otherwise remain idle.
+Stell dir ein Netzwerk aus Smartphones, Laptops und Desktop-Rechnern vor, die gemeinsam lokale KI-Workloads ausführen – und dabei womöglich Hardware nutzen, die sonst ungenutzt bliebe.
 
-This is an experimental, longer-term direction, but one that aligns with our belief in **accessible, distributed, and sustainable AI**.
+Das ist eine experimentelle, längerfristige Richtung, die aber zu unserer Überzeugung von **zugänglicher, verteilter und nachhaltiger KI** passt.
 
-## Thank You to the Kotlin Community
+## Danke an die Kotlin-Community
 
-We're incredibly grateful to the **Kotlin Foundation** for selecting Llamatik as a grant recipient.
+Wir sind der **Kotlin Foundation** unglaublich dankbar, dass sie Llamatik als Grant-Empfänger ausgewählt hat.
 
-We also want to thank everyone who has contributed to the project, reported issues, shared feedback, or simply shown interest in what we're building.
+Außerdem danken wir allen, die zum Projekt beigetragen, Issues gemeldet, Feedback geteilt oder einfach Interesse an unserer Arbeit gezeigt haben.
 
-Open-source projects grow through their communities, and every contribution matters.
+Open-Source-Projekte wachsen durch ihre Communitys, und jeder Beitrag zählt.
 
-Congratulations to all the other recipients of the 2026 Kotlin Foundation Grants Program!
+Herzlichen Glückwunsch an alle anderen Gewinner des Kotlin Foundation Grants Program 2026!
 
-## What's Next?
+## Was kommt als Nächstes?
 
-This grant represents an important milestone, but it's only one step in Llamatik's journey.
+Dieser Grant ist ein wichtiger Meilenstein, aber nur ein Schritt auf Llamatiks Weg.
 
-Our focus remains on building a robust, developer-friendly ecosystem for on-device AI, improving Kotlin Multiplatform integration, and exploring the possibilities of local AI agents.
+Unser Fokus bleibt, ein robustes, entwicklerfreundliches Ökosystem für KI auf dem Gerät aufzubauen, die Integration mit Kotlin Multiplatform zu verbessern und die Möglichkeiten lokaler KI-Agenten auszuloten.
 
-There's still a lot to build, and we're excited about what's ahead.
+Es gibt noch viel zu bauen, und wir freuen uns auf das, was vor uns liegt.
 
-**The future of AI doesn't have to live entirely in the cloud.**
+**Die Zukunft der KI muss nicht komplett in der Cloud stattfinden.**
 
-Let's build it together. 🦙
+Lass sie uns gemeinsam bauen. 🦙
 
 ---
 
-### Learn More
+### Mehr erfahren
 
-- [Kotlin Foundation Grants Program — 2026 Winners](https://kotlinfoundation.org/news/grants-program-winners-26/)
-- [Llamatik on GitHub](https://github.com/llamatik/Llamatik)
-- [Llamatik Documentation](https://docs.llamatik.com)
-- [Llamatik Website](https://www.llamatik.com/)
+- [Kotlin Foundation Grants Program — Gewinner 2026](https://kotlinfoundation.org/news/grants-program-winners-26/)
+- [Llamatik auf GitHub](https://github.com/llamatik/Llamatik)
+- [Llamatik-Dokumentation](https://docs.llamatik.com)
+- [Llamatik-Website](https://www.llamatik.com/)

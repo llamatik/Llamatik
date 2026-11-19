@@ -1,59 +1,59 @@
 ---
-title: "How to Run LLMs Offline on Android Using Kotlin"
+title: "Como rodar LLMs offline no Android usando Kotlin"
 date: 2026-02-11T00:00:00-05:00
-description: "This article shows how to run LLMs offline on Android using Kotlin, with no servers, no API keys, and full user privacy-using Llamatik, a Kotlin-first wrapper around llama.cpp."
+description: "Este artigo mostra como rodar LLMs offline no Android usando Kotlin, sem servidores, sem chaves de API e com total privacidade para o usuário, com o Llamatik, um wrapper do llama.cpp pensado para Kotlin."
 image: "images/blog/how-to-llms-on-android-hero.png"
 tags: ["Kotlin", "Multiplatform", "LLM", "llama.cpp", "Offline AI", "Android"]
 showDate: true
 draft: false
 ---
 
-Running Large Language Models (LLMs) usually means sending user data to the cloud. But on modern Android devices, LLMs can run fully offline, locally, using Kotlin.
-This article shows how to run LLMs offline on Android using Kotlin, with no servers, no API keys, and full user privacy-using Llamatik, a Kotlin-first wrapper around llama.cpp.
+Rodar Large Language Models (LLMs) normalmente significa enviar os dados do usuário para a nuvem. Mas nos dispositivos Android modernos, os LLMs podem rodar totalmente offline, de forma local, usando Kotlin.
+Este artigo mostra como rodar LLMs offline no Android usando Kotlin, sem servidores, sem chaves de API e com total privacidade para o usuário, com o Llamatik, um wrapper do llama.cpp pensado para Kotlin.
 
-## Why run LLMs offline on Android?
+## Por que rodar LLMs offline no Android?
 
-Cloud-based LLMs come with tradeoffs:
-- ❌ Network dependency
-- ❌ Latency
-- ❌ Usage-based cost
-- ❌ User data leaving the device
+Os LLMs na nuvem têm seus contrapontos:
+- ❌ Dependência de rede
+- ❌ Latência
+- ❌ Custo baseado em uso
+- ❌ Dados do usuário saindo do dispositivo
 
-Offline LLMs enable:
-- 📴 Offline-first apps
-- 🔐 Privacy-preserving AI
-- 📱 Predictable performance and cost
+Os LLMs offline permitem:
+- 📴 Apps offline-first
+- 🔐 IA que preserva a privacidade
+- 📱 Desempenho e custo previsíveis
 
-Modern Android phones are powerful enough-the missing piece has been good Kotlin tooling.
+Os celulares Android modernos são potentes o bastante. O que faltava era um bom ferramental Kotlin.
 
-## llama.cpp: the foundation for on-device LLMs
+## llama.cpp: a base dos LLMs no dispositivo
 
-llama.cpp is a high-performance C++ runtime designed to run LLMs efficiently on CPUs.
+O llama.cpp é um runtime C++ de alto desempenho criado para rodar LLMs de forma eficiente em CPUs.
 
-It supports:
-- Quantized GGUF models
-- ARM CPUs (Android)
-- No GPU or cloud dependency
+Ele oferece suporte a:
+- Modelos GGUF quantizados
+- CPUs ARM (Android)
+- Nenhuma dependência de GPU ou nuvem
 
-But integrating C++ directly into Android apps is painful.
-That's where Llamatik comes in.
+Mas integrar C++ diretamente em apps Android é trabalhoso.
+É aí que entra o Llamatik.
 
-## What is Llamatik?
+## O que é o Llamatik?
 
-Llamatik is a Kotlin-first library that lets Android developers run llama.cpp locally using a clean Kotlin API.
+O Llamatik é uma biblioteca pensada primeiro para Kotlin que permite aos desenvolvedores Android rodar o llama.cpp localmente por meio de uma API Kotlin limpa.
 
-Key features:
-- Fully offline inference
-- No JNI in app code
-- Kotlin Multiplatform support
-- GGUF model compatibility
-- Streaming & embeddings support
+Principais recursos:
+- Inferência totalmente offline
+- Sem JNI no código do app
+- Suporte a Kotlin Multiplatform
+- Compatibilidade com modelos GGUF
+- Suporte a streaming e embeddings
 
-You write only Kotlin-native complexity stays hidden.
+Você escreve apenas Kotlin, e a complexidade nativa fica escondida.
 
-## Add Llamatik to your Android project
+## Adicione o Llamatik ao seu projeto Android
 
-Llamatik is published on Maven Central.
+O Llamatik é publicado no Maven Central.
 
 ```
 dependencies {
@@ -61,29 +61,29 @@ dependencies {
 }
 ```
 
-No custom Gradle setup.
-No NDK configuration.
+Sem configuração personalizada do Gradle.
+Sem configuração do NDK.
 
-## Add a GGUF model
+## Adicione um modelo GGUF
 
-Download a quantized GGUF model (e.g. Q4) and place it in:
+Baixe um modelo GGUF quantizado (por exemplo, Q4) e coloque-o em:
 ```
 androidMain/assets/
 └── phi-2.Q4_0.gguf
 ```
 
-Smaller models load faster and work better on mobile devices.
+Modelos menores carregam mais rápido e funcionam melhor em dispositivos móveis.
 
-## Load the model
+## Carregue o modelo
 
 ```
 val modelPath = LlamaBridge.getModelPath("phi-2.Q4_0.gguf")
 LlamaBridge.initGenerateModel(modelPath)
 ```
 
-This copies the model from assets and loads it into native memory.
+Isso copia o modelo dos assets e o carrega na memória nativa.
 
-## Generate text offline
+## Gere texto offline
 
 ```
 val response = LlamaBridge.generate(
@@ -91,14 +91,14 @@ val response = LlamaBridge.generate(
 )
 ```
 
-That's it.
-No internet.
-No API keys.
-No cloud calls.
+Só isso.
+Sem internet.
+Sem chaves de API.
+Sem chamadas à nuvem.
 
-## Streaming generation (recommended)
+## Geração em streaming (recomendado)
 
-For chat-style UIs:
+Para interfaces no estilo chat:
 ```
 LlamaBridge.generateStreamWithContext(
  system = "You are a concise assistant.",
@@ -110,55 +110,55 @@ LlamaBridge.generateStreamWithContext(
 )
 ```
 
-This works seamlessly with:
+Isso funciona perfeitamente com:
 - Jetpack Compose
 - StateFlow
 - ViewModels
 
-## Embeddings & offline RAG
+## Embeddings e RAG offline
 
-Llamatik also supports embeddings, enabling offline search and RAG use cases.
+O Llamatik também oferece suporte a embeddings, o que habilita busca offline e casos de uso de RAG.
 
 ```
 LlamaBridge.initModel(modelPath)
 val embedding = LlamaBridge.embed("On-device AI with Kotlin")
 ```
 
-Store embeddings locally to build fully offline AI features.
+Armazene os embeddings localmente para criar recursos de IA totalmente offline.
 
-## Performance notes
+## Observações sobre desempenho
 
-On-device LLMs have limits:
-- Use quantized models
-- Expect slower responses than cloud GPUs
-- Manage memory carefully
+Os LLMs no dispositivo têm limites:
+- Use modelos quantizados
+- Espere respostas mais lentas do que em GPUs na nuvem
+- Gerencie a memória com cuidado
 
-But for:
-- Assistive features
-- Short prompts
-- Domain-specific tasks
+Mas para:
+- Recursos de assistência
+- Prompts curtos
+- Tarefas de domínio específico
 
-Performance is more than good enough.
+O desempenho é mais do que suficiente.
 
-## When should you use offline LLMs?
+## Quando usar LLMs offline?
 
-Llamatik is ideal when you need:
-- Offline support
-- Strong privacy guarantees
-- Predictable costs
-- Tight UI integration
+O Llamatik é ideal quando você precisa de:
+- Suporte offline
+- Fortes garantias de privacidade
+- Custos previsíveis
+- Integração estreita com a interface
 
-It's not a replacement for large cloud models-it's edge AI done right.
+Ele não substitui os grandes modelos na nuvem: é IA na borda feita do jeito certo.
 
-## Try it yourself
+## Experimente você mesmo
 - GitHub: [https://github.com/ferranpons/llamatik](https://github.com/ferranpons/llamatik)
-- Website & demo app: [https://llamatik.com](https://llamatik.com)
+- Site e app de demonstração: [https://llamatik.com](https://llamatik.com)
 - llama.cpp: [https://github.com/ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp)
 
-## Final thoughts
-Running LLMs offline on Android using Kotlin is no longer experimental.
-With the right tools, Kotlin developers can build private, offline, on-device AI-without touching C++.
-If you're curious about mobile AI beyond the cloud, this is a great place to start.
+## Considerações finais
+Rodar LLMs offline no Android usando Kotlin não é mais algo experimental.
+Com as ferramentas certas, desenvolvedores Kotlin podem criar IA privada, offline e no dispositivo, sem encostar em C++.
+Se você tem curiosidade sobre IA móvel além da nuvem, este é um ótimo ponto de partida.
 
 
-Originally published on [Medium](https://medium.com/@ferranpons/how-to-run-llms-offline-on-android-using-kotlin-2d2fe848b300) and [Dev.to](https://dev.to/ferranpons/how-to-run-llms-offline-on-android-using-kotlin-407g).
+Publicado originalmente no [Medium](https://medium.com/@ferranpons/how-to-run-llms-offline-on-android-using-kotlin-2d2fe848b300) e no [Dev.to](https://dev.to/ferranpons/how-to-run-llms-offline-on-android-using-kotlin-407g).
