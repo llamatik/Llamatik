@@ -300,6 +300,7 @@ class ChatBotTabScreen : Screen {
                         dialogMessage.value = effect.message
                         isDialogOpen.value = true
                     }
+                    is ChatBotSideEffects.OnImportFailed -> {}  // shown on the models screen
                     is ChatBotSideEffects.OnToolCallDetected -> {}  // companion only
                     is ChatBotSideEffects.OnServerGenerationFailed -> {
                         isLoading.value = false

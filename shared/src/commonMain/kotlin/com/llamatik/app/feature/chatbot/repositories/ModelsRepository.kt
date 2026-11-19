@@ -463,7 +463,8 @@ class ModelsRepository(private val service: ServiceClient) {
                         url = persisted.url,
                         sizeMb = 0,
                         localPath = persisted.localPath,
-                        source = ModelSource.CustomUrlDownload,
+                        // A blank URL marks a local file referenced in place (never downloaded).
+                        source = if (persisted.url.isBlank()) ModelSource.UserImported else ModelSource.CustomUrlDownload,
                     )
                     model to category
                 }

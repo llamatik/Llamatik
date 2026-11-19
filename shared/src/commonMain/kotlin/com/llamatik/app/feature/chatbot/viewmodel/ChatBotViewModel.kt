@@ -65,7 +65,11 @@ import com.llamatik.network.client.StreamExpiredException
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
 import com.russhwolf.settings.Settings
 import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.absolutePath
+import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
+import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.CancellationException
@@ -263,6 +267,12 @@ class ChatBotViewModel(
         // path and trigger a fresh download.
         val rawPath = pathFromStorage ?: pathFromState
         if (rawPath.isNullOrBlank()) return null
+
+        // User-imported local files are referenced in place: never migrate (move) them,
+        // just check they are still there.
+        if (model.source == ModelSource.UserImported) {
+            return rawPath.takeIf { PlatformInfo.isWasm || localFileExists(it) }
+        }
 
         // On WASM there is nothing to "migrate" in a filesystem sense — we store by key.
         if (PlatformInfo.isWasm) return rawPath
@@ -1660,6 +1670,55 @@ class ChatBotViewModel(
         downloadCompanionIfNeeded(model, "clip_vision", model.clipVisionUrl)
     }
 
+    private fun localFileExists(path: String): Boolean = runCatching { PlatformFile(path).exists() }.getOrDefault(false)
+
+    /**
+     * Lets the user pick a model file already on disk and registers it in [category] without
+     * copying it. The file is referenced in place, so removing the model never deletes it.
+     */
+    fun onImportLocalModel(category: ModelCategory) {
+        if (PlatformInfo.isWasm) return
+        screenModelScope.launch {
+            try {
+                val file = FileKit.openFilePicker(
+                    type = FileKitType.File(extensions = listOf("gguf", "bin", "safetensors")),
+                ) ?: return@launch
+                val path = file.absolutePath()
+                // Android hands back content:// URIs, which native inference can't open.
+                if (path.contains("://")) {
+                    _sideEffects.trySend(ChatBotSideEffects.OnImportFailed(getCurrentLocalization().importFromFileUnsupported))
+                    return@launch
+                }
+                val name = file.name.substringBeforeLast('.')
+                val alreadyAdded = (_state.value.generateModels + _state.value.embedModels + _state.value.sttModels +
+                    _state.value.stableDiffusionModels + _state.value.vlmModels).any { it.name == name }
+                if (alreadyAdded) return@launch
+
+                val model = LlamaModel(
+                    name = name,
+                    url = "",
+                    sizeMb = 0,
+                    fileName = path,
+                    localPath = path,
+                    source = ModelSource.UserImported,
+                )
+                getModelsUseCase.saveCustomUrlModel(model, category)
+                getModelsUseCase.saveModelPath(model.name, path)
+                _state.update { s ->
+                    when (category) {
+                        ModelCategory.Generate -> s.copy(generateModels = s.generateModels + model)
+                        ModelCategory.Stt -> s.copy(sttModels = s.sttModels + model)
+                        ModelCategory.StableDiffusion -> s.copy(stableDiffusionModels = s.stableDiffusionModels + model)
+                        ModelCategory.Vlm -> s.copy(vlmModels = s.vlmModels + model)
+                        ModelCategory.Embed -> s.copy(embedModels = s.embedModels + model)
+                    }
+                }
+            } catch (t: Throwable) {
+                Logger.e(t) { "LlamaVM - failed to import local model" }
+            }
+        }
+    }
+
     fun onDownloadFromUrl(url: String, name: String, category: ModelCategory) {
         if (downloadJobs[url]?.isActive == true) return
 
@@ -1852,7 +1911,7 @@ class ChatBotViewModel(
 
                 val path = resolveAndMigratePath(model)
 
-                if (!path.isNullOrEmpty()) {
+                if (!path.isNullOrEmpty() && model.source != ModelSource.UserImported) {
                     Logger.d("LlamaVM - delete model file at $path")
                     try {
                         LlamatikTempFile(model.name).delete(path)
@@ -1862,7 +1921,7 @@ class ChatBotViewModel(
                 }
 
                 getModelsUseCase.deleteModelPath(model)
-                if (model.source == ModelSource.CustomUrlDownload) {
+                if (model.source == ModelSource.CustomUrlDownload || model.source == ModelSource.UserImported) {
                     runCatching { getModelsUseCase.deleteCustomUrlModel(model.name) }
                 }
                 // Also delete the mmproj companion if this is a VLM model
@@ -1875,18 +1934,22 @@ class ChatBotViewModel(
                     }
                     getModelsUseCase.deleteModelPath(LlamaModel(name = "${model.name}_mmproj", url = "", sizeMb = 0))
                 }
-                val isCustom = model.source == ModelSource.CustomUrlDownload
+                val isCustom = model.source == ModelSource.CustomUrlDownload || model.source == ModelSource.UserImported
+                // Local files have a blank URL, so they must be matched by name.
+                val isSame = { it: LlamaModel ->
+                    if (model.source == ModelSource.UserImported) it.name == model.name else it.url == model.url
+                }
                 _state.value = _state.value.copy(
-                    embedModels = if (isCustom) _state.value.embedModels.filter { it.url != model.url }
-                        else _state.value.embedModels.map { if (it.url == model.url) it.copy(fileName = null, localPath = null) else it },
-                    generateModels = if (isCustom) _state.value.generateModels.filter { it.url != model.url }
-                        else _state.value.generateModels.map { if (it.url == model.url) it.copy(fileName = null, localPath = null) else it },
-                    sttModels = if (isCustom) _state.value.sttModels.filter { it.url != model.url }
-                        else _state.value.sttModels.map { if (it.url == model.url) it.copy(fileName = null, localPath = null) else it },
-                    stableDiffusionModels = if (isCustom) _state.value.stableDiffusionModels.filter { it.url != model.url }
-                        else _state.value.stableDiffusionModels.map { if (it.url == model.url) it.copy(fileName = null, localPath = null) else it },
-                    vlmModels = if (isCustom) _state.value.vlmModels.filter { it.url != model.url }
-                        else _state.value.vlmModels.map { if (it.url == model.url) it.copy(fileName = null, localPath = null, mmprojLocalPath = null) else it },
+                    embedModels = if (isCustom) _state.value.embedModels.filterNot(isSame)
+                        else _state.value.embedModels.map { if (isSame(it)) it.copy(fileName = null, localPath = null) else it },
+                    generateModels = if (isCustom) _state.value.generateModels.filterNot(isSame)
+                        else _state.value.generateModels.map { if (isSame(it)) it.copy(fileName = null, localPath = null) else it },
+                    sttModels = if (isCustom) _state.value.sttModels.filterNot(isSame)
+                        else _state.value.sttModels.map { if (isSame(it)) it.copy(fileName = null, localPath = null) else it },
+                    stableDiffusionModels = if (isCustom) _state.value.stableDiffusionModels.filterNot(isSame)
+                        else _state.value.stableDiffusionModels.map { if (isSame(it)) it.copy(fileName = null, localPath = null) else it },
+                    vlmModels = if (isCustom) _state.value.vlmModels.filterNot(isSame)
+                        else _state.value.vlmModels.map { if (isSame(it)) it.copy(fileName = null, localPath = null, mmprojLocalPath = null) else it },
                     selectedSttModelName = if (_state.value.selectedSttModelName == model.name) null else _state.value.selectedSttModelName,
                     isSttModelLoaded = if (_state.value.selectedSttModelName == model.name) false else _state.value.isSttModelLoaded,
                     selectedStableDiffusionModelName = if (_state.value.selectedStableDiffusionModelName == model.name) null else _state.value.selectedStableDiffusionModelName,
@@ -1966,6 +2029,7 @@ class ChatBotViewModel(
                         _state.value.sttModels +
                         _state.value.stableDiffusionModels +
                         _state.value.vlmModels)
+                    .filter { it.source != ModelSource.UserImported } // never touch user's own files
                     .distinctBy { it.url }
 
                 for (model in allModels) {
@@ -1987,11 +2051,11 @@ class ChatBotViewModel(
 
                 _state.update { s ->
                     s.copy(
-                        generateModels = s.generateModels.map { it.copy(localPath = null, fileName = null) },
-                        embedModels = s.embedModels.map { it.copy(localPath = null, fileName = null) },
-                        sttModels = s.sttModels.map { it.copy(localPath = null, fileName = null) },
-                        stableDiffusionModels = s.stableDiffusionModels.map { it.copy(localPath = null, fileName = null) },
-                        vlmModels = s.vlmModels.map { it.copy(localPath = null, fileName = null, mmprojLocalPath = null) },
+                        generateModels = s.generateModels.map { if (it.source == ModelSource.UserImported) it else it.copy(localPath = null, fileName = null) },
+                        embedModels = s.embedModels.map { if (it.source == ModelSource.UserImported) it else it.copy(localPath = null, fileName = null) },
+                        sttModels = s.sttModels.map { if (it.source == ModelSource.UserImported) it else it.copy(localPath = null, fileName = null) },
+                        stableDiffusionModels = s.stableDiffusionModels.map { if (it.source == ModelSource.UserImported) it else it.copy(localPath = null, fileName = null) },
+                        vlmModels = s.vlmModels.map { if (it.source == ModelSource.UserImported) it else it.copy(localPath = null, fileName = null, mmprojLocalPath = null) },
                         selectedEmbedModelName = null,
                         selectedGenerateModelName = null,
                         selectedSttModelName = null,
@@ -3168,6 +3232,7 @@ sealed class ChatBotSideEffects {
     data class OnCacheCleared(val message: String) : ChatBotSideEffects()
     data class OnCacheClearFailed(val message: String) : ChatBotSideEffects()
     data class OnToolCallDetected(val toolId: String, val rawJson: String) : ChatBotSideEffects()
+    data class OnImportFailed(val message: String) : ChatBotSideEffects()
     data class OnVideoSaved(val message: String) : ChatBotSideEffects()
     data class OnVideoSaveFailed(val message: String) : ChatBotSideEffects()
     data class OnServerGenerationFailed(val prompt: String, val mode: GenerationMode) : ChatBotSideEffects()

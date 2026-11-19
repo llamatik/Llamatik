@@ -1,5 +1,6 @@
 package com.llamatik.app.feature.models
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,10 +11,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -35,6 +40,7 @@ import com.llamatik.app.feature.chatbot.viewmodel.ChatBotSideEffects
 import com.llamatik.app.feature.chatbot.viewmodel.ChatBotViewModel
 import com.llamatik.app.localization.getCurrentLocalization
 import com.llamatik.app.permissions.rememberNotificationPermissionRequester
+import com.llamatik.app.platform.PlatformInfo
 import org.koin.core.parameter.ParametersHolder
 
 enum class ModelCatalogType {
@@ -59,6 +65,7 @@ class ModelCatalogScreen(private val type: ModelCatalogType) : Screen {
 
         val loadingModelName = remember { mutableStateOf<String?>(null) }
         var showDownloadFromUrl by remember { mutableStateOf(false) }
+        val snackbarHostState = remember { SnackbarHostState() }
 
         // Clear loading spinner when the model finishes loading (success or error)
         LaunchedEffect(Unit) {
@@ -74,6 +81,7 @@ class ModelCatalogScreen(private val type: ModelCatalogType) : Screen {
                     is ChatBotSideEffects.OnVlmModelLoadError,
                     is ChatBotSideEffects.OnEmbedModelLoaded,
                     is ChatBotSideEffects.OnEmbedModelLoadError -> loadingModelName.value = null
+                    is ChatBotSideEffects.OnImportFailed -> snackbarHostState.showSnackbar(effect.message)
                     else -> Unit
                 }
             }
@@ -128,12 +136,23 @@ class ModelCatalogScreen(private val type: ModelCatalogType) : Screen {
                     }
                 )
             },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             floatingActionButton = {
-                FloatingActionButton(onClick = { showDownloadFromUrl = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = localization.downloadFromUrl,
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (!PlatformInfo.isWasm) {
+                        SmallFloatingActionButton(onClick = { viewModel.onImportLocalModel(catalogCategory) }) {
+                            Icon(
+                                imageVector = Icons.Default.FolderOpen,
+                                contentDescription = localization.importFromFile,
+                            )
+                        }
+                    }
+                    FloatingActionButton(onClick = { showDownloadFromUrl = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = localization.downloadFromUrl,
+                        )
+                    }
                 }
             },
         ) { padding ->
