@@ -38,6 +38,19 @@ jobs:
         with:
           submodules: recursive
 
+      # CI-safe overrides (repo gradle.properties requests -Xms24g/-Xmx24g, more than runners have, so the
+      # forked Gradle daemon cannot even start: "Unable to start the daemon process").
+      - name: Configure CI Gradle JVM args
+        if: matrix.language == 'java-kotlin'
+        shell: bash
+        run: |
+          mkdir -p ~/.gradle
+          cat >> ~/.gradle/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=768m -XX:+UseParallelGC -Dfile.encoding=UTF-8
+          kotlin.daemon.jvmargs=-Xmx2g -XX:+UseParallelGC
+          org.gradle.configuration-cache=false
+          EOF
+
       - name: Set up JDK
         if: matrix.language == 'java-kotlin'
         uses: actions/setup-java@v4
