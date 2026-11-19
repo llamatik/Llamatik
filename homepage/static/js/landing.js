@@ -4,7 +4,7 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var WEB_APP = '/prompt/';
+  var WEB_APP = (window.LT && window.LT.prompt) || '/prompt/';
   var REPO = 'ferranpons/Llamatik';
 
   /* ---------- toast ---------- */
@@ -40,6 +40,20 @@
     a.addEventListener('click', function () { links.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); });
   });
 
+  /* ---------- language menu ---------- */
+  var langBtn = $('#langBtn'), langMenu = $('#langMenu');
+  if (langBtn && langMenu) {
+    var closeLang = function () { langMenu.hidden = true; langBtn.setAttribute('aria-expanded', 'false'); };
+    langBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = langMenu.hidden;
+      langMenu.hidden = !open;
+      langBtn.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', closeLang);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLang(); });
+  }
+
   /* ---------- pointer glow ---------- */
   var spot = $('#spot');
   if (!reduced && spot && window.matchMedia('(pointer:fine)').matches) {
@@ -70,13 +84,9 @@
   var routeWeb = $('#routeWeb'), routeApp = $('#routeApp'), routeCopy = $('#routeCopy');
   var chipsEl = $('#chips');
 
-  var IDEAS = {
-    chat: ['Explain quantum computing like I\'m five', 'Draft a polite email declining a meeting', 'Give me a 3-day itinerary for Lisbon', 'Summarize the pros and cons of local AI'],
-    code: ['Write a Kotlin coroutine that retries with backoff', 'Explain this regex: ^(?=.*\\d)[A-Za-z\\d]{8,}$', 'Convert a Java stream pipeline to Kotlin Flow', 'Write unit tests for a shopping cart class'],
-    create: ['A llama astronaut planting a flag on Mars, watercolor', 'Write a short story about a lighthouse keeper', 'Give me 10 names for a hiking app', 'Write a haiku about offline AI'],
-    think: ['Plan a week of meals under 60 dollars', 'What are the trade-offs of microservices vs a monolith?', 'Help me prepare for a salary negotiation', 'Teach me how transformers work in 5 steps']
-  };
-  var PLACEHOLDERS = ['Ask anything…', 'Write a Kotlin function that…', 'Summarize this idea for me…', 'Help me plan my week…', 'Explain how this works…'];
+  var LT = window.LT || {};
+  var IDEAS = LT.ideas || { chat: [], code: [], create: [], think: [] };
+  var PLACEHOLDERS = (LT.ph && LT.ph.length) ? LT.ph : [''];
 
   function renderChips(mode) {
     chipsEl.innerHTML = '';
@@ -131,12 +141,12 @@
   route.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeRoute(); });
   routeWeb.addEventListener('click', function () { if (window.gtag) gtag('event', 'hero_route_web'); });
   routeApp.addEventListener('click', function () {
-    copy(promptText()).then(function (ok) { toast(ok ? 'Prompt copied — paste it in the app' : 'Pick your platform below'); });
+    copy(promptText()).then(function (ok) { toast(ok ? LT.toastApp : LT.toastPick); });
     route.hidden = true;
     if (window.gtag) gtag('event', 'hero_route_app');
   });
   routeCopy.addEventListener('click', function () {
-    copy(promptText()).then(function (ok) { toast(ok ? 'Prompt copied' : 'Copy failed'); });
+    copy(promptText()).then(function (ok) { toast(ok ? LT.toastCopied : LT.toastFailed); });
   });
   $('#ctaTop').addEventListener('click', function (e) {
     e.preventDefault();
@@ -184,6 +194,7 @@
     var card = $('.dl-card[data-os="' + os + '"]');
     if (card && os !== 'web') {
       card.classList.add('rec');
+      card.setAttribute('data-rec', LT.rec || '');
       card.parentNode.insertBefore(card, card.parentNode.firstChild);
     }
   })();
@@ -204,9 +215,7 @@
     }, { threshold: .4 });
     o.observe(el);
   }
-  typeLoop($('#typeOut'),
-    'Imagine a coroutine as a toy that can pause and resume. It stops when it needs to wait — like for a snack — and picks up exactly where it left off, so nothing else has to stand still.',
-    { loop: true, speed: 24 });
+  typeLoop($('#typeOut'), LT.typeA || '', { loop: true, speed: 24 });
   typeLoop($('#termOut'),
     'data: {"event":"delta","text":"Hi "}\ndata: {"event":"delta","text":"from "}\ndata: {"event":"delta","text":"your own server!"}\ndata: {"event":"done"}',
     { speed: 14, loop: true, pause: 6000 });
@@ -220,11 +229,11 @@
   });
   $('#cwCopy').addEventListener('click', function () {
     var pane = $('.cw-pane.on');
-    copy(pane.textContent).then(function (ok) { toast(ok ? 'Code copied' : 'Copy failed'); });
+    copy(pane.textContent).then(function (ok) { toast(ok ? LT.toastCode : LT.toastFailed); });
   });
   $$('.mod').forEach(function (m) {
     m.addEventListener('click', function () {
-      copy(m.dataset.copyText).then(function (ok) { toast(ok ? 'Copied: ' + m.firstElementChild.textContent : 'Copy failed'); });
+      copy(m.dataset.copyText).then(function (ok) { toast(ok ? LT.toastModule.replace('{name}', m.firstElementChild.textContent) : LT.toastFailed); });
     });
   });
 

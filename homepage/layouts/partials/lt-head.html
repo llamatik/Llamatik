@@ -1,0 +1,38 @@
+{{- /* Shared <head> content. Context: dict "page" . "title" "..." "desc" "..." "ogdesc" "..." "type" "website|article" "image" "..." */ -}}
+{{- $page := .page -}}
+{{- $lang := $page.Site.Language.Lang -}}
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V6M6PMET69"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V6M6PMET69');
+</script>
+<meta charset="utf-8">
+<script>document.documentElement.classList.add('js')</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ .title }}</title>
+{{ with .desc }}<meta name="description" content="{{ . }}">{{ end }}
+<meta name="theme-color" content="#07070b">
+<link rel="icon" type="image/png" href="{{ "favicon-32x32.png" | relURL }}">
+<link rel="canonical" href="{{ $page.Permalink }}">
+{{ range $page.AllTranslations }}<link rel="alternate" hreflang="{{ .Language.LanguageCode }}" href="{{ .Permalink }}">
+{{ end }}
+<meta property="og:title" content="{{ .title }}">
+<meta property="og:type" content="{{ .type | default "website" }}">
+<meta property="og:url" content="{{ $page.Permalink }}">
+<meta property="og:locale" content="{{ replace $page.Site.Language.LanguageCode "-" "_" }}">
+<meta property="og:image" content="{{ (.image | default "images/llamatik-lead-image.png") | absURL }}">
+{{ with .ogdesc | default .desc }}<meta property="og:description" content="{{ . }}">{{ end }}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@llamatikAi">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+{{- $extra := dict "zh" "Noto+Sans+SC:wght@400;500;700;800" "ja" "Noto+Sans+JP:wght@400;500;700;800" "hi" "Noto+Sans+Devanagari:wght@400;500;700;800" "fa" "Vazirmatn:wght@400;500;700;800" -}}
+{{- $fam := index $extra $lang -}}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500{{ with $fam }}&family={{ . | safeURL }}{{ end }}&display=swap" rel="stylesheet">
+{{- $fx := dict "zh" "'Noto Sans SC'" "ja" "'Noto Sans JP'" "hi" "'Noto Sans Devanagari'" "fa" "Vazirmatn" -}}
+{{ with index $fx $lang }}<style>:root{--fx:{{ . | safeCSS }}}</style>{{ end }}
+<link rel="stylesheet" href="{{ "css/landing.css" | relURL }}?v=5">
+{{ if .blog }}<link rel="stylesheet" href="{{ "css/blog.css" | relURL }}?v=3">{{ end }}
+<script>window.LT={{ partial "lt-js-i18n.html" . | safeJS }};</script>

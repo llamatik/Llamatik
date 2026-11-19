@@ -21,6 +21,20 @@
     burger.setAttribute('aria-expanded', open);
   });
 
+  /* ---------- language menu ---------- */
+  var langBtn = $('#langBtn'), langMenu = $('#langMenu');
+  if (langBtn && langMenu) {
+    var closeLang = function () { langMenu.hidden = true; langBtn.setAttribute('aria-expanded', 'false'); };
+    langBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = langMenu.hidden;
+      langMenu.hidden = !open;
+      langBtn.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', closeLang);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLang(); });
+  }
+
   var spot = $('#spot');
   if (!reduced && spot && window.matchMedia('(pointer:fine)').matches) {
     window.addEventListener('pointermove', function (e) {
@@ -51,12 +65,12 @@
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'copy-code';
-    b.textContent = 'Copy';
+    b.textContent = (window.LT && window.LT.copy) || 'Copy';
     b.addEventListener('click', function () {
       if (!navigator.clipboard) return;
       navigator.clipboard.writeText(pre.innerText).then(function () {
-        b.textContent = 'Copied';
-        setTimeout(function () { b.textContent = 'Copy'; }, 1600);
+        b.textContent = (window.LT && window.LT.copied) || 'Copied';
+        setTimeout(function () { b.textContent = (window.LT && window.LT.copy) || 'Copy'; }, 1600);
       }, function () {});
     });
     host.appendChild(b);

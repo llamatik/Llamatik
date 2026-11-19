@@ -362,4 +362,10 @@ elseif(TARGET llama-common)
     message(STATUS "Linking llama.cpp target: llama-common")
 endif()
 
-set_target_properties(llama_jni PROPERTIES OUTPUT_NAME "llama_jni")
+# File name of the produced library. Linux x86_64 ships extra variants next to the default one
+# (llama_jni_compat, llama_jni_vulkan, ...); the JVM loader picks the right one at runtime. The JNI
+# symbols are identical in every variant, only the file name and the ggml flags differ.
+if(NOT DEFINED LLAMATIK_JNI_NAME OR LLAMATIK_JNI_NAME STREQUAL "")
+    set(LLAMATIK_JNI_NAME "llama_jni")
+endif()
+set_target_properties(llama_jni PROPERTIES OUTPUT_NAME "${LLAMATIK_JNI_NAME}")

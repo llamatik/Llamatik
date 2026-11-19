@@ -1,0 +1,7 @@
+{{- /* Translate a key and expand the tiny markup allowed in i18n strings. */ -}}
+{{- $s := i18n . -}}
+{{- $s = replace $s "<g>" "<span class=\"grad\">" -}}
+{{- $s = replace $s "</g>" "</span>" -}}
+{{- $s = replace $s "<k>" "<a href=\"https://kotlinfoundation.org/news/grants-program-winners-26/\" target=\"_blank\" rel=\"noopener\">" -}}
+{{- $s = replace $s "</k>" "</a>" -}}
+{{- return ($s | safeHTML) -}}

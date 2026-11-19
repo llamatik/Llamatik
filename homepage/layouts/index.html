@@ -1,59 +1,35 @@
 <!DOCTYPE html>
-<html lang="{{ .Site.Language.Lang }}">
+<html lang="{{ .Site.Language.LanguageCode }}" dir="{{ .Site.Language.LanguageDirection | default "ltr" }}">
 <head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6M6PMET69"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-V6M6PMET69');
-  </script>
-  <meta charset="utf-8">
-  <script>document.documentElement.classList.add('js')</script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Llamatik — Private AI that runs on your device</title>
-  <meta name="description" content="Chat, see, listen and create with AI that runs on your own devices. Free apps for Android, iOS, macOS, Windows, Linux and the browser — plus an open-source Kotlin SDK, a self-hosted server and an AI coding assistant for your IDE.">
-  <meta name="theme-color" content="#07070b">
-  <link rel="icon" type="image/png" href="{{ "favicon-32x32.png" | relURL }}">
-  <meta property="og:title" content="Llamatik — Private AI that runs on your device">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ .Permalink }}">
-  <meta property="og:image" content="{{ "images/llamatik-lead-image.png" | absURL }}">
-  <meta property="og:description" content="Chat, vision, voice, image and video generation — running on your own devices. Open source. No account. No tracking.">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@llamatikAi">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ "css/landing.css" | relURL }}?v=2">
+{{ partial "lt-head.html" (dict "page" . "title" (i18n "meta_title") "desc" (i18n "meta_desc") "ogdesc" (i18n "meta_og_desc")) }}
 </head>
 <body class="lt" id="top">
 
-{{ partial "lt-nav.html" (dict "home" true) }}
+{{ partial "lt-nav.html" (dict "page" . "home" true) }}
 
 <main>
 <!-- HERO -->
 <section class="hero">
   <div class="wrap hero-in">
     <a class="announce reveal" href="#whatsnew">
-      <span class="dot"></span> Llamatik 2.0 is here <span class="sep">·</span> SDK, Agents, Video, Share&nbsp;this&nbsp;device <span class="arr">→</span>
+      <span class="dot"></span> {{ i18n "announce_a" }} <span class="sep">·</span> {{ i18n "announce_b" }} <span class="arr">→</span>
     </a>
-    <h1 class="hero-title reveal">Private AI that lives<br>on <span class="grad">your devices.</span></h1>
-    <p class="hero-sub reveal">Chat, see, listen and create — with models that run on your phone, laptop and browser. No account. No tracking. Nothing leaves your device unless you say so.</p>
+    <h1 class="hero-title reveal">{{ partial "t.html" "hero_title" }}</h1>
+    <p class="hero-sub reveal">{{ i18n "hero_sub" }}</p>
 
     <form class="ask reveal" id="askForm" autocomplete="off">
       <div class="ask-box" id="askBox">
-        <label class="sr" for="askInput">Ask Llamatik anything</label>
-        <textarea id="askInput" rows="1" maxlength="2000" placeholder="Ask anything…" enterkeyhint="send"></textarea>
+        <label class="sr" for="askInput">{{ i18n "ask_label" }}</label>
+        <textarea id="askInput" rows="1" maxlength="2000" placeholder="{{ i18n "ask_placeholder" }}" enterkeyhint="send"></textarea>
         <div class="ask-bar">
-          <div class="modes" id="modes" role="tablist" aria-label="Prompt ideas">
-            <button type="button" class="mode on" data-mode="chat" role="tab">Chat</button>
-            <button type="button" class="mode" data-mode="code" role="tab">Code</button>
-            <button type="button" class="mode" data-mode="create" role="tab">Create</button>
-            <button type="button" class="mode" data-mode="think" role="tab">Think</button>
+          <div class="modes" id="modes" role="tablist" aria-label="{{ i18n "modes_aria" }}">
+            <button type="button" class="mode on" data-mode="chat" role="tab">{{ i18n "mode_chat" }}</button>
+            <button type="button" class="mode" data-mode="code" role="tab">{{ i18n "mode_code" }}</button>
+            <button type="button" class="mode" data-mode="create" role="tab">{{ i18n "mode_create" }}</button>
+            <button type="button" class="mode" data-mode="think" role="tab">{{ i18n "mode_think" }}</button>
           </div>
-          <span class="ask-note"><i class="lock"></i>Runs locally</span>
-          <button class="send" id="sendBtn" type="submit" aria-label="Send prompt" disabled>
+          <span class="ask-note"><i class="lock"></i>{{ i18n "runs_locally" }}</span>
+          <button class="send" id="sendBtn" type="submit" aria-label="{{ i18n "send_aria" }}" disabled>
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
           </button>
         </div>
@@ -62,51 +38,51 @@
       <!-- Where to run it -->
       <div class="route" id="route" hidden>
         <div class="route-head">
-          <span>Where should Llamatik answer?</span>
-          <button type="button" class="route-x" id="routeX" aria-label="Close">×</button>
+          <span>{{ i18n "route_title" }}</span>
+          <button type="button" class="route-x" id="routeX" aria-label="{{ i18n "route_close" }}">×</button>
         </div>
         <div class="route-grid">
           <a class="route-opt primary" id="routeWeb" href="/prompt/">
             <span class="ro-ico">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
             </span>
-            <span class="ro-t">In your browser<small>Instant. Opens the web app with your prompt ready.</small></span>
+            <span class="ro-t">{{ i18n "route_web_t" }}<small>{{ i18n "route_web_d" }}</small></span>
             <kbd>↵</kbd>
           </a>
           <a class="route-opt" id="routeApp" href="#download" data-copy>
             <span class="ro-ico">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
             </span>
-            <span class="ro-t">In the app<small>Best speed. Copies your prompt and takes you to the downloads.</small></span>
+            <span class="ro-t">{{ i18n "route_app_t" }}<small>{{ i18n "route_app_d" }}</small></span>
           </a>
           <button class="route-opt" id="routeCopy" type="button">
             <span class="ro-ico">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
             </span>
-            <span class="ro-t">Just copy it<small>Paste it in the app, your server, or your IDE.</small></span>
+            <span class="ro-t">{{ i18n "route_copy_t" }}<small>{{ i18n "route_copy_d" }}</small></span>
           </button>
         </div>
-        <p class="route-foot" id="routeFoot">Your prompt goes to <code>/prompt/</code> on this site as a URL parameter — never to a server that runs a model.</p>
+        <p class="route-foot" id="routeFoot">{{ partial "t.html" "route_foot" }}</p>
       </div>
 
       <div class="chips" id="chips"></div>
     </form>
 
     <div class="hero-meta reveal">
-      <span><i class="tick"></i> Free &amp; open source</span>
-      <span><i class="tick"></i> Works offline</span>
-      <span><i class="tick"></i> No account</span>
-      <span><i class="tick"></i> Android · iOS · Mac · Windows · Linux · Web</span>
+      <span><i class="tick"></i> {{ i18n "meta_1" }}</span>
+      <span><i class="tick"></i> {{ i18n "meta_2" }}</span>
+      <span><i class="tick"></i> {{ i18n "meta_3" }}</span>
+      <span><i class="tick"></i> <bdi>{{ i18n "meta_4" }}</bdi></span>
     </div>
   </div>
 </section>
 
 <!-- ENGINES MARQUEE -->
-<section class="marquee" aria-label="Built on">
+<section class="marquee" aria-label="{{ i18n "marquee_aria" }}">
   <div class="marquee-track">
     {{ range seq 2 }}
     <div class="marquee-set">
-      <span>llama.cpp</span><i></i><span>whisper.cpp</span><i></i><span>stable-diffusion.cpp</span><i></i><span>Kotlin Multiplatform</span><i></i><span>Compose</span><i></i><span>Ktor</span><i></i><span>GGUF</span><i></i><span>MIT licensed</span><i></i>
+      <span>llama.cpp</span><i></i><span>whisper.cpp</span><i></i><span>stable-diffusion.cpp</span><i></i><span>Kotlin Multiplatform</span><i></i><span>Compose</span><i></i><span>Ktor</span><i></i><span>GGUF</span><i></i><span>{{ i18n "marquee_mit" }}</span><i></i>
     </div>
     {{ end }}
   </div>
@@ -116,44 +92,44 @@
 <section class="sec" id="download">
   <div class="wrap">
     <div class="sec-head reveal">
-      <p class="eyebrow">Get Llamatik</p>
-      <h2>One app. <span class="grad">Every screen you own.</span></h2>
-      <p class="lead">Start in a browser tab, then take it with you. Same chats, same models, same privacy.</p>
+      <p class="eyebrow">{{ i18n "dl_eyebrow" }}</p>
+      <h2>{{ partial "t.html" "dl_title" }}</h2>
+      <p class="lead">{{ i18n "dl_lead" }}</p>
     </div>
 
     <div class="dl-grid">
       <a class="dl-card dl-web reveal" href="/prompt/" data-os="web">
         <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
-        <h3>Web</h3><p>Zero install. Runs in your browser with WebAssembly.</p>
-        <span class="dl-act">Open web app →</span>
+        <h3>{{ i18n "dl_web_t" }}</h3><p><bdi>{{ i18n "dl_web_d" }}</bdi></p>
+        <span class="dl-act">{{ i18n "dl_web_act" }}</span>
       </a>
       <a class="dl-card reveal" href="https://play.google.com/store/apps/details?id=com.llamatik.app.android" target="_blank" rel="noopener" data-os="android">
         <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M17.6 9.5a6 6 0 0 0-11.2 0zM7 7.2 5.6 5m11.4 2.2L18.4 5M6 10v7a1 1 0 0 0 1 1h1v3a1.5 1.5 0 0 0 3 0v-3h2v3a1.5 1.5 0 0 0 3 0v-3h1a1 1 0 0 0 1-1v-7zM3.5 10a1.5 1.5 0 0 1 3 0v5a1.5 1.5 0 0 1-3 0zm14 0a1.5 1.5 0 0 1 3 0v5a1.5 1.5 0 0 1-3 0z" opacity=".9"/></svg></div>
-        <h3>Android</h3><p>Google Play · Android 8.0+</p>
-        <span class="dl-act">Get it on Google Play →</span>
+        <h3>{{ i18n "dl_android_t" }}</h3><p><bdi>{{ i18n "dl_android_d" }}</bdi></p>
+        <span class="dl-act">{{ i18n "dl_android_act" }}</span>
       </a>
       <a class="dl-card reveal" href="https://apple.co/3Md7EIh" target="_blank" rel="noopener" data-os="ios">
         <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.15-2.8.85-3.5.85s-1.8-.83-3-.8a4.4 4.4 0 0 0-3.7 2.3c-1.6 2.8-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2a9.7 9.7 0 0 0 1.2-2.5 3.9 3.9 0 0 1-2.4-3.55zM14.2 5.8a3.8 3.8 0 0 0 .9-2.8 3.9 3.9 0 0 0-2.5 1.3 3.6 3.6 0 0 0-.9 2.7 3.2 3.2 0 0 0 2.5-1.2z"/></svg></div>
-        <h3>iPhone &amp; iPad</h3><p>App Store · iOS 16.6+</p>
-        <span class="dl-act">Download on the App Store →</span>
+        <h3>{{ i18n "dl_ios_t" }}</h3><p><bdi>{{ i18n "dl_ios_d" }}</bdi></p>
+        <span class="dl-act">{{ i18n "dl_ios_act" }}</span>
       </a>
-      <a class="dl-card reveal" href="{{ "download/" | relURL }}" data-os="mac" data-ext="dmg">
+      <a class="dl-card reveal" href="{{ "download/" | relLangURL }}" data-os="mac" data-ext="dmg">
         <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
-        <h3>macOS</h3><p>Apple Silicon &amp; Intel · .dmg</p>
-        <span class="dl-act">Download for Mac →</span>
+        <h3>{{ i18n "dl_mac_t" }}</h3><p><bdi>{{ i18n "dl_mac_d" }}</bdi></p>
+        <span class="dl-act">{{ i18n "dl_mac_act" }}</span>
       </a>
-      <a class="dl-card reveal" href="{{ "download/" | relURL }}" data-os="win" data-ext="msi">
+      <a class="dl-card reveal" href="{{ "download/" | relLangURL }}" data-os="win" data-ext="msi">
         <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M3 5.5 11 4.4v7.1H3zm9-1.2L21 3v8.5h-9zM3 12.5h8v7.1L3 18.5zm9 0h9V21l-9-1.3z"/></svg></div>
-        <h3>Windows</h3><p>Windows 10+ · .msi</p>
-        <span class="dl-act">Download for Windows →</span>
+        <h3>{{ i18n "dl_win_t" }}</h3><p><bdi>{{ i18n "dl_win_d" }}</bdi></p>
+        <span class="dl-act">{{ i18n "dl_win_act" }}</span>
       </a>
-      <a class="dl-card reveal" href="{{ "download/" | relURL }}" data-os="linux" data-ext="deb">
+      <a class="dl-card reveal" href="{{ "download/" | relLangURL }}" data-os="linux" data-ext="deb">
         <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 4 4-4 4M12 17h7"/><rect x="2.5" y="3.5" width="19" height="17" rx="2.5"/></svg></div>
-        <h3>Linux</h3><p>Debian &amp; Ubuntu · .deb · Omarchy</p>
-        <span class="dl-act">Download .deb →</span>
+        <h3>{{ i18n "dl_linux_t" }}</h3><p><bdi>{{ i18n "dl_linux_d" }}</bdi></p>
+        <span class="dl-act">{{ i18n "dl_linux_act" }}</span>
       </a>
     </div>
-    <p class="dl-foot reveal">Every desktop release ships with SHA-256 checksums. <a href="{{ "download/" | relURL }}">All downloads &amp; checksums →</a></p>
+    <p class="dl-foot reveal">{{ i18n "dl_foot" }} <a href="{{ "download/" | relLangURL }}">{{ i18n "dl_foot_link" }}</a></p>
   </div>
 </section>
 
@@ -161,72 +137,72 @@
 <section class="sec" id="features">
   <div class="wrap">
     <div class="sec-head reveal">
-      <p class="eyebrow">What it does</p>
-      <h2>More than a chatbot.<br><span class="grad">A whole AI studio in your pocket.</span></h2>
-      <p class="lead">Text, vision, voice, images, video and documents — each one running on the engine you already trust, on the hardware you already own.</p>
+      <p class="eyebrow">{{ i18n "f_eyebrow" }}</p>
+      <h2>{{ partial "t.html" "f_title" }}</h2>
+      <p class="lead">{{ i18n "f_lead" }}</p>
     </div>
 
     <div class="bento">
       <article class="card c-chat span2 reveal">
-        <div class="tag">Chat</div>
-        <h3>Fast, streaming conversations</h3>
-        <p>Pick any GGUF model — download from the built-in catalog or load a file from your device. Markdown, code blocks and history included.</p>
+        <div class="tag">{{ i18n "f_chat_tag" }}</div>
+        <h3>{{ i18n "f_chat_t" }}</h3>
+        <p>{{ i18n "f_chat_d" }}</p>
         <div class="mock chatmock" id="chatMock" aria-hidden="true">
-          <div class="msg u">Explain Kotlin coroutines like I'm five.</div>
+          <div class="msg u">{{ i18n "f_chat_q" }}</div>
           <div class="msg a"><span id="typeOut"></span><i class="caret"></i></div>
         </div>
       </article>
 
       <article class="card c-vision reveal">
-        <div class="tag">Vision <em>new</em></div>
-        <h3>Show it a picture</h3>
-        <p>Ask about photos, screenshots and documents with on-device vision models like SmolVLM.</p>
-        <div class="mock scanmock" aria-hidden="true"><div class="scan"></div><div class="bbox b1">receipt</div><div class="bbox b2">total: 42.10</div></div>
+        <div class="tag">{{ i18n "f_vision_tag" }} <em>{{ i18n "f_new" }}</em></div>
+        <h3>{{ i18n "f_vision_t" }}</h3>
+        <p>{{ i18n "f_vision_d" }}</p>
+        <div class="mock scanmock" aria-hidden="true"><div class="scan"></div><div class="bbox b1">{{ i18n "f_vision_box1" }}</div><div class="bbox b2">{{ i18n "f_vision_box2" }}</div></div>
       </article>
 
       <article class="card c-voice reveal">
-        <div class="tag">Voice</div>
-        <h3>Talk, don't type</h3>
-        <p>Whisper transcribes speech offline — with timestamps, translation to English, and speaker turns.</p>
+        <div class="tag">{{ i18n "f_voice_tag" }}</div>
+        <h3>{{ i18n "f_voice_t" }}</h3>
+        <p>{{ i18n "f_voice_d" }}</p>
         <div class="mock wave" aria-hidden="true">{{ range seq 28 }}<i style="--i:{{ . }}"></i>{{ end }}</div>
       </article>
 
       <article class="card c-video span2 reveal">
-        <div class="tag">Video <em>new</em></div>
-        <h3>Text-to-video, on your hardware</h3>
-        <p>Describe a scene and get a short clip — encoded to H.264, saved to your gallery, with optional on-device upscaling.</p>
+        <div class="tag">{{ i18n "f_video_tag" }} <em>{{ i18n "f_new" }}</em></div>
+        <h3>{{ i18n "f_video_t" }}</h3>
+        <p>{{ i18n "f_video_d" }}</p>
         <div class="mock filmmock" aria-hidden="true"><div class="film"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="playhead"></div></div>
       </article>
 
       <article class="card c-image reveal">
-        <div class="tag">Images</div>
-        <h3>Generate art offline</h3>
-        <p>Text-to-image and image-to-image, with live progress and ControlNet guidance for pose, depth and edges.</p>
+        <div class="tag">{{ i18n "f_image_tag" }}</div>
+        <h3>{{ i18n "f_image_t" }}</h3>
+        <p>{{ i18n "f_image_d" }}</p>
         <div class="mock imgmock" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
       </article>
 
       <article class="card c-agent reveal">
-        <div class="tag">Agents <em>2.0</em></div>
-        <h3>An assistant that acts</h3>
-        <p>Planner, tools, permissions and an audit log — with companion personas from Professional to Pet.</p>
+        <div class="tag">{{ i18n "f_agent_tag" }} <em>2.0</em></div>
+        <h3>{{ i18n "f_agent_t" }}</h3>
+        <p>{{ i18n "f_agent_d" }}</p>
       </article>
 
       <article class="card c-rag reveal">
-        <div class="tag">Documents</div>
-        <h3>Chat with your PDFs</h3>
-        <p>Local RAG: chunking, embeddings and MMR retrieval — your files never get uploaded.</p>
+        <div class="tag">{{ i18n "f_rag_tag" }}</div>
+        <h3>{{ i18n "f_rag_t" }}</h3>
+        <p>{{ i18n "f_rag_d" }}</p>
       </article>
 
       <article class="card c-fast reveal">
-        <div class="tag">Speed</div>
-        <h3>Multi-token prediction</h3>
-        <p>Speculative drafting for models that support it (Qwen3.5, GLM-4) — more tokens per second.</p>
+        <div class="tag">{{ i18n "f_fast_tag" }}</div>
+        <h3>{{ i18n "f_fast_t" }}</h3>
+        <p>{{ i18n "f_fast_d" }}</p>
       </article>
 
       <article class="card c-priv span2 reveal">
-        <div class="tag">Privacy</div>
-        <h3>Offline by default</h3>
-        <p>Models and chats stay on your device. No account, no tracking, and a clear warning before you ever connect to a server.</p>
+        <div class="tag">{{ i18n "f_priv_tag" }}</div>
+        <h3>{{ i18n "f_priv_t" }}</h3>
+        <p>{{ i18n "f_priv_d" }}</p>
       </article>
     </div>
   </div>
@@ -236,16 +212,16 @@
 <section class="sec" id="network">
   <div class="wrap net">
     <div class="net-copy reveal">
-      <p class="eyebrow">Share this device <span class="pill">new in 2.0</span></p>
-      <h2>Every device you own,<br><span class="grad">one shared brain.</span></h2>
-      <p class="lead">Your gaming PC has the horsepower. Your phone has you. Turn on <b>Share this device</b> and Llamatik serves your loaded models to your other devices over the local network — found automatically with mDNS.</p>
+      <p class="eyebrow">{{ i18n "net_eyebrow" }} <span class="pill">{{ i18n "net_pill" }}</span></p>
+      <h2>{{ partial "t.html" "net_title" }}</h2>
+      <p class="lead">{{ partial "t.html" "net_lead" }}</p>
       <ul class="ticks">
-        <li><b>Approve each device</b> before it can use yours — no shared secrets to leak.</li>
-        <li><b>Hands-off discovery.</b> Nearby Llamatik hosts show up on their own.</li>
-        <li><b>Resilient streaming.</b> Drop off Wi-Fi mid-answer and it reconnects and continues.</li>
-        <li><b>Android, Desktop and iOS</b> can host. Your battery thanks you.</li>
+        <li>{{ partial "t.html" "net_t1" }}</li>
+        <li>{{ partial "t.html" "net_t2" }}</li>
+        <li>{{ partial "t.html" "net_t3" }}</li>
+        <li>{{ partial "t.html" "net_t4" }}</li>
       </ul>
-      <p class="warn-note">Connections between devices are currently plain HTTP — keep them on networks you trust.</p>
+      <p class="warn-note">{{ i18n "net_warn" }}</p>
     </div>
     <div class="net-viz reveal" aria-hidden="true">
       <svg viewBox="0 0 520 440" class="net-svg">
@@ -261,13 +237,13 @@
           <circle r="4"><animateMotion dur="2.9s" repeatCount="indefinite" begin="-.5s"><mpath href="#p3"/></animateMotion></circle>
           <circle r="4"><animateMotion dur="3.4s" repeatCount="indefinite" begin="-2s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#p4"/></animateMotion></circle>
         </g>
-        <g class="node host"><circle cx="260" cy="220" r="62" class="halo"/><circle cx="260" cy="220" r="46"/><text x="260" y="214" text-anchor="middle">Your PC</text><text x="260" y="234" text-anchor="middle" class="sub">hosting</text></g>
-        <g class="node"><circle cx="100" cy="90" r="34"/><text x="100" y="95" text-anchor="middle">Phone</text></g>
-        <g class="node"><circle cx="430" cy="100" r="34"/><text x="430" y="105" text-anchor="middle">Tablet</text></g>
-        <g class="node"><circle cx="90" cy="340" r="34"/><text x="90" y="345" text-anchor="middle">Laptop</text></g>
-        <g class="node"><circle cx="440" cy="340" r="34"/><text x="440" y="345" text-anchor="middle">Browser</text></g>
+        <g class="node host"><circle cx="260" cy="220" r="62" class="halo"/><circle cx="260" cy="220" r="46"/><text x="260" y="214" text-anchor="middle">{{ i18n "net_pc" }}</text><text x="260" y="234" text-anchor="middle" class="sub">{{ i18n "net_hosting" }}</text></g>
+        <g class="node"><circle cx="100" cy="90" r="34"/><text x="100" y="95" text-anchor="middle">{{ i18n "net_phone" }}</text></g>
+        <g class="node"><circle cx="430" cy="100" r="34"/><text x="430" y="105" text-anchor="middle">{{ i18n "net_tablet" }}</text></g>
+        <g class="node"><circle cx="90" cy="340" r="34"/><text x="90" y="345" text-anchor="middle">{{ i18n "net_laptop" }}</text></g>
+        <g class="node"><circle cx="440" cy="340" r="34"/><text x="440" y="345" text-anchor="middle">{{ i18n "net_browser" }}</text></g>
       </svg>
-      <div class="approve"><span class="a-ico">✓</span><div><b>“Pixel 9” wants to connect</b><small>Approve once — revoke any time</small></div><button type="button" tabindex="-1">Approve</button></div>
+      <div class="approve"><span class="a-ico">✓</span><div><b>{{ i18n "net_approve_t" }}</b><small>{{ i18n "net_approve_d" }}</small></div><button type="button" tabindex="-1">{{ i18n "net_approve_btn" }}</button></div>
     </div>
   </div>
 </section>
@@ -276,17 +252,17 @@
 <section class="sec" id="whatsnew">
   <div class="wrap">
     <div class="sec-head reveal">
-      <p class="eyebrow">Llamatik 2.0</p>
-      <h2>The biggest release yet.</h2>
-      <p class="lead">The app is the showcase. The engine underneath is now a full Kotlin Multiplatform AI SDK.</p>
+      <p class="eyebrow">{{ i18n "wn_eyebrow" }}</p>
+      <h2>{{ i18n "wn_title" }}</h2>
+      <p class="lead">{{ i18n "wn_lead" }}</p>
     </div>
     <div class="timeline">
-      <div class="tl reveal"><b>SDK</b><p>Chat, models, downloads, RAG and the new <code>Assistant</code> facade — UI-free and publishable.</p></div>
-      <div class="tl reveal"><b>Agents</b><p>A Kotlin DSL and an <code>AgentRuntime</code> with permissions, confirmations and audit.</p></div>
-      <div class="tl reveal"><b>Video</b><p>Text-to-video, ControlNet, live progress and video upscaling.</p></div>
-      <div class="tl reveal"><b>Vision</b><p>Multimodal image analysis through libmtmd — SmolVLM and friends.</p></div>
-      <div class="tl reveal"><b>Network</b><p>Connect to servers, discover nodes, and share your own device.</p></div>
-      <div class="tl reveal"><b>llama.cpp 1.0</b><p>Built on the new semantic-versioned releases of llama.cpp and whisper.cpp.</p></div>
+      <div class="tl reveal"><b>{{ i18n "wn_sdk_t" }}</b><p>{{ partial "t.html" "wn_sdk_d" }}</p></div>
+      <div class="tl reveal"><b>{{ i18n "wn_agents_t" }}</b><p>{{ partial "t.html" "wn_agents_d" }}</p></div>
+      <div class="tl reveal"><b>{{ i18n "wn_video_t" }}</b><p>{{ partial "t.html" "wn_video_d" }}</p></div>
+      <div class="tl reveal"><b>{{ i18n "wn_vision_t" }}</b><p>{{ partial "t.html" "wn_vision_d" }}</p></div>
+      <div class="tl reveal"><b>{{ i18n "wn_network_t" }}</b><p>{{ partial "t.html" "wn_network_d" }}</p></div>
+      <div class="tl reveal"><b>{{ i18n "wn_llama_t" }}</b><p>{{ partial "t.html" "wn_llama_d" }}</p></div>
     </div>
   </div>
 </section>
@@ -295,20 +271,20 @@
 <section class="sec" id="developers">
   <div class="wrap dev">
     <div class="dev-copy reveal">
-      <p class="eyebrow">For developers</p>
-      <h2>Build it into <span class="grad">your own app.</span></h2>
-      <p class="lead">The same stack that powers the Llamatik app is on Maven Central. One Kotlin API for Android, iOS, Desktop and WASM — no Python, no glue code.</p>
+      <p class="eyebrow">{{ i18n "dev_eyebrow" }}</p>
+      <h2>{{ partial "t.html" "dev_title" }}</h2>
+      <p class="lead">{{ i18n "dev_lead" }}</p>
 
       <div class="mods">
-        <button type="button" class="mod" data-copy-text='implementation("com.llamatik:core:&lt;version&gt;")'><b>core</b><span>llama.cpp · whisper.cpp · stable-diffusion.cpp bindings</span></button>
-        <button type="button" class="mod" data-copy-text='implementation("com.llamatik:sdk:&lt;version&gt;")'><b>sdk</b><span>Chat, models, RAG, Agent DSL, Assistant</span></button>
-        <button type="button" class="mod" data-copy-text='implementation("com.llamatik:sdk-agent:&lt;version&gt;")'><b>sdk-agent</b><span>Planner, tools, permissions, workflows</span></button>
-        <button type="button" class="mod" data-copy-text='implementation("com.llamatik:server:&lt;version&gt;")'><b>server</b><span>Embed the inference API in any Ktor app</span></button>
+        <button type="button" class="mod" data-copy-text='implementation("com.llamatik:core:&lt;version&gt;")'><b>core</b><span>{{ i18n "mod_core_d" }}</span></button>
+        <button type="button" class="mod" data-copy-text='implementation("com.llamatik:sdk:&lt;version&gt;")'><b>sdk</b><span>{{ i18n "mod_sdk_d" }}</span></button>
+        <button type="button" class="mod" data-copy-text='implementation("com.llamatik:sdk-agent:&lt;version&gt;")'><b>sdk-agent</b><span>{{ i18n "mod_agent_d" }}</span></button>
+        <button type="button" class="mod" data-copy-text='implementation("com.llamatik:server:&lt;version&gt;")'><b>server</b><span>{{ i18n "mod_server_d" }}</span></button>
       </div>
-      <p class="hint">Click a module to copy its Gradle line.</p>
+      <p class="hint">{{ i18n "dev_hint" }}</p>
       <div class="btn-row">
-        <a class="btn btn-solid" href="https://docs.llamatik.com" rel="noopener">Read the docs</a>
-        <a class="btn btn-ghost" href="https://github.com/ferranpons/Llamatik" target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn btn-solid" href="https://docs.llamatik.com" rel="noopener">{{ i18n "dev_docs" }}</a>
+        <a class="btn btn-ghost" href="https://github.com/ferranpons/Llamatik" target="_blank" rel="noopener">{{ i18n "dev_github" }}</a>
       </div>
     </div>
 
@@ -320,7 +296,7 @@
           <button type="button" class="cw-tab" data-tab="bridge" role="tab">LlamaBridge.kt</button>
           <button type="button" class="cw-tab" data-tab="gradle" role="tab">build.gradle.kts</button>
         </div>
-        <button type="button" class="cw-copy" id="cwCopy">Copy</button>
+        <button type="button" class="cw-copy" id="cwCopy">{{ i18n "cw_copy" }}</button>
       </div>
 <pre class="cw-pane on" data-pane="agent"><code><span class="k">val</span> agent = <span class="f">Agent</span> {
     <span class="f">name</span>(<span class="s">"Kotlin Assistant"</span>)
@@ -375,17 +351,17 @@ agent.<span class="f">stream</span>(<span class="s">"What is 17% of 2,340?"</spa
 <span class="o" id="termOut"></span><i class="caret"></i></code></pre>
     </div>
     <div class="dev-copy reveal">
-      <p class="eyebrow">Llamatik Server</p>
-      <h2>Your own inference backend.<br><span class="grad">Same API. Zero code changes.</span></h2>
-      <p class="lead">Need more power than a phone? Self-host a Ktor server that speaks exactly the same API as the library — text, embeddings, speech, images, <b>video</b> and vision, streamed over SSE.</p>
+      <p class="eyebrow">{{ i18n "srv_eyebrow" }}</p>
+      <h2>{{ partial "t.html" "srv_title" }}</h2>
+      <p class="lead">{{ partial "t.html" "srv_lead" }}</p>
       <ul class="ticks">
-        <li>Full <code>LlamaBridge</code>, <code>WhisperBridge</code>, <code>StableDiffusionBridge</code> and <code>MultimodalBridge</code> parity</li>
-        <li>Schema-constrained JSON, KV sessions, speculative decoding, GPU offload</li>
-        <li>JWT auth, profiles, Docker-ready — or embed <code>com.llamatik:server</code> in your own app</li>
+        <li>{{ partial "t.html" "srv_t1" }}</li>
+        <li>{{ partial "t.html" "srv_t2" }}</li>
+        <li>{{ partial "t.html" "srv_t3" }}</li>
       </ul>
       <div class="btn-row">
-        <a class="btn btn-solid" href="https://github.com/ferranpons/Llamatik-server" target="_blank" rel="noopener">Get Llamatik Server</a>
-        <a class="btn btn-ghost" href="https://docs.llamatik.com" rel="noopener">API docs</a>
+        <a class="btn btn-solid" href="https://github.com/ferranpons/Llamatik-server" target="_blank" rel="noopener">{{ i18n "srv_get" }}</a>
+        <a class="btn btn-ghost" href="https://docs.llamatik.com" rel="noopener">{{ i18n "srv_docs" }}</a>
       </div>
     </div>
   </div>
@@ -396,21 +372,21 @@ agent.<span class="f">stream</span>(<span class="s">"What is 17% of 2,340?"</spa
   <div class="wrap">
     <div class="ide reveal">
       <div class="ide-copy">
-        <p class="eyebrow">Llamatik Code</p>
-        <h2>An AI pair programmer that <span class="grad">never sees the cloud.</span></h2>
-        <p class="lead">A privacy-first coding assistant for IntelliJ IDEA, Android Studio and the JetBrains family. Load a GGUF model once and your code never leaves your machine.</p>
+        <p class="eyebrow">{{ i18n "code_eyebrow" }}</p>
+        <h2>{{ partial "t.html" "code_title" }}</h2>
+        <p class="lead">{{ i18n "code_lead" }}</p>
         <ul class="ticks">
-          <li><b>Ask mode</b> — unlimited chat aware of your files and selection</li>
-          <li><b>Agent mode</b> — proposes diffs and waits for your approval</li>
-          <li><b>MCP servers</b> and built-in web docs search, no API key</li>
+          <li>{{ partial "t.html" "code_t1" }}</li>
+          <li>{{ partial "t.html" "code_t2" }}</li>
+          <li>{{ partial "t.html" "code_t3" }}</li>
         </ul>
         <div class="btn-row">
-          <a class="btn btn-solid" href="https://plugins.jetbrains.com/plugin/31304-llamatik-code" target="_blank" rel="noopener">Get the plugin</a>
-          <a class="btn btn-ghost" href="{{ "blog/llamatik-code-jetbrains-plugin/" | relURL }}">Read the announcement</a>
+          <a class="btn btn-solid" href="https://plugins.jetbrains.com/plugin/31304-llamatik-code" target="_blank" rel="noopener">{{ i18n "code_get" }}</a>
+          <a class="btn btn-ghost" href="{{ "blog/llamatik-code-jetbrains-plugin/" | relLangURL }}">{{ i18n "code_read" }}</a>
         </div>
       </div>
       <div class="ide-shot">
-        <img src="{{ "images/screenshots/llamatik_code_image.png" | relURL }}" alt="Llamatik Code inside an IntelliJ-based IDE" loading="lazy">
+        <img src="{{ "images/screenshots/llamatik_code_image.png" | relURL }}" alt="{{ i18n "code_alt" }}" loading="lazy">
       </div>
     </div>
   </div>
@@ -420,13 +396,13 @@ agent.<span class="f">stream</span>(<span class="s">"What is 17% of 2,340?"</spa
 <section class="sec" id="why">
   <div class="wrap">
     <div class="sec-head reveal">
-      <p class="eyebrow">Why local-first</p>
-      <h2>Your AI. Your data. <span class="grad">Your rules.</span></h2>
+      <p class="eyebrow">{{ i18n "why_eyebrow" }}</p>
+      <h2>{{ partial "t.html" "why_title" }}</h2>
     </div>
     <div class="trio">
-      <div class="tri reveal"><div class="tri-n">01</div><h3>Private by design</h3><p>Prompts, documents and voice are processed on your hardware. There is no account to create and no cloud to trust.</p></div>
-      <div class="tri reveal"><div class="tri-n">02</div><h3>Works anywhere</h3><p>On a plane, in a basement, behind a firewall. Once a model is downloaded, the network is optional.</p></div>
-      <div class="tri reveal"><div class="tri-n">03</div><h3>Open source</h3><p>MIT-licensed and built in the open. Inspect it, fork it, ship it. A <a href="https://kotlinfoundation.org/news/grants-program-winners-26/" target="_blank" rel="noopener">2026 Kotlin Foundation Grant</a> winner.</p></div>
+      <div class="tri reveal"><div class="tri-n">01</div><h3>{{ i18n "why1_t" }}</h3><p>{{ i18n "why1_d" }}</p></div>
+      <div class="tri reveal"><div class="tri-n">02</div><h3>{{ i18n "why2_t" }}</h3><p>{{ i18n "why2_d" }}</p></div>
+      <div class="tri reveal"><div class="tri-n">03</div><h3>{{ i18n "why3_t" }}</h3><p>{{ partial "t.html" "why3_d" }}</p></div>
     </div>
   </div>
 </section>
@@ -435,19 +411,19 @@ agent.<span class="f">stream</span>(<span class="s">"What is 17% of 2,340?"</spa
 <section class="sec final">
   <div class="wrap">
     <div class="final-box reveal">
-      <h2>Ready to run AI <span class="grad">your way?</span></h2>
-      <p class="lead">Ask your first question in seconds — no sign-up.</p>
+      <h2>{{ partial "t.html" "cta_title" }}</h2>
+      <p class="lead">{{ i18n "cta_lead" }}</p>
       <div class="btn-row center">
-        <a class="btn btn-lg btn-solid" href="#top" id="ctaTop">Try it in your browser</a>
-        <a class="btn btn-lg btn-ghost" href="#download">Download the app</a>
-        <a class="btn btn-lg btn-ghost" href="https://github.com/ferranpons/Llamatik" target="_blank" rel="noopener">Star on GitHub</a>
+        <a class="btn btn-lg btn-solid" href="#top" id="ctaTop">{{ i18n "cta_try" }}</a>
+        <a class="btn btn-lg btn-ghost" href="#download">{{ i18n "cta_download" }}</a>
+        <a class="btn btn-lg btn-ghost" href="https://github.com/ferranpons/Llamatik" target="_blank" rel="noopener">{{ i18n "cta_star" }}</a>
       </div>
     </div>
   </div>
 </section>
 </main>
 
-{{ partial "lt-footer.html" (dict "home" true) }}
-<script src="{{ "js/landing.js" | relURL }}?v=1" defer></script>
+{{ partial "lt-footer.html" (dict "page" . "home" true) }}
+<script src="{{ "js/landing.js" | relURL }}?v=3" defer></script>
 </body>
 </html>

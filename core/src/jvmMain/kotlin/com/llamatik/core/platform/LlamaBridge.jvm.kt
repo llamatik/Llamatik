@@ -2,15 +2,12 @@
 
 package com.llamatik.core.platform
 
-import java.io.File
-import java.util.Locale
-
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual object LlamaBridge {
 
     init {
-        loadNativeFromResources()
-        println("🖥️ [JVM LlamaBridge] Loaded native library 'llama_jni'")
+        val loaded = DesktopNativeLoader.loadJni(loadCompanions = true)
+        println("🖥️ [JVM LlamaBridge] Loaded native library '$loaded'")
     }
 
     actual external fun initEmbedModel(modelPath: String): Boolean
@@ -199,73 +196,4 @@ actual object LlamaBridge {
 
     actual fun shutdownMtp() = nativeShutdownMtp()
     private external fun nativeShutdownMtp()
-
-    private fun loadNativeFromResources() {
-        val os = System.getProperty("os.name").lowercase(Locale.ROOT)
-        val platform = when {
-            os.contains("mac") -> "macos"
-            os.contains("linux") -> "linux"
-            os.contains("win") -> "windows"
-            else -> error("Unsupported OS: $os")
-        }
-
-        val tempDir = createTempNativeDir(platform)
-        val resourceRoot = "/native/$platform"
-        val resourceNames = nativeResourceNames(platform)
-
-        val extractedFiles = resourceNames.map { resourceName ->
-            extractNativeResource(resourceRoot, resourceName, tempDir)
-        }
-
-        extractedFiles
-            .filter { it.name != System.mapLibraryName("llama_jni") }
-            .forEach { System.load(it.absolutePath) }
-
-        val jniLib = extractedFiles.firstOrNull { it.name == System.mapLibraryName("llama_jni") }
-            ?: error("JNI library not found among extracted resources for platform: $platform")
-
-        System.load(jniLib.absolutePath)
-    }
-
-    private fun createTempNativeDir(platform: String): File {
-        val dir = kotlin.io.path.createTempDirectory(prefix = "llamatik_${platform}_").toFile()
-        dir.deleteOnExit()
-        return dir
-    }
-
-    private fun nativeResourceNames(platform: String): List<String> {
-        val jniLib = System.mapLibraryName("llama_jni")
-        val allResources = object {}.javaClass.getResourceAsStream("/native/$platform/native-libs.txt")
-            ?.bufferedReader()
-            ?.useLines { lines ->
-                lines
-                    .map(String::trim)
-                    .filter { it.isNotEmpty() && !it.startsWith("#") }
-                    .toList()
-            }
-            .orEmpty()
-
-        return when {
-            allResources.isNotEmpty() -> {
-                val ordered = allResources.filter { it != jniLib }
-                ordered + jniLib
-            }
-            else -> listOf(jniLib)
-        }
-    }
-
-    private fun extractNativeResource(resourceRoot: String, resourceName: String, tempDir: File): File {
-        val resourcePath = "$resourceRoot/$resourceName"
-        val input = object {}.javaClass.getResourceAsStream(resourcePath)
-            ?: error("Native library not found in resources: $resourcePath")
-
-        val out = File(tempDir, resourceName)
-        input.use { inputStream ->
-            out.outputStream().use { outputStream ->
-                inputStream.copyTo(outputStream)
-            }
-        }
-        out.deleteOnExit()
-        return out
-    }
 }

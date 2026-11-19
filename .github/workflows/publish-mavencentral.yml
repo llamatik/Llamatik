@@ -61,7 +61,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build
+          # libvulkan-dev + glslc: needed for the optional Linux Vulkan native variants
+          sudo apt-get install -y cmake ninja-build libvulkan-dev glslc
           cmake --version
 
       - name: Install Windows deps (cmake + ninja)
@@ -93,9 +94,14 @@ jobs:
           "CMAKE_PATH=$cmake" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           & $cmake --version
 
+      # Linux ships four libraries: default (AVX2+FMA), llama_jni_compat (older CPUs), and the two Vulkan
+      # counterparts. DesktopNativeLoader picks one at runtime; see core/build.gradle.kts.
       - name: Build desktop JNI library
         shell: bash
-        run: ./gradlew :core:copyDesktopJniToResources --no-daemon --stacktrace
+        run: |
+          EXTRA=""
+          if [ "${{ runner.os }}" = "Linux" ]; then EXTRA="-Pllamatik.linux.vulkan=true"; fi
+          ./gradlew :core:copyDesktopJniToResources $EXTRA --no-daemon --stacktrace
 
       - name: Upload native artifact
         uses: actions/upload-artifact@v4

@@ -491,6 +491,57 @@ kotlin {
         )
     }
 
+    // ---------- Linux x86_64 extra variants ----------
+    // The default Linux library is built for an AVX2 + FMA + F16C baseline (GGML_NATIVE=OFF) and dies with
+    // SIGILL on older CPUs (Intel before Haswell, e.g. Sandy Bridge). Ship a second CPU-only build without
+    // those instructions; DesktopNativeLoader picks it from /proc/cpuinfo. Optionally also ship Vulkan builds
+    // (-Pllamatik.linux.vulkan=true, needs libvulkan-dev + glslc) so the "use GPU" option works on Linux; the
+    // loader falls back to the CPU library when libvulkan.so.1 is missing.
+    val hostArch = System.getProperty("os.arch").lowercase()
+    val linuxX64 = desktopPlatform == "linux" && (hostArch == "amd64" || hostArch == "x86_64")
+    val linuxVulkan = propString("llamatik.linux.vulkan")?.toBooleanStrictOrNull() ?: false
+    val oldCpuFlags = listOf("-DGGML_AVX2=OFF", "-DGGML_FMA=OFF", "-DGGML_F16C=OFF", "-DGGML_BMI2=OFF")
+
+    // (library name, extra CMake args)
+    val jniVariants: List<Pair<String, List<String>>> = if (!linuxX64) emptyList() else buildList {
+        add("llama_jni_compat" to oldCpuFlags)
+        if (linuxVulkan) {
+            add("llama_jni_vulkan" to listOf("-DGGML_VULKAN=ON"))
+            add("llama_jni_vulkan_compat" to (listOf("-DGGML_VULKAN=ON") + oldCpuFlags))
+        }
+    }
+
+    val variantCompileTasks = jniVariants.map { (variantName, variantArgs) ->
+        val buildDir = layout.buildDirectory.dir("llama-jni/$desktopPlatform-${variantName}").get().asFile
+        val configure = tasks.register("configure_${variantName}", Exec::class.java) {
+            group = "llama-native"
+            description = "Configure CMake for ${variantName}"
+            enabled = !nativesPrebuilt
+            doFirst {
+                if (buildDir.exists()) buildDir.deleteRecursively()
+                buildDir.mkdirs()
+                commandLine(
+                    listOf(
+                        cmakePath, "-S", desktopJniSourceDir.absolutePath, "-B", buildDir.absolutePath,
+                        "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
+                        "-DLLAMATIK_JNI_NAME=${variantName}",
+                    ) + extraCmakeArgs + variantArgs,
+                )
+            }
+        }
+        val compile = tasks.register("compile_${variantName}", Exec::class.java) {
+            group = "llama-native"
+            description = "Build ${variantName}"
+            dependsOn(configure)
+            // Same build tree layout/ggml sources as the default library; run after it to avoid two
+            // concurrent llama.cpp builds fighting over CPU/RAM.
+            mustRunAfter(compileLlamaJniDesktop)
+            enabled = !nativesPrebuilt
+            commandLine(cmakePath, "--build", buildDir.absolutePath, "--config", "Release")
+        }
+        Triple(variantName, buildDir, compile)
+    }
+
     val copyDesktopJniToResources by tasks.registering(Copy::class) {
         group = "llama-native"
         dependsOn(compileLlamaJniDesktop)
@@ -511,6 +562,10 @@ kotlin {
         from(fileTree(desktopJniBuildDir) {
             include(nativeMatches)
         })
+        variantCompileTasks.forEach { (variantName, dir, compile) ->
+            dependsOn(compile)
+            from(fileTree(dir) { include("**/${System.mapLibraryName(variantName)}") })
+        }
         eachFile {
             path = name
         }

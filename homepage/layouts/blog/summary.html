@@ -4,6 +4,6 @@
     {{ with .Params.tags }}<div class="pc-tags">{{ range first 2 . }}<span>{{ . }}</span>{{ end }}</div>{{ end }}
     <h3>{{ .Title }}</h3>
     <p>{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 140 }}{{ end }}</p>
-    <div class="post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time><i></i><span>{{ .ReadingTime }} min read</span></div>
+    <div class="post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format ":date_medium" .Date }}</time><i></i><span>{{ i18n "min_read" .ReadingTime }}</span></div>
   </div>
 </a>

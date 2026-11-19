@@ -154,6 +154,10 @@ class ChatBotViewModel(
     val state = _state.asStateFlow()
 
     init {
+        liveInstances.update { it + 1 }
+    }
+
+    init {
         // Only the main chat (not companion chats) tells the embedded server what is loaded, so
         // "Share this device" reflects the model the user actually has active.
         if (serverConnectionRepository != null) {
@@ -2112,7 +2116,16 @@ class ChatBotViewModel(
         activeSession?.close()
         activeSession = null
         _state.value = _state.value.copy(isGenerating = false)
-        LlamaBridge.shutdown()
+        // Only the last live instance may free the shared native model; otherwise closing e.g. the
+        // model catalog would unload the model the chat tab is still using, and the next prompt
+        // would fail with "generator not ready" while the UI still shows a loaded model.
+        var remaining = 0
+        liveInstances.update { (it - 1).coerceAtLeast(0).also { n -> remaining = n } }
+        if (remaining == 0) {
+            LlamaBridge.shutdown()
+        } else {
+            Logger.d("LlamaVM - onDispose: $remaining other instance(s) alive, keeping the native model loaded")
+        }
     }
 
     private fun sanitizeForRag(s: String): String {
@@ -3068,6 +3081,16 @@ class ChatBotViewModel(
 
         chatHistoryRepository.upsert(session)
         refreshSessions()
+    }
+
+    private companion object {
+        /**
+         * Number of ChatBotViewModel instances currently alive. Several screens (chat tab, models,
+         * catalog, settings, companions, onboarding) each own one, but they all share the single
+         * native model held by the global LlamaBridge. Counting lets [onDispose] free that model only
+         * when the last instance goes away, instead of whenever any one screen is closed.
+         */
+        val liveInstances = MutableStateFlow(0)
     }
 }
 

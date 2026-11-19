@@ -1,9 +1,9 @@
 {{ define "main" }}
 {{ $pages := .Pages.ByDate.Reverse }}
 <section class="wrap blog-hero">
-  <p class="eyebrow">The Llamatik blog</p>
-  <h1 class="blog-title">{{ .Title }}<span class="grad">.</span></h1>
-  {{ with .Params.description }}<p class="lead">{{ . }}</p>{{ end }}
+  <p class="eyebrow">{{ i18n "blog_eyebrow" }}</p>
+  <h1 class="blog-title">{{ i18n "blog_meta_title" }}<span class="grad">.</span></h1>
+  <p class="lead">{{ i18n "blog_meta_desc" }}</p>
 </section>
 
 <section class="wrap blog-list">
@@ -11,11 +11,11 @@
   <a class="post-feature reveal" href="{{ .RelPermalink }}">
     {{ with .Params.image }}<figure class="pf-img"><img src="{{ . | absURL }}" alt="" loading="eager"></figure>{{ end }}
     <div class="pf-body">
-      <span class="pf-badge">Latest</span>
+      <span class="pf-badge">{{ i18n "blog_latest" }}</span>
       <h2>{{ .Title }}</h2>
       <p>{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 180 }}{{ end }}</p>
-      <div class="post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time><i></i><span>{{ .ReadingTime }} min read</span></div>
-      <span class="pf-cta">Read the post →</span>
+      <div class="post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format ":date_medium" .Date }}</time><i></i><span>{{ i18n "min_read" .ReadingTime }}</span></div>
+      <span class="pf-cta">{{ i18n "blog_read_post" }}</span>
     </div>
   </a>
   {{ end }}
