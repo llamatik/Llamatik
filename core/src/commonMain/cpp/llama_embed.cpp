@@ -15,6 +15,7 @@
 #include <cstdarg>
 #include <atomic>
 #include <filesystem>
+#include <system_error>
 #include <set>
 #include <mutex>
 #include <unordered_map>
@@ -143,46 +144,68 @@ static int token_overlap_score(const std::string &a, const std::string &b) {
     return score;
 }
 
+// Paths coming from the JVM are UTF-8. On Windows std::filesystem::path(const char*) assumes the
+// ANSI code page and the throwing overloads raise on unmappable characters (e.g. non-ASCII user
+// names), which used to escape through JNI and abort the process. Always go through u8path and the
+// error_code overloads, and hand UTF-8 strings back to llama.cpp.
+static std::filesystem::path fs_from_utf8(const std::string &s) {
+    return std::filesystem::u8path(s);
+}
+
+static std::string fs_to_utf8(const std::filesystem::path &p) {
+    const auto u = p.u8string();
+    return std::string(u.begin(), u.end());
+}
+
+static bool fs_exists_safe(const std::filesystem::path &p) {
+    std::error_code ec;
+    return std::filesystem::exists(p, ec) && !ec;
+}
+
 static std::string try_resolve_existing_model_path(const char *requested_path_cstr) {
     if (!requested_path_cstr || !requested_path_cstr[0]) return {};
     namespace fs = std::filesystem;
     const std::string requested_path = requested_path_cstr;
-    if (fs::exists(requested_path)) return requested_path;
+    try {
+        const fs::path req = fs_from_utf8(requested_path);
+        if (fs_exists_safe(req)) return requested_path;
 
-    const fs::path req(requested_path);
-    const std::string req_name = req.filename().string();
-    const std::string req_stem = req.stem().string();
+        const std::string req_name = fs_to_utf8(req.filename());
+        const std::string req_stem = fs_to_utf8(req.stem());
 
-    std::vector<fs::path> candidates;
-    if (!req.parent_path().empty() && fs::exists(req.parent_path())) {
-        for (const auto &entry : fs::directory_iterator(req.parent_path())) {
-            if (entry.is_regular_file()) candidates.push_back(entry.path());
+        std::vector<fs::path> candidates;
+        if (!req.parent_path().empty() && fs_exists_safe(req.parent_path())) {
+            std::error_code ec;
+            for (fs::directory_iterator it(req.parent_path(), ec), end; !ec && it != end; it.increment(ec)) {
+                std::error_code ec2;
+                if (it->is_regular_file(ec2) && !ec2) candidates.push_back(it->path());
+            }
         }
-    }
 
-    for (const auto &p : candidates) {
-        if (lower_ascii(p.filename().string()) == lower_ascii(req_name)) return p.string();
-    }
-    for (const auto &p : candidates) {
-        if (lower_ascii(p.stem().string()) == lower_ascii(req_stem)) return p.string();
-    }
+        for (const auto &p : candidates) {
+            if (lower_ascii(fs_to_utf8(p.filename())) == lower_ascii(req_name)) return fs_to_utf8(p);
+        }
+        for (const auto &p : candidates) {
+            if (lower_ascii(fs_to_utf8(p.stem())) == lower_ascii(req_stem)) return fs_to_utf8(p);
+        }
 
-    int best_score = -1;
-    std::string best_path;
-    for (const auto &p : candidates) {
-        const std::string cand = p.filename().string();
-        const int score = std::max(token_overlap_score(req_name, cand), token_overlap_score(req_stem, cand));
-        if (score > best_score) { best_score = score; best_path = p.string(); }
+        int best_score = -1;
+        std::string best_path;
+        for (const auto &p : candidates) {
+            const std::string cand = fs_to_utf8(p.filename());
+            const int score = std::max(token_overlap_score(req_name, cand), token_overlap_score(req_stem, cand));
+            if (score > best_score) { best_score = score; best_path = fs_to_utf8(p); }
+        }
+        if (best_score >= 2 && !best_path.empty()) return best_path;
+    } catch (...) {
     }
-    if (best_score >= 2 && !best_path.empty()) return best_path;
     return {};
 }
 
 static llama_model *load_model_with_fallback(const char *path) {
-    namespace fs = std::filesystem;
     std::string resolved = try_resolve_existing_model_path(path);
     const char *final_path = resolved.empty() ? path : resolved.c_str();
-    if (!final_path || !final_path[0] || !fs::exists(final_path)) return nullptr;
+    if (!final_path || !final_path[0] || !fs_exists_safe(fs_from_utf8(final_path))) return nullptr;
 
     llama_model_params mp = llama_model_default_params();
     mp.n_gpu_layers = g_gpu_layers.load(std::memory_order_relaxed);

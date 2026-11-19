@@ -78,6 +78,15 @@ if(NOT DEFINED GGML_NATIVE)
     set(GGML_NATIVE OFF CACHE BOOL "ggml: optimize the build for the current system (OFF = portable)" FORCE)
 endif()
 
+if(WIN32)
+    # MSVC 14.40+ makes std::mutex's constructor constexpr. A statically-initialised std::mutex
+    # (e.g. g_mu in whisper_stt.cpp) then crashes with a null dereference inside msvcp140.dll when
+    # the process loads an OLDER msvcp140.dll than the toolset that built us. A JVM-hosted app
+    # (JBR / jpackage runtime) is exactly that case. Apply it to EVERY target (llama_jni, whisper,
+    # llama, ggml, mtmd), not only ggml-base. Must come before the add_subdirectory() calls.
+    add_compile_definitions(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+endif()
+
 add_subdirectory("${LLAMA_CPP_DIR}" "${CMAKE_BINARY_DIR}/llama-wrapper-build")
 
 if(WIN32 AND TARGET ggml-base)

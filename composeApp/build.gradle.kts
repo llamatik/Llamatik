@@ -292,7 +292,15 @@ compose.desktop {
                 bundleID = "com.llamatik.app"
                 iconFile.set(project.file("src/desktopMain/resources/icons/mac/Llamatik.icns"))
             }
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            windows {
+                shortcut = true          // Desktop shortcut
+                menuGroup = "Llamatik"   // Start menu / apps list entry
+                dirChooser = true
+                perUserInstall = true
+                // Keep this UUID constant so upgrades replace previous installs
+                upgradeUuid = "6f1c3b0e-8a52-4d7e-9b3a-5c2e1f7d4a90"
+            }
+            targetFormats(TargetFormat.Dmg,TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Llamatik"
             packageVersion = "$versionMajor.$versionMinor.$versionPatch"
             includeAllModules = true
