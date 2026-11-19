@@ -48,6 +48,8 @@ import com.llamatik.app.platform.RootNavigatorRepository
 import com.llamatik.app.platform.VideoSaver
 import com.llamatik.app.platform.decodeImageBytesToRgba
 import com.llamatik.app.platform.extractPdfText
+import com.llamatik.app.platform.localAbsolutePath
+import com.llamatik.app.platform.localFileExists
 import com.llamatik.app.platform.migrateModelPathIfNeeded
 import com.llamatik.app.platform.normalizeToJpegBytes
 import com.llamatik.app.platform.tts.TtsEngine
@@ -65,11 +67,8 @@ import com.llamatik.network.client.StreamExpiredException
 import com.llamatik.sdk.agent.runtime.AgentRuntimeEvent
 import com.russhwolf.settings.Settings
 import io.github.vinceglb.filekit.FileKit
-import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
-import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.CancellationException
@@ -1670,8 +1669,6 @@ class ChatBotViewModel(
         downloadCompanionIfNeeded(model, "clip_vision", model.clipVisionUrl)
     }
 
-    private fun localFileExists(path: String): Boolean = runCatching { PlatformFile(path).exists() }.getOrDefault(false)
-
     /**
      * Lets the user pick a model file already on disk and registers it in [category] without
      * copying it. The file is referenced in place, so removing the model never deletes it.
@@ -1683,7 +1680,7 @@ class ChatBotViewModel(
                 val file = FileKit.openFilePicker(
                     type = FileKitType.File(extensions = listOf("gguf", "bin", "safetensors")),
                 ) ?: return@launch
-                val path = file.absolutePath()
+                val path = file.localAbsolutePath()
                 // Android hands back content:// URIs, which native inference can't open.
                 if (path.contains("://")) {
                     _sideEffects.trySend(ChatBotSideEffects.OnImportFailed(getCurrentLocalization().importFromFileUnsupported))

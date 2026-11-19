@@ -1,5 +1,3 @@
-{{ define "body_classes" }}page-default-single{{ end }}
-
 {{ define "meta_tags" }}
   {{ $image := .Params.image | default .Site.Params.seo.meta_og_image }}
   {{ with .Params.description }}<meta name="description" content="{{ . }}"/>{{ end }}
@@ -37,13 +35,38 @@
 {{ end }}
 
 {{ define "main" }}
-<div class="container pb-6 pt-6 pt-md-14 pb-md-14">
-  <div class="row justify-content-start">
-    <div class="col-12 col-md-8">
-      <h1 class="title">{{ .Title }}</h1>
-
-      <div class="content">{{ .Content }}</div>
+<div class="read-progress" id="readProgress"></div>
+<article class="post">
+  <header class="wrap post-head">
+    <a class="back" href="{{ "blog/" | relURL }}">← All posts</a>
+    {{ with .Params.tags }}<div class="pc-tags">{{ range first 4 . }}<span>{{ . }}</span>{{ end }}</div>{{ end }}
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.description }}<p class="lead">{{ . }}</p>{{ end }}
+    <div class="post-meta">
+      <span class="by"><img src="{{ "images/logo/LlamatikLogo.svg" | relURL }}" alt="" width="22" height="22">{{ .Params.author | default "Llamatik" }}</span><i></i>
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time><i></i><span>{{ .ReadingTime }} min read</span>
     </div>
+  </header>
+  {{ with .Params.image }}
+  <figure class="wrap post-cover"><img src="{{ . | absURL }}" alt="{{ $.Params.image_alt | default $.Title }}"></figure>
+  {{ end }}
+  <div class="wrap post-wrap"><div class="prose">{{ .Content }}</div></div>
+
+  <div class="wrap post-end">
+    <div class="post-cta">
+      <div>
+        <h3>Try Llamatik <span class="grad">on your own device</span></h3>
+        <p>Free, open source and private. Start in your browser or download the app.</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn-solid" href="/prompt/">Open the web app</a>
+        <a class="btn btn-ghost" href="{{ "/" | relURL }}#download">Download</a>
+      </div>
+    </div>
+    <nav class="post-nav">
+      {{ with .PrevInSection }}<a href="{{ .RelPermalink }}"><small>More from the blog</small><b>{{ .Title }}</b></a>{{ else }}<span></span>{{ end }}
+      {{ with .NextInSection }}<a class="r" href="{{ .RelPermalink }}"><small>More from the blog</small><b>{{ .Title }}</b></a>{{ end }}
+    </nav>
   </div>
-</div>
+</article>
 {{ end }}

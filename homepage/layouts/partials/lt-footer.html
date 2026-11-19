@@ -1,0 +1,14 @@
+{{ $p := cond (.home | default false) "" "/" }}
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand"><img src="{{ "images/logo/LlamatikLogo.svg" | relURL }}" alt="" width="26" height="26"><b>Llamatik</b><p>Private AI that runs on your device.</p></div>
+    <div class="foot-cols">
+      <div><h4>Product</h4><a href="{{ $p }}#features">Features</a><a href="{{ $p }}#download">Download</a><a href="/prompt/">Web app</a></div>
+      <div><h4>Developers</h4><a href="https://docs.llamatik.com">Docs</a><a href="https://github.com/ferranpons/Llamatik">GitHub</a><a href="https://central.sonatype.com/artifact/com.llamatik/core" target="_blank" rel="noopener">Maven Central</a><a href="https://github.com/ferranpons/Llamatik-server">Server</a></div>
+      <div><h4>Company</h4><a href="{{ "about/" | relURL }}">About</a><a href="{{ "blog/" | relURL }}">Blog</a><a href="{{ "contact/" | relURL }}">Contact</a><a href="{{ "privacy/" | relURL }}">Privacy</a></div>
+    </div>
+  </div>
+  <div class="wrap foot-copy">{{ .Site.Params.footer.copyright_text | safeHTML }}</div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>

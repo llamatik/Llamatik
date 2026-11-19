@@ -1,21 +1,29 @@
 {{ define "main" }}
-<div class="container pt-6 pb-3">
-    <div class="blog-header">
-        <h1 class="blog-header__title">{{ .Title }}</h1>
-        {{ with .Params.description }}
-        <p class="blog-header__subtitle">{{ . }}</p>
-        {{ end }}
-        {{ with .Content }}
-        <div class="blog-header__content">{{ . }}</div>
-        {{ end }}
-    </div>
-</div>
+{{ $pages := .Pages.ByDate.Reverse }}
+<section class="wrap blog-hero">
+  <p class="eyebrow">The Llamatik blog</p>
+  <h1 class="blog-title">{{ .Title }}<span class="grad">.</span></h1>
+  {{ with .Params.description }}<p class="lead">{{ . }}</p>{{ end }}
+</section>
 
-<div class="container pb-6">
-    <div class="blog-grid">
-        {{ range .Pages.ByDate.Reverse }}
-        {{ .Render "summary" }}
-        {{ end }}
+<section class="wrap blog-list">
+  {{ with index $pages 0 }}
+  <a class="post-feature reveal" href="{{ .RelPermalink }}">
+    {{ with .Params.image }}<figure class="pf-img"><img src="{{ . | absURL }}" alt="" loading="eager"></figure>{{ end }}
+    <div class="pf-body">
+      <span class="pf-badge">Latest</span>
+      <h2>{{ .Title }}</h2>
+      <p>{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 180 }}{{ end }}</p>
+      <div class="post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time><i></i><span>{{ .ReadingTime }} min read</span></div>
+      <span class="pf-cta">Read the post →</span>
     </div>
-</div>
+  </a>
+  {{ end }}
+
+  <div class="post-grid">
+    {{ range after 1 $pages }}
+    {{ .Render "summary" }}
+    {{ end }}
+  </div>
+</section>
 {{ end }}
