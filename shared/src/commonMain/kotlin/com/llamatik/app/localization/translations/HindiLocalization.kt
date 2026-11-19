@@ -249,6 +249,8 @@ internal object HindiLocalization : Localization {
     override val chatsInFolder = "फ़ोल्डर में चैट"
 
     override val downloadFromUrl = "URL से डाउनलोड करें"
+    override val importFromFile = "फ़ाइल से आयात करें"
+    override val importFromFileUnsupported = "यह प्लेटफ़ॉर्म स्थानीय फ़ाइल पथ से मॉडल लोड नहीं कर सकता।"
     override val modelUrlLabel = "मॉडल URL"
     override val modelNameLabel = "मॉडल का नाम"
     override val categoryLabel = "श्रेणी"

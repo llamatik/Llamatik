@@ -250,6 +250,8 @@ Le tue priorità:
     override val chatsInFolder = "Chat nella cartella"
 
     override val downloadFromUrl = "Scarica da URL"
+    override val importFromFile = "Importa da file"
+    override val importFromFileUnsupported = "Questa piattaforma non può caricare modelli da un percorso di file locale."
     override val modelUrlLabel = "URL del modello"
     override val modelNameLabel = "Nome del modello"
     override val categoryLabel = "Categoria"

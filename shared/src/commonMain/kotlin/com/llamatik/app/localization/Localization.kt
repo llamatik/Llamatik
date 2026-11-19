@@ -226,8 +226,8 @@ interface Localization {
     val modelsTitle: String
 
     val downloadFromUrl: String
-    val importFromFile: String get() = "Import from file"
-    val importFromFileUnsupported: String get() = "This platform cannot load models from a local file path."
+    val importFromFile: String
+    val importFromFileUnsupported: String
     val modelUrlLabel: String
     val modelNameLabel: String
     val categoryLabel: String

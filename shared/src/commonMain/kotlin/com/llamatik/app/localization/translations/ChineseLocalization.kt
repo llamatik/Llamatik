@@ -251,6 +251,8 @@ internal object ChineseLocalization : Localization {
     override val chatsInFolder = "文件夹中的聊天"
 
     override val downloadFromUrl = "从URL下载"
+    override val importFromFile = "从文件导入"
+    override val importFromFileUnsupported = "此平台无法从本地文件路径加载模型。"
     override val modelUrlLabel = "模型URL"
     override val modelNameLabel = "模型名称"
     override val categoryLabel = "类别"

@@ -250,6 +250,8 @@ internal object RussianLocalization : Localization {
     override val chatsInFolder = "Чаты в папке"
 
     override val downloadFromUrl = "Скачать по URL"
+    override val importFromFile = "Импортировать из файла"
+    override val importFromFileUnsupported = "Эта платформа не может загружать модели по локальному пути к файлу."
     override val modelUrlLabel = "URL модели"
     override val modelNameLabel = "Название модели"
     override val categoryLabel = "Категория"

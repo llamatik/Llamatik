@@ -250,6 +250,8 @@ internal object CatalanLocalization : Localization {
     override val chatsInFolder = "Xats a la carpeta"
 
     override val downloadFromUrl = "Descarregar des d'URL"
+    override val importFromFile = "Importa des d'un fitxer"
+    override val importFromFileUnsupported = "Aquesta plataforma no pot carregar models des d'una ruta de fitxer local."
     override val modelUrlLabel = "URL del model"
     override val modelNameLabel = "Nom del model"
     override val categoryLabel = "Categoria"

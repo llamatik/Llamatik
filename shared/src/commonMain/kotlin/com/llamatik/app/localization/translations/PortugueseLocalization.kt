@@ -246,6 +246,8 @@ internal object PortugueseLocalization : Localization {
     override val chatsInFolder = "Chats na pasta"
 
     override val downloadFromUrl = "Baixar de URL"
+    override val importFromFile = "Importar de arquivo"
+    override val importFromFileUnsupported = "Esta plataforma não consegue carregar modelos a partir de um caminho de arquivo local."
     override val modelUrlLabel = "URL do modelo"
     override val modelNameLabel = "Nome do modelo"
     override val categoryLabel = "Categoria"

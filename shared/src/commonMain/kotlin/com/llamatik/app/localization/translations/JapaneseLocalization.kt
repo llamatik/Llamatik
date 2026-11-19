@@ -249,6 +249,8 @@ internal object JapaneseLocalization : Localization {
     override val chatsInFolder = "フォルダ内のチャット"
 
     override val downloadFromUrl = "URLからダウンロード"
+    override val importFromFile = "ファイルからインポート"
+    override val importFromFileUnsupported = "このプラットフォームではローカルファイルパスからモデルを読み込めません。"
     override val modelUrlLabel = "モデルURL"
     override val modelNameLabel = "モデル名"
     override val categoryLabel = "カテゴリ"

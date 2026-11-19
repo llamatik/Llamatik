@@ -249,6 +249,8 @@ internal object PersianLocalization : Localization {
     override val chatsInFolder = "چت‌های پوشه"
 
     override val downloadFromUrl = "دانلود از URL"
+    override val importFromFile = "وارد کردن از فایل"
+    override val importFromFileUnsupported = "این پلتفرم نمی‌تواند مدل‌ها را از مسیر فایل محلی بارگذاری کند."
     override val modelUrlLabel = "URL مدل"
     override val modelNameLabel = "نام مدل"
     override val categoryLabel = "دسته‌بندی"
