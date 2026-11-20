@@ -238,6 +238,20 @@ post_cta_d: "Kostenlos, Open Source und privat. Starte im Browser oder lade die 
 post_cta_web: "Web-App öffnen"
 post_cta_dl: "Download"
 
+# ---------- download page ----------
+dlp_meta_title: "Llamatik herunterladen — Android, iOS, macOS, Windows, Linux & Web"
+dlp_meta_desc: "Lade Llamatik für Android, iOS, macOS, Windows und Linux herunter oder probiere es sofort im Browser aus. Private, Local-first-KI, die auf deinem Gerät läuft."
+dlp_sec_web: "Sofort ausprobieren"
+dlp_sec_mobile: "Mobile Apps"
+dlp_sec_desktop: "Desktop-Apps"
+dlp_sec_desktop_d: "Führe KI lokal auf deinem Computer aus – privat, Local-first und für volle Kontrolle gebaut."
+dlp_checksum: "SHA-256-Prüfsumme"
+dlp_version: "Version {v}"
+dlp_linux_note: "Getestet unter Ubuntu 22.04+. Installation mit:"
+dlp_dev_title: "Du entwickelst mit Llamatik?"
+dlp_dev_d: "Füge das SDK deiner eigenen App hinzu, hoste den Server selbst oder stöbere in der Doku."
+dlp_all_releases: "Alle Releases auf GitHub →"
+
 # ---------- JavaScript (landing page behaviour) ----------
 js_placeholders: "Frag einfach los…|Schreib eine Kotlin-Funktion, die…|Fass mir diese Idee zusammen…|Hilf mir, meine Woche zu planen…|Erklär mir, wie das funktioniert…"
 js_ideas_chat: "Erklär mir Quantencomputing, als wäre ich fünf|Entwirf eine höfliche E-Mail, um einen Termin abzusagen|Plane mir drei Tage in Lissabon|Fass die Vor- und Nachteile lokaler KI zusammen"

@@ -1,107 +1,79 @@
 {{ define "main" }}
-<div class="container pt-6 pb-6">
-    <div class="download-header">
-        <h1>{{ .Title }}</h1>
-        {{ with .Params.description }}
-        <p>{{ . }}</p>
-        {{ end }}
+{{ $rel := "https://github.com/ferranpons/Llamatik/releases/latest" }}
+<section class="wrap blog-hero">
+  <p class="eyebrow">{{ i18n "nav_download" }}</p>
+  <h1 class="blog-title dlp-title">{{ partial "t.html" "dl_title" }}</h1>
+  <p class="lead">{{ i18n "dl_lead" }}</p>
+  <p class="dlp-version" id="relVersion" hidden></p>
+</section>
+
+<div class="wrap dlp">
+  <!-- WEB -->
+  <section class="dlp-sec reveal">
+    <h2>{{ i18n "dlp_sec_web" }}</h2>
+    <a class="dlp-web" href="/prompt/" data-os="web">
+      <span class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
+      <span class="dlp-web-t"><b>{{ i18n "dl_web_t" }}</b><small><bdi>{{ i18n "dl_web_d" }}</bdi></small></span>
+      <span class="btn btn-solid">{{ i18n "dl_web_act" }}</span>
+    </a>
+  </section>
+
+  <!-- MOBILE -->
+  <section class="dlp-sec reveal">
+    <h2>{{ i18n "dlp_sec_mobile" }}</h2>
+    <div class="dl-grid two">
+      <a class="dl-card" href="https://play.google.com/store/apps/details?id=com.llamatik.app.android" target="_blank" rel="noopener" data-os="android">
+        <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M17.6 9.5a6 6 0 0 0-11.2 0zM7 7.2 5.6 5m11.4 2.2L18.4 5M6 10v7a1 1 0 0 0 1 1h1v3a1.5 1.5 0 0 0 3 0v-3h2v3a1.5 1.5 0 0 0 3 0v-3h1a1 1 0 0 0 1-1v-7zM3.5 10a1.5 1.5 0 0 1 3 0v5a1.5 1.5 0 0 1-3 0zm14 0a1.5 1.5 0 0 1 3 0v5a1.5 1.5 0 0 1-3 0z" opacity=".9"/></svg></div>
+        <h3>{{ i18n "dl_android_t" }}</h3><p><bdi>{{ i18n "dl_android_d" }}</bdi></p>
+        <span class="dl-act">{{ i18n "dl_android_act" }}</span>
+      </a>
+      <a class="dl-card" href="https://apple.co/3Md7EIh" target="_blank" rel="noopener" data-os="ios">
+        <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.15-2.8.85-3.5.85s-1.8-.83-3-.8a4.4 4.4 0 0 0-3.7 2.3c-1.6 2.8-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2a9.7 9.7 0 0 0 1.2-2.5 3.9 3.9 0 0 1-2.4-3.55zM14.2 5.8a3.8 3.8 0 0 0 .9-2.8 3.9 3.9 0 0 0-2.5 1.3 3.6 3.6 0 0 0-.9 2.7 3.2 3.2 0 0 0 2.5-1.2z"/></svg></div>
+        <h3>{{ i18n "dl_ios_t" }}</h3><p><bdi>{{ i18n "dl_ios_d" }}</bdi></p>
+        <span class="dl-act">{{ i18n "dl_ios_act" }}</span>
+      </a>
     </div>
+  </section>
 
-    <!-- MOBILE SECTION -->
-    {{ with .Params.mobile_section }}
-    <div class="download-section">
-        <h2>{{ .title }}</h2>
-
-        <div class="download-grid">
-            {{ range .platforms }}
-            <div class="download-card">
-                <h3>{{ .title }}</h3>
-                <p>{{ .description }}</p>
-
-                <a
-                        class="download-button {{ .button_style | default "primary" }}"
-                href="{{ .button_url }}"
-                {{ if .external }}target="_blank" rel="noopener"{{ end }}
-                >
-                {{ .button_text }}
-                </a>
-            </div>
-            {{ end }}
-        </div>
+  <!-- DESKTOP -->
+  <section class="dlp-sec reveal">
+    <h2>{{ i18n "dlp_sec_desktop" }}</h2>
+    <p class="dlp-sub">{{ i18n "dlp_sec_desktop_d" }}</p>
+    <div class="dl-grid">
+      <div class="dl-card" data-os="mac">
+        <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+        <h3>{{ i18n "dl_mac_t" }}</h3><p><bdi>{{ i18n "dl_mac_d" }}</bdi></p>
+        <a class="btn btn-solid dl-main" href="{{ $rel }}" data-ext="dmg" target="_blank" rel="noopener">{{ i18n "dl_mac_act" }}</a>
+        <a class="dl-sum" href="{{ $rel }}" data-sum="macos" target="_blank" rel="noopener">{{ i18n "dlp_checksum" }}</a>
+      </div>
+      <div class="dl-card" data-os="win">
+        <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M3 5.5 11 4.4v7.1H3zm9-1.2L21 3v8.5h-9zM3 12.5h8v7.1L3 18.5zm9 0h9V21l-9-1.3z"/></svg></div>
+        <h3>{{ i18n "dl_win_t" }}</h3><p><bdi>{{ i18n "dl_win_d" }}</bdi></p>
+        <a class="btn btn-solid dl-main" href="{{ $rel }}" data-ext="msi" target="_blank" rel="noopener">{{ i18n "dl_win_act" }}</a>
+        <a class="dl-sum" href="{{ $rel }}" data-sum="windows" target="_blank" rel="noopener">{{ i18n "dlp_checksum" }}</a>
+      </div>
+      <div class="dl-card" data-os="linux">
+        <div class="dl-ico"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 4 4-4 4M12 17h7"/><rect x="2.5" y="3.5" width="19" height="17" rx="2.5"/></svg></div>
+        <h3>{{ i18n "dl_linux_t" }}</h3><p><bdi>{{ i18n "dl_linux_d" }}</bdi></p>
+        <a class="btn btn-solid dl-main" href="{{ $rel }}" data-ext="deb" target="_blank" rel="noopener">{{ i18n "dl_linux_act" }}</a>
+        <a class="dl-sum" href="{{ $rel }}" data-sum="linux" target="_blank" rel="noopener">{{ i18n "dlp_checksum" }}</a>
+        <p class="dl-note">{{ i18n "dlp_linux_note" }} <code dir="ltr">sudo dpkg -i llamatik_*_amd64.deb</code></p>
+      </div>
     </div>
-    {{ end }}
+    <p class="dl-foot"><a href="{{ $rel }}" target="_blank" rel="noopener">{{ i18n "dlp_all_releases" }}</a></p>
+  </section>
 
-    <br><br><br>
-
-    <!-- DESKTOP SECTION -->
-    {{ with .Params.desktop_section }}
-    <div class="download-section">
-        <h2>{{ .title }}</h2>
-        {{ with .subtitle }}
-        <p class="download-section-subtitle">{{ . }}</p>
-        {{ end }}
-
-        <div class="download-grid">
-            {{ range .platforms }}
-            <div class="download-card">
-                <h3>{{ .title }}</h3>
-                {{ with .subtitle }}
-                <p>{{ . }}</p>
-                {{ end }}
-
-                <a
-                        class="download-button {{ .button_style | default "primary" }}"
-                href="{{ .button_url }}"
-                {{ if .external }}target="_blank" rel="noopener"{{ end }}
-                >
-                {{ .button_text }}
-                </a>
-
-                {{ with .secondary_link }}
-                <br>
-                <a
-                        class="download-checksum"
-                        href="{{ .url }}"
-                        {{ if .external }}target="_blank" rel="noopener"{{ end }}
-                >
-                    {{ .text }}
-                </a>
-                {{ end }}
-
-                {{ with .note }}
-                <br><br>
-                <p class="download-note">{{ . | markdownify }}</p>
-                {{ end }}
-            </div>
-            {{ end }}
-        </div>
+  <!-- DEVELOPERS -->
+  <section class="dlp-dev reveal">
+    <div>
+      <h3>{{ i18n "dlp_dev_title" }}</h3>
+      <p>{{ i18n "dlp_dev_d" }}</p>
     </div>
-    {{ end }}
-
-    <br><br><br>
-
-    <!-- WEB SECTION -->
-    {{ with .Params.web_section }}
-    <div class="download-section">
-        <h2>{{ .title }}</h2>
-        {{ with .subtitle }}
-        <p class="download-section-subtitle">{{ . }}</p>
-        {{ end }}
-
-        <div class="download-grid">
-            <div class="download-card">
-                <h3>{{ .card_title }}</h3>
-                <p>{{ .description }}</p>
-
-                <a
-                        class="download-button {{ .button_style | default "primary" }}"
-                href="{{ .button_url }}"
-                >
-                {{ .button_text }}
-                </a>
-            </div>
-        </div>
+    <div class="btn-row">
+      <a class="btn btn-solid" href="https://docs.llamatik.com" rel="noopener">{{ i18n "dev_docs" }}</a>
+      <a class="btn btn-ghost" href="https://github.com/ferranpons/Llamatik" target="_blank" rel="noopener">{{ i18n "dev_github" }}</a>
+      <a class="btn btn-ghost" href="https://github.com/ferranpons/Llamatik-server" target="_blank" rel="noopener">{{ i18n "srv_get" }}</a>
     </div>
-    {{ end }}
+  </section>
 </div>
 {{ end }}

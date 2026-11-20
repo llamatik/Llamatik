@@ -238,6 +238,20 @@ post_cta_d: "免费、开源、私密。先在浏览器中体验，或下载应�
 post_cta_web: "打开网页版"
 post_cta_dl: "下载"
 
+# ---------- download page ----------
+dlp_meta_title: "下载 Llamatik — Android、iOS、macOS、Windows、Linux 与网页版"
+dlp_meta_desc: "下载适用于 Android、iOS、macOS、Windows 和 Linux 的 Llamatik，或直接在浏览器中即时体验。私密、本地优先的 AI，在你的设备上运行。"
+dlp_sec_web: "即刻体验"
+dlp_sec_mobile: "移动应用"
+dlp_sec_desktop: "桌面应用"
+dlp_sec_desktop_d: "在你的电脑上本地运行 AI——私密、本地优先，由你掌控。"
+dlp_checksum: "SHA-256 校验和"
+dlp_version: "版本 {v}"
+dlp_linux_note: "已在 Ubuntu 22.04+ 上测试。安装命令："
+dlp_dev_title: "要用 Llamatik 开发？"
+dlp_dev_d: "将 SDK 加入你的应用，自行部署服务器，或深入阅读文档。"
+dlp_all_releases: "GitHub 上的所有版本 →"
+
 # ---------- JavaScript (landing page behaviour) ----------
 js_placeholders: "随便问点什么…|帮我写一个 Kotlin 函数，用来…|帮我总结一下这个想法…|帮我规划一下这周的安排…|解释一下这是怎么运作的…"
 js_ideas_chat: "像给五岁小孩讲故事一样解释量子计算|帮我写一封礼貌拒绝会议邀请的邮件|给我一份里斯本三日游行程|总结一下本地 AI 的优缺点"

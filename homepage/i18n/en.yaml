@@ -238,6 +238,20 @@ post_cta_d: "Free, open source and private. Start in your browser or download th
 post_cta_web: "Open the web app"
 post_cta_dl: "Download"
 
+# ---------- download page ----------
+dlp_meta_title: "Download Llamatik — Android, iOS, macOS, Windows, Linux & Web"
+dlp_meta_desc: "Download Llamatik for Android, iOS, macOS, Windows and Linux, or try it instantly in your browser. Private, local-first AI that runs on your device."
+dlp_sec_web: "Try it instantly"
+dlp_sec_mobile: "Mobile apps"
+dlp_sec_desktop: "Desktop apps"
+dlp_sec_desktop_d: "Run AI locally on your computer — private, local-first and built for control."
+dlp_checksum: "SHA-256 checksum"
+dlp_version: "Version {v}"
+dlp_linux_note: "Tested on Ubuntu 22.04+. Install with:"
+dlp_dev_title: "Building with Llamatik?"
+dlp_dev_d: "Add the SDK to your own app, self-host the server, or dive into the docs."
+dlp_all_releases: "All releases on GitHub →"
+
 # ---------- JavaScript (landing page behaviour) ----------
 js_placeholders: "Ask anything…|Write a Kotlin function that…|Summarize this idea for me…|Help me plan my week…|Explain how this works…"
 js_ideas_chat: "Explain quantum computing like I'm five|Draft a polite email declining a meeting|Give me a 3-day itinerary for Lisbon|Summarize the pros and cons of local AI"

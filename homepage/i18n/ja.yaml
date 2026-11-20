@@ -238,6 +238,20 @@ post_cta_d: "無料、オープンソース、そしてプライベート。ブ�
 post_cta_web: "Webアプリを開く"
 post_cta_dl: "ダウンロード"
 
+# ---------- download page ----------
+dlp_meta_title: "Llamatik をダウンロード — Android、iOS、macOS、Windows、Linux、Web"
+dlp_meta_desc: "Android、iOS、macOS、Windows、Linux 向けの Llamatik をダウンロード。ブラウザですぐに試すこともできます。デバイス上で動くプライベートなローカルファースト AI。"
+dlp_sec_web: "今すぐ試す"
+dlp_sec_mobile: "モバイルアプリ"
+dlp_sec_desktop: "デスクトップアプリ"
+dlp_sec_desktop_d: "パソコン上で AI をローカル実行。プライベートでローカルファースト、主導権はあなたに。"
+dlp_checksum: "SHA-256 チェックサム"
+dlp_version: "バージョン {v}"
+dlp_linux_note: "Ubuntu 22.04 以降で動作確認済み。インストール:"
+dlp_dev_title: "Llamatik で開発しますか？"
+dlp_dev_d: "SDK を自分のアプリに追加したり、サーバーを自前でホストしたり、ドキュメントを読んだりできます。"
+dlp_all_releases: "GitHub のすべてのリリース →"
+
 # ---------- JavaScript (landing page behaviour) ----------
 js_placeholders: "何でも聞いてください…|Kotlinで関数を書いて…|このアイデアを要約して…|今週の予定を立てるのを手伝って…|これがどう動くのか説明して…"
 js_ideas_chat: "量子コンピューターを5歳児にもわかるように説明して|会議のお誘いを丁寧にお断りするメールを書いて|リスボン3日間の旅行プランを教えて|ローカルAIのメリットとデメリットをまとめて"
