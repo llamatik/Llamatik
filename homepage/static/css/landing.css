@@ -1,7 +1,7 @@
 /* Llamatik landing — standalone styles (home page only) */
 :root{
   --bg:#07070b; --bg2:#0d0d14; --panel:rgba(255,255,255,.04); --line:rgba(255,255,255,.09);
-  --text:#f4f4f7; --mut:#a1a1b3; --dim:#6e6e82;
+  --text:#f4f4f7; --mut:#a1a1b3; --dim:#8c8ca1;
   --amber:#f59e0b; --pink:#ec4899; --violet:#8b5cf6; --teal:#2dd4bf;
   --grad:linear-gradient(100deg,#fbbf24 0%,#f59e0b 30%,#ec4899 75%,#8b5cf6 100%);
   --r:20px; --fx:system-ui; --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -20,10 +20,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* background */
 .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.bg-orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.38;will-change:transform}
-.o1{width:640px;height:640px;background:#f59e0b;top:-240px;left:-120px;animation:drift 22s ease-in-out infinite alternate}
-.o2{width:560px;height:560px;background:#8b5cf6;top:10%;right:-180px;opacity:.3;animation:drift 28s ease-in-out infinite alternate-reverse}
-.o3{width:520px;height:520px;background:#ec4899;top:48%;left:30%;opacity:.14;animation:drift 32s ease-in-out infinite alternate}
+.bg-orb{position:absolute;border-radius:50%;opacity:.38;will-change:transform}
+/* Soft radial gradients instead of filter:blur(110px): same look, far cheaper to paint and animate. */
+.o1{width:900px;height:900px;background:radial-gradient(closest-side,#f59e0b,transparent);top:-370px;left:-250px;animation:drift 22s ease-in-out infinite alternate}
+.o2{width:800px;height:800px;background:radial-gradient(closest-side,#8b5cf6,transparent);top:calc(10% - 120px);right:-300px;opacity:.3;animation:drift 28s ease-in-out infinite alternate-reverse}
+.o3{width:740px;height:740px;background:radial-gradient(closest-side,#ec4899,transparent);top:calc(48% - 110px);left:calc(30% - 110px);opacity:.14;animation:drift 32s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translate(90px,70px) scale(1.12)}}
 .bg-grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;opacity:.35;mask-image:radial-gradient(ellipse 70% 60% at 50% 25%,#000 20%,transparent 75%)}
 .bg-spot{position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.14),transparent 65%);transform:translate(-50%,-50%);left:50%;top:30%;transition:opacity .4s}
@@ -257,7 +258,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .foot-brand p{grid-column:1/-1;color:var(--dim);font-size:14px;margin-top:6px}
 .foot-cols{display:flex;gap:64px;flex-wrap:wrap}
 .foot-cols div{display:flex;flex-direction:column;gap:10px}
-.foot-cols h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+.foot-cols h2{font-size:12px;font-weight:600;line-height:1.4;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
 .foot-cols a{color:var(--mut);font-size:14.5px}.foot-cols a:hover{color:var(--text)}
 .foot-copy{margin-top:40px;font-size:13px;color:var(--dim)}
 
@@ -438,6 +439,7 @@ html:lang(ja) body,html:lang(zh) body{line-height:1.7}
 .faq-a code{font-size:.88em}
 .faq-a strong{color:var(--text)}
 .faq-more{margin-top:48px}
+.faq-more h2{font-size:clamp(20px,2.4vw,26px);letter-spacing:-.02em;margin-bottom:8px}
 .nf{text-align:center;padding:90px 0 130px;position:relative}
 .nf-code{font-size:clamp(110px,22vw,230px);font-weight:800;letter-spacing:-.06em;line-height:.9;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.9;margin-bottom:6px}
 .nf .lead{max-width:520px;margin-inline:auto}

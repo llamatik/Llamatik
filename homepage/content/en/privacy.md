@@ -8,8 +8,7 @@ date: 2026-11-20T00:00:00+00:00
 <!--
   DRAFT FOR OWNER / LEGAL REVIEW. Before publishing:
   1. Confirm the Firebase retention settings quoted in section 4 match the Firebase console.
-  2. Re-read section 5: it lists the third-party requests the website makes today (Google Fonts, GitHub API).
-     If you self-host the fonts or drop the GitHub calls, update that list.
+  2. Re-read section 5: it lists the third-party requests the website makes today (only GitHub Pages hosting).
 -->
 
 Last updated: November 20, 2026
@@ -71,8 +70,8 @@ Separately from Llamatik, Google Play and the App Store collect their own inform
 
 - **No cookies, no analytics, no advertising and no tracking pixels.** Nothing on this site identifies or follows you between visits.
 - **Hosting.** The site is served by GitHub Pages (GitHub, Inc., a Microsoft company). When you load a page, GitHub receives your IP address and standard request data and keeps server logs under its own policy ([GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)). We do not receive these logs.
-- **Fonts.** Page fonts are loaded from Google Fonts, so Google receives your IP address and browser details when a page loads.
-- **GitHub statistics.** The home and download pages ask api.github.com from your browser for the star count and the latest release, so GitHub receives your IP address. The answers are kept in your browser's session storage, which is cleared when you close the tab.
+- **Fonts.** Fonts are served from our own site, so no font provider is contacted.
+- **GitHub statistics.** The star count and download links for the latest release are fetched when the site is built, not from your browser, so visiting the site does not contact the GitHub API.
 - **Links.** Download buttons and other links lead to Google Play, the App Store, GitHub and other sites, which have their own privacy policies.
 - **Email.** If you write to us, we use your email address and message only to reply, and keep them for as long as needed to handle your request.
 
@@ -87,7 +86,7 @@ The **Llamatik Server** and the **SDK** are software you run yourself. The libra
 - **Diagnostics:** your consent.
 - **Running and securing the website, and answering your messages:** our legitimate interest in operating the project and helping its users.
 
-We do not sell personal data and we do not share it for advertising. The only recipients are the service providers named above: Google (Firebase and Google Fonts), GitHub (hosting and API), Hugging Face and the other hosts you choose to download from, and our email provider.
+We do not sell personal data and we do not share it for advertising. The only recipients are the service providers named above: Google (Firebase), GitHub (hosting), Hugging Face and the other hosts you choose to download from, and our email provider.
 
 ## 8. Your rights
 

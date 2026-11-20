@@ -154,8 +154,7 @@
   });
 
   /* ---------- GitHub: stars + latest desktop builds ---------- */
-  var cache = {};
-  try { cache = JSON.parse(sessionStorage.getItem('lt_gh') || '{}'); } catch (e) {}
+  var gh = window.LT_GH || {};
   function applyStars(n) {
     var el = $('#ghStars'); if (!el || !n) return;
     el.textContent = n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'k' : n; el.hidden = false;
@@ -167,20 +166,9 @@
       if (hit) { a.href = hit.url; a.target = '_blank'; a.rel = 'noopener'; }
     });
   }
-  if (cache.stars) applyStars(cache.stars);
-  if (cache.assets) applyRelease(cache.assets);
-  if (!cache.stars && window.fetch) {
-    fetch('https://api.github.com/repos/' + REPO).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-      if (j && j.stargazers_count) { cache.stars = j.stargazers_count; applyStars(cache.stars); save(); }
-    }).catch(function () {});
-    fetch('https://api.github.com/repos/' + REPO + '/releases/latest').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-      if (j && j.assets) {
-        cache.assets = j.assets.map(function (a) { return { name: a.name, url: a.browser_download_url }; });
-        applyRelease(cache.assets); save();
-      }
-    }).catch(function () {});
-  }
-  function save() { try { sessionStorage.setItem('lt_gh', JSON.stringify(cache)); } catch (e) {} }
+  /* Values are baked in at build time (see lt-head.html): no request to api.github.com from the browser. */
+  if (gh.stars) applyStars(gh.stars);
+  if (gh.assets) applyRelease(gh.assets);
 
   /* ---------- recommend the visitor's platform ---------- */
   (function () {

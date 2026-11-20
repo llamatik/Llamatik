@@ -6,6 +6,8 @@ title = "Llamatik"
 defaultContentLanguage = 'en'
 defaultContentLanguageInSubdir = false
 hasCJKLanguage = true
+enableRobotsTXT = true
+disableKinds = ["taxonomy", "term"]
 
 [module]
 [module.hugoVersion]

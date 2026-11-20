@@ -4,9 +4,9 @@
   <div class="wrap foot-in">
     <div class="foot-brand"><img src="{{ "images/logo/LlamatikLogo.svg" | relURL }}" alt="" width="26" height="26"><b>Llamatik</b><p>{{ i18n "foot_tag" }}</p></div>
     <div class="foot-cols">
-      <div><h4>{{ i18n "foot_product" }}</h4><a href="{{ $p }}#features">{{ i18n "foot_features" }}</a><a href="{{ $p }}#download">{{ i18n "foot_download" }}</a><a href="/prompt/">{{ i18n "foot_webapp" }}</a><a href="{{ "faq/" | relLangURL }}">{{ i18n "foot_faq" }}</a></div>
-      <div><h4>{{ i18n "foot_devs" }}</h4><a href="https://docs.llamatik.com">{{ i18n "foot_docs" }}</a><a href="https://github.com/ferranpons/Llamatik">{{ i18n "foot_github" }}</a><a href="https://central.sonatype.com/artifact/com.llamatik/core" target="_blank" rel="noopener">{{ i18n "foot_maven" }}</a><a href="https://github.com/ferranpons/Llamatik-server">{{ i18n "foot_server" }}</a></div>
-      <div><h4>{{ i18n "foot_company" }}</h4><a href="{{ "about/" | relLangURL }}">{{ i18n "foot_about" }}</a><a href="{{ "blog/" | relLangURL }}">{{ i18n "foot_blog" }}</a><a href="{{ "contact/" | relLangURL }}">{{ i18n "foot_contact" }}</a><a href="{{ "privacy/" | relLangURL }}">{{ i18n "foot_privacy" }}</a></div>
+      <div><h2>{{ i18n "foot_product" }}</h2><a href="{{ $p }}#features">{{ i18n "foot_features" }}</a><a href="{{ $p }}#download">{{ i18n "foot_download" }}</a><a href="/prompt/">{{ i18n "foot_webapp" }}</a><a href="{{ "faq/" | relLangURL }}">{{ i18n "foot_faq" }}</a></div>
+      <div><h2>{{ i18n "foot_devs" }}</h2><a href="https://docs.llamatik.com">{{ i18n "foot_docs" }}</a><a href="https://github.com/ferranpons/Llamatik">{{ i18n "foot_github" }}</a><a href="https://central.sonatype.com/artifact/com.llamatik/core" target="_blank" rel="noopener">{{ i18n "foot_maven" }}</a><a href="https://github.com/ferranpons/Llamatik-server">{{ i18n "foot_server" }}</a></div>
+      <div><h2>{{ i18n "foot_company" }}</h2><a href="{{ "about/" | relLangURL }}">{{ i18n "foot_about" }}</a><a href="{{ "blog/" | relLangURL }}">{{ i18n "foot_blog" }}</a><a href="{{ "contact/" | relLangURL }}">{{ i18n "foot_contact" }}</a><a href="{{ "privacy/" | relLangURL }}">{{ i18n "foot_privacy" }}</a></div>
     </div>
   </div>
   <div class="wrap foot-copy">{{ .page.Site.Params.footer.copyright_text | safeHTML }}</div>
