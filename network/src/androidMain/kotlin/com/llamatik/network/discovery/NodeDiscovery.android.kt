@@ -3,10 +3,13 @@ package com.llamatik.network.discovery
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import android.os.Build
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emptyFlow
+import java.net.Inet4Address
+import java.net.InetAddress
 
 actual object NodeDiscovery {
     private const val SERVICE_TYPE = "_llamatik._tcp"
@@ -62,7 +65,7 @@ actual object NodeDiscovery {
                     mgr.resolveService(serviceInfo, object : NsdManager.ResolveListener {
                         override fun onResolveFailed(info: NsdServiceInfo, errorCode: Int) {}
                         override fun onServiceResolved(info: NsdServiceInfo) {
-                            val host = info.host?.hostAddress ?: return
+                            val host = preferredHost(info) ?: return
                             trySend(
                                 DiscoveryEvent.NodeFound(
                                     DiscoveredNode(
@@ -91,4 +94,11 @@ actual object NodeDiscovery {
     }
 
     actual fun stopDiscovering() {}
+
+    /** Prefers an IPv4 address when the service resolved to several (API 34+); otherwise uses the single host. */
+    private fun preferredHost(info: NsdServiceInfo): String? {
+        val addresses: List<InetAddress> =
+            if (Build.VERSION.SDK_INT >= 34) info.hostAddresses else listOfNotNull(info.host)
+        return (addresses.firstOrNull { it is Inet4Address } ?: addresses.firstOrNull())?.hostAddress
+    }
 }

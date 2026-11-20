@@ -287,8 +287,12 @@ add_library(mtmd_ios_obj OBJECT
         ${MTMD_DIR}/mtmd-helper.cpp
         ${MTMD_DIR}/mtmd-audio.cpp
         ${MTMD_DIR}/mtmd-image.cpp
-        ${MTMD_DIR}/clip.cpp
+        ${MTMD_DIR}/mtmd-model.cpp
+        ${MTMD_DIR}/mtmd-subcontext.cpp
+        ${MTMD_DIR}/mtmd-graph.cpp
         ${MTMD_DIR}/models/cogvlm.cpp
+        ${MTMD_DIR}/models/drama3-gen.cpp
+        ${MTMD_DIR}/models/magevl.cpp
         ${MTMD_DIR}/models/conformer.cpp
         ${MTMD_DIR}/models/deepseekocr.cpp
         ${MTMD_DIR}/models/deepseekocr2.cpp

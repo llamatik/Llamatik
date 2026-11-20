@@ -1,28 +1,31 @@
 ---
-title: 'FAQ'
-description: 'Frequently Asked Questions.'
-intro_image: "images/illustrations/curiosity-search-amico.svg"
-intro_image_absolute: false
-intro_image_hide_on_mobile: false
-is_pricing: false
+title: "FAQ"
+description: "Respostas sobre como usar IA privada, que roda no dispositivo, com o Llamatik."
+items:
+  - q: "O que é o Llamatik?"
+    a: "O Llamatik é uma plataforma gratuita e de código aberto para IA privada que roda no dispositivo. Ele inclui o **app Llamatik** (Android, iOS, macOS, Windows, Linux e web), um **SDK Kotlin Multiplatform**, um **servidor** auto-hospedado e o **Llamatik Code**, um assistente de programação com IA para as IDEs da JetBrains. Ele é construído sobre engines abertas: llama.cpp, whisper.cpp e stable-diffusion.cpp."
+  - q: "Funciona offline?"
+    a: "Sim. Depois que um modelo é baixado, o chat, a visão, a voz e a geração de imagens rodam no seu dispositivo, sem conexão com a internet. Você só precisa estar online para baixar modelos e atualizações."
+  - q: "Meus dados são enviados para algum lugar?"
+    a: "Não por padrão. Prompts, documentos e voz são processados no seu dispositivo, e não há conta para criar. Os dados só saem do seu dispositivo se você escolher conectar o app a um Llamatik Server ou a outro dispositivo com **Compartilhar este dispositivo**; essas conexões usam atualmente HTTP sem criptografia, então mantenha-as em redes confiáveis. O app para Android também pode enviar relatórios de falhas e estatísticas básicas de uso, mas só se você ativar em Configurações (vem desativado por padrão e não inclui seus prompts, chats nem documentos). Este site não usa cookies nem rastreadores de análise."
+  - q: "Quais dispositivos e sistemas operacionais são compatíveis?"
+    a: "Android 8.0 ou mais recente, iPhone e iPad com iOS 16.6 ou mais recente, macOS (Apple Silicon e Intel), Windows 10 ou mais recente, Linux baseado em Debian e Ubuntu (.deb) e navegadores modernos por meio do WebAssembly. Baixe todos na [página de download](/download/)."
+  - q: "Quais modelos posso rodar?"
+    a: "Qualquer modelo no formato GGUF compatível com o llama.cpp. O app tem um catálogo integrado (por exemplo, modelos Gemma 3, SmolVLM e Whisper), ou você pode carregar um arquivo `.gguf` que já tenha no dispositivo. A transcrição de fala usa modelos Whisper, a análise de imagens usa modelos de visão como o SmolVLM, e imagens e vídeo usam modelos do stable-diffusion.cpp."
+  - q: "De quanta memória e armazenamento eu preciso?"
+    a: "Depende do modelo. Como regra geral, um modelo quantizado precisa de aproximadamente tanta memória livre quanto o tamanho do seu arquivo, mais um pouco de espaço para a conversa. Um modelo de 1B de parâmetros com quantização de 4 bits ocupa menos de 1 GB e roda em muitos celulares recentes; modelos maiores exigem mais RAM. Se o app fechar ou ficar lento, tente um modelo menor ou mais quantizado."
+  - q: "Ele consegue gerar imagens e vídeo, ou transcrever fala?"
+    a: "Sim. Os apps nativos podem gerar imagens e vídeos curtos com o stable-diffusion.cpp, transcrever áudio offline com o Whisper e responder perguntas sobre imagens com modelos de visão no dispositivo. Os recursos disponíveis dependem da plataforma e dos modelos que você baixar. O app web é focado em chat."
+  - q: "Qual é a diferença entre o app, o SDK e o servidor?"
+    a: "O **app** é o produto pronto para usar. O **SDK** (`com.llamatik:core`, `sdk` e `sdk-agent` no Maven Central) permite incorporar os mesmos recursos ao seu próprio app Kotlin Multiplatform. O **servidor** expõe a mesma API via HTTP para que você hospede modelos por conta própria em uma máquina mais potente, e os apps criados com o SDK podem usá-lo sem alterar o código."
+  - q: "Posso usar um computador mais potente a partir do meu celular?"
+    a: "Sim. Ative **Compartilhar este dispositivo** em um computador, celular ou tablet, e seus outros dispositivos com Llamatik na mesma rede poderão descobri-lo e usar os modelos carregados nele, depois que você aprovar cada dispositivo. Você também pode conectar o app a um Llamatik Server auto-hospedado."
+  - q: "O Llamatik é gratuito? Qual é a licença?"
+    a: "Os apps são gratuitos e não exigem conta. O código-fonte é de código aberto sob a licença MIT; o nome, o logotipo e os recursos visuais do Llamatik são proprietários e cobertos por uma licença separada. O Llamatik Code tem um plano gratuito e um plano Pro pago com recursos extras."
+  - q: "Posso usar o Llamatik no meu próprio app?"
+    a: "Sim. Adicione `com.llamatik:core` (inferência), `com.llamatik:sdk` (chat, modelos, RAG, agentes) ou `com.llamatik:sdk-agent` a um projeto Kotlin Multiplatform; eles funcionam em Android, iOS, desktop e WASM. Veja a [documentação](https://docs.llamatik.com) e o [GitHub](https://github.com/ferranpons/Llamatik)."
+  - q: "Como funciona a caixa de prompt da página inicial?"
+    a: "Ao pressionar Enter, você escolhe onde o Llamatik responde: no app web, em um app baixado (seu prompt é copiado) ou apenas copiar o texto. No caso do app web, o texto é passado para a página no fragmento da URL (a parte depois de `#`), que os navegadores nunca enviam a nenhum servidor. Na primeira vez, o app web ainda precisa baixar um modelo no seu navegador."
+  - q: "Onde posso obter ajuda ou relatar um bug?"
+    a: "Abra uma issue no [GitHub](https://github.com/ferranpons/Llamatik/issues) ou entre em contato pela [página de contato](/contact/)."
 ---
-
-**How customizable are the components?**
-
-You get access to the full source code. You can use the components as is in your project, or use as a base to your own components.
-
-**How often are new features added?**
-
-New features are added constantly. Our goal is to provide you with every single pattern found in all mobile apps, so there are a lot of ideas and releases planned. New features are posted on [Twitter](https://twitter.com/mpkickstarter) as soon as they are available. We also send a monthly update [via email](https://multiplatformkickstarter.substack.com/) to notify you.
-
-**What is your refund policy for PRO Templates?**
-
-We offer a 7-day money back guarantee, no questions asked. If you are not satisfied with your purchase, you can request a refund within 7 days of your purchase.
-
-**What is Kotlin Multiplatform?**
-
-Is a technology designed and created by JetBrains to simplify the development of cross-platform projects. It reduces time spent writing and maintaining the same code for different platforms while retaining the flexibility and benefits of native programming.
-
-**What is Compose Multiplatform?**
-
-Is a declarative framework for sharing UIs across multiple platforms with Kotlin. It is based on Jetpack Compose and developed by JetBrains and open-source contributors.

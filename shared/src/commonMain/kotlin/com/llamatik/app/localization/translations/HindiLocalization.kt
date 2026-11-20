@@ -217,6 +217,9 @@ internal object HindiLocalization : Localization {
     override val videoSaveError = "वीडियो सहेजने में विफल।"
     override val allCachedModelsRemoved = "सभी कैश किए गए मॉडल और PDF RAG स्टोर सफलतापूर्वक हटा दिए गए।"
     override val settings = "सेटिंग्स"
+    override val diagnosticsTitle = "डायग्नोस्टिक्स साझा करें"
+    override val diagnosticsDescription = "Llamatik को बेहतर बनाने में मदद के लिए क्रैश रिपोर्ट और बुनियादी उपयोग के आँकड़े भेजें। डिफ़ॉल्ट रूप से बंद। इसमें आपके प्रॉम्प्ट, चैट, दस्तावेज़ या आवाज़ शामिल नहीं होते।"
+    override val privacyPolicy = "गोपनीयता नीति"
     override val agentMode = "एजेंट मोड"
     override val agentModeDescription = "AI को आपके डिवाइस पर क्रियाएं करने देता है"
     override val agentModeInfoTitle = "एजेंट मोड — प्रायोगिक"
@@ -249,6 +252,8 @@ internal object HindiLocalization : Localization {
     override val chatsInFolder = "फ़ोल्डर में चैट"
 
     override val downloadFromUrl = "URL से डाउनलोड करें"
+    override val importFromFile = "फ़ाइल से आयात करें"
+    override val importFromFileUnsupported = "यह प्लेटफ़ॉर्म स्थानीय फ़ाइल पथ से मॉडल लोड नहीं कर सकता।"
     override val modelUrlLabel = "मॉडल URL"
     override val modelNameLabel = "मॉडल का नाम"
     override val categoryLabel = "श्रेणी"

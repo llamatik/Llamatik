@@ -126,7 +126,8 @@ JNIEXPORT jboolean JNICALL
 Java_com_llamatik_core_platform_LlamaBridge_initEmbedModel(
         JNIEnv *env, jobject, jstring modelPath) {
     const char *path = env->GetStringUTFChars(modelPath, nullptr);
-    const bool ok = llama_embed_init(path);
+    bool ok = false;
+    try { ok = llama_embed_init(path); } catch (...) { ok = false; }
     env->ReleaseStringUTFChars(modelPath, path);
     return ok ? JNI_TRUE : JNI_FALSE;
 }
@@ -184,7 +185,8 @@ JNIEXPORT jboolean JNICALL
 Java_com_llamatik_core_platform_LlamaBridge_initGenerateModel(
         JNIEnv *env, jobject, jstring modelPath) {
     const char *path = env->GetStringUTFChars(modelPath, nullptr);
-    const bool ok = llama_generate_init(path);
+    bool ok = false;
+    try { ok = llama_generate_init(path); } catch (...) { ok = false; }
     env->ReleaseStringUTFChars(modelPath, path);
     return ok ? JNI_TRUE : JNI_FALSE;
 }

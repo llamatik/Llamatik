@@ -217,6 +217,9 @@ internal object JapaneseLocalization : Localization {
     override val videoSaveError = "動画の保存に失敗しました。"
     override val allCachedModelsRemoved = "すべてのキャッシュ済みモデルとPDF RAGストアが正常に削除されました。"
     override val settings = "設定"
+    override val diagnosticsTitle = "診断データを共有"
+    override val diagnosticsDescription = "クラッシュレポートと基本的な利用統計を送信して、Llamatik の改善にご協力ください。初期設定ではオフです。プロンプト、チャット、ドキュメント、音声は含まれません。"
+    override val privacyPolicy = "プライバシーポリシー"
     override val agentMode = "エージェントモード"
     override val agentModeDescription = "AIがデバイス上でアクションを実行できるようにします"
     override val agentModeInfoTitle = "エージェントモード — 試験的機能"
@@ -249,6 +252,8 @@ internal object JapaneseLocalization : Localization {
     override val chatsInFolder = "フォルダ内のチャット"
 
     override val downloadFromUrl = "URLからダウンロード"
+    override val importFromFile = "ファイルからインポート"
+    override val importFromFileUnsupported = "このプラットフォームではローカルファイルパスからモデルを読み込めません。"
     override val modelUrlLabel = "モデルURL"
     override val modelNameLabel = "モデル名"
     override val categoryLabel = "カテゴリ"

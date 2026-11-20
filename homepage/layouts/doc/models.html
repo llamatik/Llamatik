@@ -1,0 +1,54 @@
+{{ define "main" }}
+{{ $ld := slice }}
+<section class="wrap blog-hero">
+  <p class="eyebrow">{{ i18n "mdl_eyebrow" }}</p>
+  <h1 class="blog-title doc-title">{{ partial "t.html" "mdl_title" }}</h1>
+  <p class="lead">{{ i18n "mdl_lead" }}</p>
+</section>
+
+<div class="wrap mdl">
+  <h2 class="mdl-h reveal">{{ i18n "mdl_start_t" }}</h2>
+  <div class="mdl-start">
+    {{ range $n := slice "1" "2" "3" "4" }}
+    <div class="mdl-card reveal"><b>{{ i18n (printf "mdl_s%s_t" $n) }}</b><p>{{ i18n (printf "mdl_s%s_d" $n) }}</p></div>
+    {{ end }}
+  </div>
+
+  {{ range $cat := slice "chat" "vision" "voice" "embed" "image" "video" }}
+  <h2 class="mdl-h reveal">{{ i18n (printf "mdl_cat_%s" $cat) }}</h2>
+  <div class="cmp-wrap mdl-tbl reveal">
+    <table class="cmp mdl-t">
+      <thead><tr><th scope="col">{{ i18n "mdl_col_model" }}</th><th scope="col">{{ i18n "mdl_col_size" }}</th><th scope="col">{{ i18n "mdl_col_ram" }}</th><th scope="col">{{ i18n "mdl_col_notes" }}</th></tr></thead>
+      <tbody>
+        {{ range where site.Data.models "cat" $cat }}
+        <tr>
+          <th scope="row"><a href="{{ .repo }}" target="_blank" rel="noopener" dir="ltr">{{ .name }}</a></th>
+          <td dir="ltr">{{ if ge .size_mb 1000 }}{{ lang.FormatNumber 1 (div (float .size_mb) 1000) }} GB{{ else }}{{ .size_mb }} MB{{ end }}</td>
+          <td dir="ltr">~{{ if ge .ram_mb 1000 }}{{ lang.FormatNumber 1 (div (float .ram_mb) 1000) }} GB{{ else }}{{ .ram_mb }} MB{{ end }}</td>
+          <td class="mdl-tags">{{ range .tags }}<span class="mdl-tag t-{{ . }}">{{ i18n (printf "mdl_tag_%s" .) }}</span>{{ end }}</td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+  {{ end }}
+  <p class="cmp-note reveal">{{ i18n "mdl_ram_note" }}</p>
+
+  <div class="mdl-two">
+    <div class="mdl-card reveal"><h2>{{ i18n "mdl_expect_t" }}</h2><p>{{ i18n "mdl_expect_d" }}</p></div>
+    <div class="mdl-card reveal"><h2>{{ i18n "mdl_byo_t" }}</h2><p>{{ i18n "mdl_byo_d" }}</p></div>
+  </div>
+
+  <h2 class="mdl-h reveal">{{ i18n "mdl_faq_t" }}</h2>
+  <div class="faq-list">
+    {{ range $n := slice "1" "2" "3" }}
+      {{ $q := i18n (printf "mdl_q%s" $n) }}{{ $a := i18n (printf "mdl_a%s" $n) }}
+      {{ $ld = $ld | append (dict "@type" "Question" "name" $q "acceptedAnswer" (dict "@type" "Answer" "text" $a)) }}
+      <details class="faq-item reveal"><summary><span>{{ $q }}</span><i class="faq-chev" aria-hidden="true"></i></summary><div class="faq-a">{{ $a }}</div></details>
+    {{ end }}
+  </div>
+  <div class="btn-row" style="justify-content:center;margin-top:36px"><a class="btn btn-solid" href="{{ "download/" | relLangURL }}">{{ i18n "foot_download" }}</a></div>
+</div>
+{{ $schema := dict "@context" "https://schema.org" "@type" "FAQPage" "inLanguage" .Site.Language.LanguageCode "mainEntity" $ld }}
+<script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+{{ end }}

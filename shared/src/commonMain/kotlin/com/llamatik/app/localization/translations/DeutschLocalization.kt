@@ -220,6 +220,9 @@ Deine Prioritäten:
     override val videoSaveError = "Video konnte nicht gespeichert werden."
     override val allCachedModelsRemoved = "Alle zwischengespeicherten Modelle und der PDF-RAG-Speicher wurden erfolgreich entfernt."
     override val settings = "Einstellungen"
+    override val diagnosticsTitle = "Diagnosedaten teilen"
+    override val diagnosticsDescription = "Sende Absturzberichte und einfache Nutzungsstatistiken, um Llamatik zu verbessern. Standardmäßig aus. Enthält weder deine Prompts noch Chats, Dokumente oder Sprache."
+    override val privacyPolicy = "Datenschutzerklärung"
     override val agentMode = "Agentenmodus"
     override val agentModeDescription = "Erlaubt der KI, Aktionen auf Ihrem Gerät auszuführen"
     override val agentModeInfoTitle = "Agentenmodus — Experimentell"
@@ -252,6 +255,8 @@ Deine Prioritäten:
     override val chatsInFolder = "Chats im Ordner"
 
     override val downloadFromUrl = "Von URL herunterladen"
+    override val importFromFile = "Aus Datei importieren"
+    override val importFromFileUnsupported = "Diese Plattform kann Modelle nicht aus einem lokalen Dateipfad laden."
     override val modelUrlLabel = "Modell-URL"
     override val modelNameLabel = "Modellname"
     override val categoryLabel = "Kategorie"

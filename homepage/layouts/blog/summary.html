@@ -1,27 +1,9 @@
-<article class="blog-card">
-    <a class="blog-card__link" href="{{ .RelPermalink }}">
-        {{- with .Params.image }}
-        <figure class="blog-card__image">
-            <img src="{{ . | absURL }}" alt="{{ $.Title }}" loading="lazy" />
-        </figure>
-        {{- end }}
-
-        <h2 class="blog-card__title">{{ .Title }}</h2>
-
-        <div class="blog-card__meta">
-            <time datetime="{{ .Date }}">{{ .Date.Format "Jan 2, 2006" }}</time>
-            <span class="blog-card__dot">•</span>
-            <span>{{ .ReadingTime }} min read</span>
-        </div>
-
-        <p class="blog-card__summary">
-            {{ with .Params.description }}
-            {{ . }}
-            {{ else }}
-            {{ .Summary | plainify }}
-            {{ end }}
-        </p>
-
-        <span class="blog-card__cta">Read post →</span>
-    </a>
-</article>
+<a class="post-card reveal" href="{{ .RelPermalink }}">
+  {{ with .Params.image }}<figure class="pc-img"><img src="{{ . | absURL }}" alt="" loading="lazy"></figure>{{ else }}<figure class="pc-img pc-ph"></figure>{{ end }}
+  <div class="pc-body">
+    {{ with .Params.tags }}<div class="pc-tags">{{ range first 2 . }}<span>{{ . }}</span>{{ end }}</div>{{ end }}
+    <h3>{{ .Title }}</h3>
+    <p>{{ with .Params.description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 140 }}{{ end }}</p>
+    <div class="post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format ":date_medium" .Date }}</time><i></i><span>{{ i18n "min_read" .ReadingTime }}</span></div>
+  </div>
+</a>

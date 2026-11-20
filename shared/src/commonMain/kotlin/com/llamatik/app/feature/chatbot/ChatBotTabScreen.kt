@@ -58,6 +58,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
@@ -85,6 +86,7 @@ import com.llamatik.app.localization.getLanguageCode
 import com.llamatik.app.permissions.rememberAudioPermissionRequester
 import com.llamatik.app.platform.AudioPaths
 import com.llamatik.app.platform.AudioRecorder
+import com.llamatik.app.platform.LaunchPrompt
 import com.llamatik.app.platform.decodeImageBytesToImageBitmap
 import com.llamatik.app.platform.rgbaToImageBitmap
 import com.llamatik.app.resources.Res
@@ -300,6 +302,7 @@ class ChatBotTabScreen : Screen {
                         dialogMessage.value = effect.message
                         isDialogOpen.value = true
                     }
+                    is ChatBotSideEffects.OnImportFailed -> {}  // shown on the models screen
                     is ChatBotSideEffects.OnToolCallDetected -> {}  // companion only
                     is ChatBotSideEffects.OnServerGenerationFailed -> {
                         isLoading.value = false
@@ -484,7 +487,7 @@ class ChatBotTabScreen : Screen {
     ) {
         val audioPermissionRequester = rememberAudioPermissionRequester()
         var input by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue())
+            mutableStateOf(LaunchPrompt.consume()?.let { TextFieldValue(it, TextRange(it.length)) } ?: TextFieldValue())
         }
         val speakingMessageKey = remember { mutableStateOf<String?>(null) }
 

@@ -218,6 +218,9 @@ internal object RussianLocalization : Localization {
     override val videoSaveError = "Не удалось сохранить видео."
     override val allCachedModelsRemoved = "Все кэшированные модели и хранилище PDF RAG успешно удалены."
     override val settings = "Настройки"
+    override val diagnosticsTitle = "Отправлять диагностику"
+    override val diagnosticsDescription = "Отправляйте отчёты о сбоях и базовую статистику использования, чтобы помочь улучшить Llamatik. По умолчанию выключено. Не включает ваши промпты, чаты, документы и голос."
+    override val privacyPolicy = "Политика конфиденциальности"
     override val agentMode = "Режим агента"
     override val agentModeDescription = "Позволяет ИИ выполнять действия на вашем устройстве"
     override val agentModeInfoTitle = "Режим агента — Экспериментальный"
@@ -250,6 +253,8 @@ internal object RussianLocalization : Localization {
     override val chatsInFolder = "Чаты в папке"
 
     override val downloadFromUrl = "Скачать по URL"
+    override val importFromFile = "Импортировать из файла"
+    override val importFromFileUnsupported = "Эта платформа не может загружать модели по локальному пути к файлу."
     override val modelUrlLabel = "URL модели"
     override val modelNameLabel = "Название модели"
     override val categoryLabel = "Категория"

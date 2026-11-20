@@ -1,0 +1,12 @@
+{{- /* Strings the page scripts need, emitted as a JSON object. */ -}}
+{{- $split := "|" -}}
+{{- $d := dict
+  "ph" (split (i18n "js_placeholders") $split)
+  "ideas" (dict "chat" (split (i18n "js_ideas_chat") $split) "code" (split (i18n "js_ideas_code") $split) "create" (split (i18n "js_ideas_create") $split) "think" (split (i18n "js_ideas_think") $split))
+  "typeA" (i18n "f_chat_a")
+  "toastApp" (i18n "js_toast_app") "toastPick" (i18n "js_toast_pick") "toastCopied" (i18n "js_toast_copied")
+  "toastFailed" (i18n "js_toast_failed") "toastCode" (i18n "js_toast_code") "toastModule" (i18n "js_toast_module")
+  "version" (i18n "dlp_version") "copy" (i18n "cw_copy") "copied" (i18n "js_copied") "rec" (i18n "dl_rec")
+  "prompt" ("/prompt/")
+-}}
+{{- $d | jsonify -}}

@@ -1,154 +1,154 @@
 ---
-title: "Introducing the Llamatik App an Offline AI Chat on Your Mobile Device"
+title: "Llamatik ऐप का परिचय — आपके मोबाइल डिवाइस पर ऑफ़लाइन AI चैट"
 date: 2025-11-25T09:00:00-05:00
-description: "We are excited to announce the launch of the Llamatik App, a fully offline AI chatbot designed to showcase the power and versatility of the Llamatik Kotlin Multiplatform library. Whether you are a developer curious about on-device AI or a user who wants a private, fast, and modern chatbot experience, the Llamatik app brings the full potential of lightweight LLMs directly to your mobile device."
+description: "हमें Llamatik ऐप के लॉन्च की घोषणा करते हुए खुशी हो रही है — एक पूरी तरह ऑफ़लाइन AI चैटबॉट, जिसे Llamatik Kotlin Multiplatform लाइब्रेरी की ताकत और बहुमुखी क्षमता दिखाने के लिए बनाया गया है। चाहे आप ऑन-डिवाइस AI के बारे में जिज्ञासु डेवलपर हों या ऐसे यूज़र जो प्राइवेट, तेज़ और आधुनिक चैटबॉट अनुभव चाहते हैं, Llamatik ऐप हल्के LLM की पूरी क्षमता सीधे आपके मोबाइल डिवाइस पर ले आता है।"
 image: "images/blog/llamatik_new_app_hero.png"
 tags: ["Kotlin", "Multiplatform", "LLM", "llama.cpp", "Offline AI", "App"]
 showDate: true
 draft: false
 ---
 
-🚀 Introducing the Llamatik App: Offline AI Chat on Your Mobile Device
+🚀 Llamatik ऐप का परिचय: आपके मोबाइल डिवाइस पर ऑफ़लाइन AI चैट
 
-We’re excited to announce the launch of the Llamatik App, a fully offline AI chatbot designed to showcase the power and versatility of the Llamatik Kotlin Multiplatform library.
-Whether you’re a developer curious about on-device AI or a user who wants a private, fast, and modern chatbot experience, the Llamatik app brings the full potential of lightweight LLMs directly to your mobile device.
-
-⸻
-
-🔍 What Is Llamatik?
-
-Llamatik is a Kotlin Multiplatform library that allows developers to run local Large Language Models (LLMs) and vector embeddings across Android, iOS, Desktop, and Web platforms.
-
-With the release of the Llamatik app, you can now experience everything the library can do — without writing a single line of code.
-
-The app serves as a live demo, a sandbox, and a reference implementation for developers building local AI experiences.
+हमें Llamatik ऐप के लॉन्च की घोषणा करते हुए खुशी हो रही है — यह एक पूरी तरह ऑफ़लाइन AI चैटबॉट है, जिसे Llamatik Kotlin Multiplatform लाइब्रेरी की ताकत और बहुमुखी क्षमता दिखाने के लिए बनाया गया है।
+चाहे आप ऑन-डिवाइस AI के बारे में जिज्ञासु डेवलपर हों या ऐसे यूज़र जो प्राइवेट, तेज़ और आधुनिक चैटबॉट अनुभव चाहते हैं, Llamatik ऐप हल्के LLM की पूरी क्षमता सीधे आपके मोबाइल डिवाइस पर ले आता है।
 
 ⸻
 
-⚡ What the Llamatik App Can Do
+🔍 Llamatik क्या है?
 
-🧠 Fully Local AI Chat
+Llamatik एक Kotlin Multiplatform लाइब्रेरी है, जो डेवलपर को Android, iOS, डेस्कटॉप और वेब प्लेटफ़ॉर्म पर लोकल Large Language Models (LLM) और वेक्टर एम्बेडिंग चलाने देती है।
 
-All text generation runs 100% on your device using quantized open-source models.
-There is no cloud, no server, and no data sent anywhere.
-This makes Llamatik:
-•	Private
-•	Fast
-•	Always available
-•	Compliant with strict privacy environments
+Llamatik ऐप के रिलीज़ होने के बाद अब आप लाइब्रेरी की हर क्षमता को आज़मा सकते हैं — कोड की एक भी लाइन लिखे बिना।
 
-The chat interface is simple, clean, and built with Jetpack Compose Multiplatform.
+यह ऐप एक लाइव डेमो, एक सैंडबॉक्स और उन डेवलपर के लिए रेफ़रेंस इम्प्लीमेंटेशन का काम करता है जो लोकल AI अनुभव बना रहे हैं।
 
 ⸻
 
-📦 Built-In Model Downloader
+⚡ Llamatik ऐप क्या कर सकता है
 
-The app includes direct download support for several optimized models, including:
+🧠 पूरी तरह लोकल AI चैट
+
+सारा टेक्स्ट जनरेशन क्वांटाइज़्ड ओपन-सोर्स मॉडल के साथ 100% आपके डिवाइस पर चलता है।
+न कोई क्लाउड, न कोई सर्वर, और कहीं कोई डेटा नहीं भेजा जाता।
+इससे Llamatik बनता है:
+•	प्राइवेट
+•	तेज़
+•	हमेशा उपलब्ध
+•	सख़्त प्राइवेसी वाले माहौल के अनुरूप
+
+चैट इंटरफ़ेस सरल, साफ़-सुथरा है और Jetpack Compose Multiplatform से बना है।
+
+⸻
+
+📦 बिल्ट-इन मॉडल डाउनलोडर
+
+ऐप में कई ऑप्टिमाइज़्ड मॉडल के लिए सीधे डाउनलोड की सुविधा है, जिनमें शामिल हैं:
 •	Gemma 3 270M
-•	SmolVLM 256M / 500M (Vision + Language)
+•	SmolVLM 256M / 500M (विज़न + भाषा)
 •	Phi-1.5
-•	Qwen 2.5 5B (quantized)
-•	Llama 3.2 1B (quantized)
+•	Qwen 2.5 5B (क्वांटाइज़्ड)
+•	Llama 3.2 1B (क्वांटाइज़्ड)
 
-All models come in GGUF format and are compatible with the llama.cpp backend integrated in Llamatik.
+सभी मॉडल GGUF फ़ॉर्मैट में आते हैं और Llamatik में इंटीग्रेट किए गए llama.cpp बैकएंड के साथ संगत हैं।
 
-You can download, switch, and manage models directly from the app.
-
-⸻
-
-🎯 Smart Suggestions & Quick Actions
-
-To make the experience more intuitive, the app provides:
-•	Suggested prompts
-•	Quick actions
-•	Clean and responsive UI
-•	A selectable model pill over the input box
-•	Built-in onboarding
-
-These small touches make the app great for both beginners and power users.
+आप ऐप से ही मॉडल डाउनलोड कर सकते हैं, बदल सकते हैं और उनका प्रबंधन कर सकते हैं।
 
 ⸻
 
-🔐 Privacy First
+🎯 स्मार्ट सुझाव और क्विक एक्शन
 
-Every generation happens locally.
-Your conversations:
-•	Are not collected
-•	Are not stored externally
-•	Are not logged or sent to a server
+अनुभव को और सहज बनाने के लिए ऐप देता है:
+•	सुझाए गए प्रॉम्प्ट
+•	क्विक एक्शन
+•	साफ़-सुथरा और रिस्पॉन्सिव UI
+•	इनपुट बॉक्स के ऊपर चुना जा सकने वाला मॉडल पिल
+•	बिल्ट-इन ऑनबोर्डिंग
 
-Even model inference is done offline using llama.cpp compiled for mobile.
-
-The only telemetry in the app is Firebase Analytics and Crashlytics, used strictly for error tracking and anonymous usage insights.
-
-⸻
-
-🧩 A Showcase of Llamatik Library Features
-
-The app demonstrates several key capabilities of the underlying library:
-
-✔ Kotlin Multiplatform support
-
-Build once, run on Android, iOS, Desktop, Web.
-
-✔ On-device LLM inference
-
-Through a custom C/C++ bridge to llama.cpp.
-
-✔ Embedding generation
-
-Compatible with models like nomic-embed-text-v1.5.
-
-✔ Vector store support
-
-Create local semantic search or RAG-like features with lightweight vector stores.
-
-✔ Model management
-
-Download, load, unload, switch, and generate across multiple quantized models.
-
-✔ High-level ChatRunner utilities
-
-Easy to stream, generate, and handle AI conversation logic.
-
-For developers reading this: the Llamatik app is built entirely on top of the open-source library — and its codebase is a practical example of real-world KMP local AI integration.
+ये छोटी-छोटी बातें ऐप को शुरुआती और अनुभवी, दोनों तरह के यूज़र के लिए बेहतरीन बनाती हैं।
 
 ⸻
 
-📱 Why an App?
+🔐 सबसे पहले प्राइवेसी
 
-While the Llamatik library is already powerful, we wanted a way for:
-•	Developers to see the library in action
-•	Users to experiment with local AI
-•	The community to test models easily
-•	Anyone to experience offline AI assistants without setup
-•	Newcomers to understand how a cross-platform AI app is structured
+हर जनरेशन लोकली होता है।
+आपकी बातचीत:
+•	इकट्ठा नहीं की जाती
+•	बाहर कहीं स्टोर नहीं की जाती
+•	लॉग नहीं की जाती और किसी सर्वर को नहीं भेजी जाती
 
-The Llamatik app gives you a complete, polished environment to explore what local LLMs can do on a phone.
+यहाँ तक कि मॉडल इन्फ़रेंस भी मोबाइल के लिए कंपाइल किए गए llama.cpp से ऑफ़लाइन होता है।
 
-⸻
-
-🗺 What’s Coming Next?
-
-We’re already working on:
-•	🔍 Integrated vector search for PDFs and documents
-•	📁 Local model import from file storage
-•	🌐 More model providers and sizes
-•	🎛 Advanced chat settings (temperature, top-k, etc.)
-•	🧱 On-device RAG pipelines
-•	🛠 Developer samples & tutorials
-
-Your feedback will help shape the roadmap — so please share your thoughts!
+ऐप में एकमात्र टेलीमेट्री Firebase Analytics और Crashlytics है, जिसका उपयोग सिर्फ़ त्रुटियों को ट्रैक करने और गुमनाम उपयोग-जानकारी के लिए होता है।
 
 ⸻
 
-🐪 Try Llamatik Today
+🧩 Llamatik लाइब्रेरी की विशेषताओं का प्रदर्शन
 
-You can now download the [Llamatik app on Google Play](https://play.google.com/store/apps/details?id=com.llamatik.app.android) and soon on the iOS App Store.
+यह ऐप अंतर्निहित लाइब्रेरी की कई मुख्य क्षमताएँ दिखाता है:
 
-It’s free, open, offline, and built with privacy and performance in mind.
+✔ Kotlin Multiplatform सपोर्ट
 
-Whether you’re a developer building new AI-powered features or a user wanting a fast, local AI assistant — Llamatik is here for you.
+एक बार बनाएँ, Android, iOS, डेस्कटॉप और वेब पर चलाएँ।
 
-👉 Explore. Learn. Build.
-👉 Experience what’s possible when AI runs entirely on your device.
+✔ ऑन-डिवाइस LLM इन्फ़रेंस
+
+llama.cpp तक एक कस्टम C/C++ ब्रिज के ज़रिए।
+
+✔ एम्बेडिंग जनरेशन
+
+nomic-embed-text-v1.5 जैसे मॉडल के साथ संगत।
+
+✔ वेक्टर स्टोर सपोर्ट
+
+हल्के वेक्टर स्टोर से लोकल सिमैंटिक सर्च या RAG जैसे फ़ीचर बनाएँ।
+
+✔ मॉडल प्रबंधन
+
+कई क्वांटाइज़्ड मॉडल में डाउनलोड, लोड, अनलोड, स्विच और जनरेट करें।
+
+✔ उच्च-स्तरीय ChatRunner यूटिलिटी
+
+AI बातचीत के लॉजिक को स्ट्रीम, जनरेट और हैंडल करना आसान।
+
+डेवलपर के लिए: Llamatik ऐप पूरी तरह ओपन-सोर्स लाइब्रेरी के ऊपर बना है — और इसका कोडबेस असली दुनिया में KMP के साथ लोकल AI इंटीग्रेशन का एक व्यावहारिक उदाहरण है।
+
+⸻
+
+📱 ऐप क्यों?
+
+Llamatik लाइब्रेरी पहले से ही शक्तिशाली है, फिर भी हम चाहते थे कि:
+•	डेवलपर लाइब्रेरी को काम करते हुए देख सकें
+•	यूज़र लोकल AI के साथ प्रयोग कर सकें
+•	कम्युनिटी आसानी से मॉडल टेस्ट कर सके
+•	कोई भी बिना सेटअप के ऑफ़लाइन AI असिस्टेंट का अनुभव ले सके
+•	नए लोग समझ सकें कि क्रॉस-प्लेटफ़ॉर्म AI ऐप की संरचना कैसी होती है
+
+Llamatik ऐप आपको एक संपूर्ण, निखरा हुआ माहौल देता है, जिसमें आप देख सकते हैं कि लोकल LLM फ़ोन पर क्या कर सकते हैं।
+
+⸻
+
+🗺 आगे क्या आ रहा है?
+
+हम पहले से इन पर काम कर रहे हैं:
+•	🔍 PDF और दस्तावेज़ों के लिए इंटीग्रेटेड वेक्टर सर्च
+•	📁 फ़ाइल स्टोरेज से लोकल मॉडल इम्पोर्ट
+•	🌐 और मॉडल प्रोवाइडर और साइज़
+•	🎛 उन्नत चैट सेटिंग (temperature, top-k आदि)
+•	🧱 ऑन-डिवाइस RAG पाइपलाइन
+•	🛠 डेवलपर सैंपल और ट्यूटोरियल
+
+आपकी प्रतिक्रिया रोडमैप को आकार देने में मदद करेगी — इसलिए कृपया अपनी राय साझा करें!
+
+⸻
+
+🐪 आज ही Llamatik आज़माएँ
+
+अब आप [Google Play पर Llamatik ऐप](https://play.google.com/store/apps/details?id=com.llamatik.app.android) डाउनलोड कर सकते हैं और जल्द ही iOS App Store पर भी।
+
+यह मुफ़्त है, ओपन है, ऑफ़लाइन है, और प्राइवेसी तथा प्रदर्शन को ध्यान में रखकर बनाया गया है।
+
+चाहे आप नए AI-संचालित फ़ीचर बनाने वाले डेवलपर हों या तेज़, लोकल AI असिस्टेंट चाहने वाले यूज़र — Llamatik आपके लिए है।
+
+👉 खोजें। सीखें। बनाएँ।
+👉 जानें कि जब AI पूरी तरह आपके डिवाइस पर चलता है, तो क्या-क्या संभव है।

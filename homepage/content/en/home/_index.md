@@ -1,4 +1,12 @@
 ---
+# Legacy template sections: superseded by the new landing page, kept out of the build and sitemap.
+build:
+  render: never
+  list: never
+cascade:
+  build:
+    render: never
+    list: never
 title: "Llamatik"
 ---
 

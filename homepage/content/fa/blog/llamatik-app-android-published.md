@@ -1,154 +1,154 @@
 ---
-title: "Introducing the Llamatik App an Offline AI Chat on Your Mobile Device"
+title: "معرفی اپلیکیشن Llamatik: چت هوش مصنوعی آفلاین روی دستگاه موبایل شما"
 date: 2025-11-25T09:00:00-05:00
-description: "We are excited to announce the launch of the Llamatik App, a fully offline AI chatbot designed to showcase the power and versatility of the Llamatik Kotlin Multiplatform library. Whether you are a developer curious about on-device AI or a user who wants a private, fast, and modern chatbot experience, the Llamatik app brings the full potential of lightweight LLMs directly to your mobile device."
+description: "با خوشحالی از عرضه‌ی اپلیکیشن Llamatik خبر می‌دهیم؛ یک چت‌بات هوش مصنوعی کاملاً آفلاین که برای نمایش قدرت و تنوع کتابخانه‌ی Kotlin Multiplatform به نام Llamatik ساخته شده است. چه توسعه‌دهنده‌ای باشید که درباره‌ی هوش مصنوعی روی دستگاه کنجکاو است و چه کاربری که تجربه‌ای خصوصی، سریع و مدرن از یک چت‌بات می‌خواهد، اپلیکیشن Llamatik تمام ظرفیت مدل‌های زبانی سبک را مستقیم به دستگاه موبایل شما می‌آورد."
 image: "images/blog/llamatik_new_app_hero.png"
 tags: ["Kotlin", "Multiplatform", "LLM", "llama.cpp", "Offline AI", "App"]
 showDate: true
 draft: false
 ---
 
-🚀 Introducing the Llamatik App: Offline AI Chat on Your Mobile Device
+🚀 معرفی اپلیکیشن Llamatik: چت هوش مصنوعی آفلاین روی دستگاه موبایل شما
 
-We’re excited to announce the launch of the Llamatik App, a fully offline AI chatbot designed to showcase the power and versatility of the Llamatik Kotlin Multiplatform library.
-Whether you’re a developer curious about on-device AI or a user who wants a private, fast, and modern chatbot experience, the Llamatik app brings the full potential of lightweight LLMs directly to your mobile device.
-
-⸻
-
-🔍 What Is Llamatik?
-
-Llamatik is a Kotlin Multiplatform library that allows developers to run local Large Language Models (LLMs) and vector embeddings across Android, iOS, Desktop, and Web platforms.
-
-With the release of the Llamatik app, you can now experience everything the library can do — without writing a single line of code.
-
-The app serves as a live demo, a sandbox, and a reference implementation for developers building local AI experiences.
+با خوشحالی از عرضه‌ی اپلیکیشن Llamatik خبر می‌دهیم؛ یک چت‌بات هوش مصنوعی کاملاً آفلاین که برای نمایش قدرت و تنوع کتابخانه‌ی Kotlin Multiplatform به نام Llamatik ساخته شده است.
+چه توسعه‌دهنده‌ای باشید که درباره‌ی هوش مصنوعی روی دستگاه کنجکاو است و چه کاربری که تجربه‌ای خصوصی، سریع و مدرن از یک چت‌بات می‌خواهد، اپلیکیشن Llamatik تمام ظرفیت مدل‌های زبانی سبک را مستقیم به دستگاه موبایل شما می‌آورد.
 
 ⸻
 
-⚡ What the Llamatik App Can Do
+🔍 Llamatik چیست؟
 
-🧠 Fully Local AI Chat
+Llamatik کتابخانه‌ای در Kotlin Multiplatform است که به توسعه‌دهندگان اجازه می‌دهد مدل‌های زبانی بزرگ (LLM) محلی و امبدینگ‌های برداری را روی پلتفرم‌های Android، iOS، دسکتاپ و وب اجرا کنند.
 
-All text generation runs 100% on your device using quantized open-source models.
-There is no cloud, no server, and no data sent anywhere.
-This makes Llamatik:
-•	Private
-•	Fast
-•	Always available
-•	Compliant with strict privacy environments
+با عرضه‌ی اپلیکیشن Llamatik اکنون می‌توانید همه‌ی امکانات کتابخانه را تجربه کنید، بی‌آنکه حتی یک خط کد بنویسید.
 
-The chat interface is simple, clean, and built with Jetpack Compose Multiplatform.
+این اپلیکیشن هم یک دموی زنده است، هم یک محیط آزمایش، و هم یک پیاده‌سازی مرجع برای توسعه‌دهندگانی که تجربه‌های هوش مصنوعی محلی می‌سازند.
 
 ⸻
 
-📦 Built-In Model Downloader
+⚡ اپلیکیشن Llamatik چه کارهایی می‌تواند بکند
 
-The app includes direct download support for several optimized models, including:
+🧠 چت هوش مصنوعی کاملاً محلی
+
+تمام تولید متن، ۱۰۰٪ روی دستگاه شما و با مدل‌های متن‌باز کوانتیزه انجام می‌شود.
+نه ابری در کار است، نه سروری، و نه داده‌ای به جایی ارسال می‌شود.
+این یعنی Llamatik:
+•	خصوصی است
+•	سریع است
+•	همیشه در دسترس است
+•	با محیط‌های دارای الزامات سخت‌گیرانه‌ی حریم خصوصی سازگار است
+
+رابط چت ساده و تمیز است و با Jetpack Compose Multiplatform ساخته شده است.
+
+⸻
+
+📦 دانلودکننده‌ی مدل داخلی
+
+این اپلیکیشن از دانلود مستقیم چند مدل بهینه پشتیبانی می‌کند، از جمله:
 •	Gemma 3 270M
-•	SmolVLM 256M / 500M (Vision + Language)
+•	SmolVLM 256M / 500M (بینایی + زبان)
 •	Phi-1.5
-•	Qwen 2.5 5B (quantized)
-•	Llama 3.2 1B (quantized)
+•	Qwen 2.5 5B (کوانتیزه)
+•	Llama 3.2 1B (کوانتیزه)
 
-All models come in GGUF format and are compatible with the llama.cpp backend integrated in Llamatik.
+همه‌ی مدل‌ها با قالب GGUF هستند و با بک‌اند llama.cpp که در Llamatik یکپارچه شده سازگارند.
 
-You can download, switch, and manage models directly from the app.
-
-⸻
-
-🎯 Smart Suggestions & Quick Actions
-
-To make the experience more intuitive, the app provides:
-•	Suggested prompts
-•	Quick actions
-•	Clean and responsive UI
-•	A selectable model pill over the input box
-•	Built-in onboarding
-
-These small touches make the app great for both beginners and power users.
+می‌توانید مدل‌ها را مستقیم از داخل اپلیکیشن دانلود کنید، جابه‌جا کنید و مدیریت کنید.
 
 ⸻
 
-🔐 Privacy First
+🎯 پیشنهادهای هوشمند و اقدام‌های سریع
 
-Every generation happens locally.
-Your conversations:
-•	Are not collected
-•	Are not stored externally
-•	Are not logged or sent to a server
+برای شهودی‌تر شدن تجربه، اپلیکیشن این امکانات را ارائه می‌دهد:
+•	promptهای پیشنهادی
+•	اقدام‌های سریع
+•	رابط کاربری تمیز و واکنش‌گرا
+•	یک کپسول انتخاب مدل روی جعبه‌ی ورودی
+•	راهنمای شروع داخلی
 
-Even model inference is done offline using llama.cpp compiled for mobile.
-
-The only telemetry in the app is Firebase Analytics and Crashlytics, used strictly for error tracking and anonymous usage insights.
-
-⸻
-
-🧩 A Showcase of Llamatik Library Features
-
-The app demonstrates several key capabilities of the underlying library:
-
-✔ Kotlin Multiplatform support
-
-Build once, run on Android, iOS, Desktop, Web.
-
-✔ On-device LLM inference
-
-Through a custom C/C++ bridge to llama.cpp.
-
-✔ Embedding generation
-
-Compatible with models like nomic-embed-text-v1.5.
-
-✔ Vector store support
-
-Create local semantic search or RAG-like features with lightweight vector stores.
-
-✔ Model management
-
-Download, load, unload, switch, and generate across multiple quantized models.
-
-✔ High-level ChatRunner utilities
-
-Easy to stream, generate, and handle AI conversation logic.
-
-For developers reading this: the Llamatik app is built entirely on top of the open-source library — and its codebase is a practical example of real-world KMP local AI integration.
+همین جزئیات کوچک، اپلیکیشن را هم برای تازه‌کارها و هم برای کاربران حرفه‌ای عالی می‌کند.
 
 ⸻
 
-📱 Why an App?
+🔐 حریم خصوصی در اولویت
 
-While the Llamatik library is already powerful, we wanted a way for:
-•	Developers to see the library in action
-•	Users to experiment with local AI
-•	The community to test models easily
-•	Anyone to experience offline AI assistants without setup
-•	Newcomers to understand how a cross-platform AI app is structured
+هر تولید متن به‌صورت محلی انجام می‌شود.
+گفت‌وگوهای شما:
+•	جمع‌آوری نمی‌شوند
+•	بیرون از دستگاه ذخیره نمی‌شوند
+•	ثبت نمی‌شوند و به هیچ سروری ارسال نمی‌گردند
 
-The Llamatik app gives you a complete, polished environment to explore what local LLMs can do on a phone.
+حتی استنتاج مدل هم آفلاین و با llama.cpp که برای موبایل کامپایل شده انجام می‌شود.
 
-⸻
-
-🗺 What’s Coming Next?
-
-We’re already working on:
-•	🔍 Integrated vector search for PDFs and documents
-•	📁 Local model import from file storage
-•	🌐 More model providers and sizes
-•	🎛 Advanced chat settings (temperature, top-k, etc.)
-•	🧱 On-device RAG pipelines
-•	🛠 Developer samples & tutorials
-
-Your feedback will help shape the roadmap — so please share your thoughts!
+تنها تله‌متری موجود در اپلیکیشن Firebase Analytics و Crashlytics است که صرفاً برای ردیابی خطا و آمار ناشناس استفاده می‌شود.
 
 ⸻
 
-🐪 Try Llamatik Today
+🧩 نمایشی از قابلیت‌های کتابخانه‌ی Llamatik
 
-You can now download the [Llamatik app on Google Play](https://play.google.com/store/apps/details?id=com.llamatik.app.android) and soon on the iOS App Store.
+این اپلیکیشن چند قابلیت کلیدی کتابخانه‌ی زیرین را نشان می‌دهد:
 
-It’s free, open, offline, and built with privacy and performance in mind.
+✔ پشتیبانی از Kotlin Multiplatform
 
-Whether you’re a developer building new AI-powered features or a user wanting a fast, local AI assistant — Llamatik is here for you.
+یک بار بسازید، روی Android، iOS، دسکتاپ و وب اجرا کنید.
 
-👉 Explore. Learn. Build.
-👉 Experience what’s possible when AI runs entirely on your device.
+✔ استنتاج LLM روی دستگاه
+
+از طریق یک پل سفارشی C/C++ به llama.cpp.
+
+✔ تولید امبدینگ
+
+سازگار با مدل‌هایی مانند nomic-embed-text-v1.5.
+
+✔ پشتیبانی از vector store
+
+با vector storeهای سبک، جست‌وجوی معنایی محلی یا قابلیت‌هایی شبیه RAG بسازید.
+
+✔ مدیریت مدل
+
+دانلود، بارگذاری، تخلیه، جابه‌جایی و تولید متن با چند مدل کوانتیزه.
+
+✔ ابزارهای سطح بالای ChatRunner
+
+streaming، تولید متن و مدیریت منطق گفت‌وگوی هوش مصنوعی را آسان می‌کنند.
+
+برای توسعه‌دهندگانی که این متن را می‌خوانند: اپلیکیشن Llamatik کاملاً بر پایه‌ی کتابخانه‌ی متن‌باز ساخته شده است و کدبیس آن نمونه‌ای عملی از یکپارچه‌سازی واقعی هوش مصنوعی محلی در KMP است.
+
+⸻
+
+📱 چرا یک اپلیکیشن؟
+
+کتابخانه‌ی Llamatik همین حالا هم قدرتمند است، اما می‌خواستیم راهی داشته باشیم تا:
+•	توسعه‌دهندگان کتابخانه را در عمل ببینند
+•	کاربران هوش مصنوعی محلی را آزمایش کنند
+•	جامعه به‌راحتی مدل‌ها را امتحان کند
+•	هر کسی بدون هیچ راه‌اندازی دستیارهای هوش مصنوعی آفلاین را تجربه کند
+•	تازه‌واردها ساختار یک اپلیکیشن هوش مصنوعی چندپلتفرمی را بفهمند
+
+اپلیکیشن Llamatik محیطی کامل و صیقل‌خورده در اختیار شما می‌گذارد تا ببینید مدل‌های زبانی محلی روی یک گوشی چه کارهایی از دستشان برمی‌آید.
+
+⸻
+
+🗺 گام‌های بعدی چیست؟
+
+همین حالا روی این موارد کار می‌کنیم:
+•	🔍 جست‌وجوی برداری یکپارچه برای PDF و اسناد
+•	📁 وارد کردن مدل محلی از حافظه‌ی فایل
+•	🌐 ارائه‌دهندگان و اندازه‌های بیشتر مدل
+•	🎛 تنظیمات پیشرفته‌ی چت (temperature، top-k و غیره)
+•	🧱 پایپ‌لاین‌های RAG روی دستگاه
+•	🛠 نمونه‌کدها و آموزش‌های توسعه‌دهندگان
+
+بازخورد شما به شکل‌دادن نقشه‌ی راه کمک می‌کند؛ پس نظرتان را با ما در میان بگذارید!
+
+⸻
+
+🐪 امروز Llamatik را امتحان کنید
+
+اکنون می‌توانید [اپلیکیشن Llamatik را از Google Play](https://play.google.com/store/apps/details?id=com.llamatik.app.android) دانلود کنید و به‌زودی از App Store در iOS.
+
+رایگان، باز، آفلاین، و ساخته‌شده با تمرکز بر حریم خصوصی و کارایی است.
+
+چه توسعه‌دهنده‌ای باشید که قابلیت‌های جدید مبتنی بر هوش مصنوعی می‌سازد، چه کاربری که دستیار هوش مصنوعی محلی و سریع می‌خواهد، Llamatik برای شما ساخته شده است.
+
+👉 کاوش کنید. یاد بگیرید. بسازید.
+👉 ببینید وقتی هوش مصنوعی کاملاً روی دستگاه شما اجرا می‌شود چه چیزهایی ممکن است.

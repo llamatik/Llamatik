@@ -1,0 +1,25 @@
+# Llamatik
+
+> Llamatik is free, open-source AI that runs on your own device: chat, vision, voice, image and video generation, with no account and no ads. Apps for Android, iOS, macOS, Windows, Linux and the browser (WebAssembly), plus a Kotlin Multiplatform SDK, a self-hosted server and an AI coding assistant for JetBrains IDEs.
+
+Prompts, chats, documents and voice are processed locally. Diagnostics (Android only) are opt-in and off by default. The website uses no cookies and no analytics.
+
+## Main pages
+- [Home](https://www.llamatik.com/): overview, features and prompt box
+- [Download](https://www.llamatik.com/download/): apps for every platform
+- [Web app](https://www.llamatik.com/prompt/): run Llamatik in the browser
+- [Models](https://www.llamatik.com/models/): which model to pick, with sizes and memory guidance
+- [Llamatik Code](https://www.llamatik.com/llamatik-code/): coding assistant for IntelliJ IDEA and Android Studio
+- [FAQ](https://www.llamatik.com/faq/): common questions
+- [Blog](https://www.llamatik.com/blog/): release notes and guides
+- [Privacy policy](https://www.llamatik.com/privacy/)
+
+## Community
+- [Discord](https://discord.gg/QVcc6Bcd57): chat with the community
+- [X / Twitter](https://x.com/llamatikAi): release news
+
+## Source
+- [Llamatik on GitHub](https://github.com/ferranpons/Llamatik)
+- [Llamatik Server on GitHub](https://github.com/ferranpons/Llamatik-server)
+
+The site is available in English, Spanish, Catalan, French, German, Italian, Portuguese, Russian, Chinese, Japanese, Hindi and Persian under /es/, /ca/, /fr/, /de/, /it/, /pt/, /ru/, /zh/, /ja/, /hi/ and /fa/.

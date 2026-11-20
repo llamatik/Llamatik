@@ -217,6 +217,9 @@ internal object PersianLocalization : Localization {
     override val videoSaveError = "ذخیره ویدیو ناموفق بود."
     override val allCachedModelsRemoved = "تمام مدل‌های کش‌شده و ذخیره PDF RAG با موفقیت حذف شدند."
     override val settings = "تنظیمات"
+    override val diagnosticsTitle = "اشتراک‌گذاری تشخیص‌ها"
+    override val diagnosticsDescription = "گزارش خرابی و آمار استفاده‌ی پایه را برای کمک به بهبود Llamatik ارسال کنید. به‌طور پیش‌فرض خاموش است. پرامپت‌ها، چت‌ها، سندها و صدای شما را شامل نمی‌شود."
+    override val privacyPolicy = "سیاست حریم خصوصی"
     override val agentMode = "حالت عامل"
     override val agentModeDescription = "به هوش مصنوعی اجازه می‌دهد روی دستگاه شما اقدام کند"
     override val agentModeInfoTitle = "حالت عامل — آزمایشی"
@@ -249,6 +252,8 @@ internal object PersianLocalization : Localization {
     override val chatsInFolder = "چت‌های پوشه"
 
     override val downloadFromUrl = "دانلود از URL"
+    override val importFromFile = "وارد کردن از فایل"
+    override val importFromFileUnsupported = "این پلتفرم نمی‌تواند مدل‌ها را از مسیر فایل محلی بارگذاری کند."
     override val modelUrlLabel = "URL مدل"
     override val modelNameLabel = "نام مدل"
     override val categoryLabel = "دسته‌بندی"

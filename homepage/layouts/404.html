@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.LanguageCode }}" dir="{{ .Site.Language.LanguageDirection | default "ltr" }}">
+<head>
+{{ $codes := slice }}{{ range site.Languages }}{{ $codes = $codes | append .Lang }}{{ end }}
+{{ partial "lt-head.html" (dict "page" . "title" (i18n "nf_meta_title") "blog" true) }}
+<meta name="robots" content="noindex">
+<script>
+  /* GitHub Pages serves one root 404.html for every missing URL. If the missing path starts with a
+     language prefix (/es/…), show that language's 404 instead of the English one. */
+  (function () {
+    var langs = {{ $codes | jsonify }};
+    var seg = location.pathname.split('/')[1];
+    var here = document.documentElement.lang.split('-')[0];
+    if (langs.indexOf(seg) !== -1 && seg !== 'en' && seg !== here && location.pathname.indexOf('/404.html') === -1) {
+      location.replace('/' + seg + '/404.html');
+    }
+  })();
+</script>
+</head>
+<body class="lt blog-page">
+{{ partial "lt-nav.html" (dict "page" . "blog" false) }}
+<main class="blog-main">
+  <section class="wrap nf">
+    <p class="nf-code" aria-hidden="true">404</p>
+    <p class="eyebrow">{{ i18n "nf_eyebrow" }}</p>
+    <h1 class="blog-title doc-title">{{ partial "t.html" "nf_title" }}</h1>
+    <p class="lead">{{ i18n "nf_lead" }}</p>
+    <div class="btn-row center">
+      <a class="btn btn-lg btn-solid" href="{{ "/" | relLangURL }}">{{ i18n "nf_home" }}</a>
+      <a class="btn btn-lg btn-ghost" href="/prompt/">{{ i18n "nf_try" }}</a>
+    </div>
+  </section>
+</main>
+{{ partial "lt-footer.html" (dict "page" . "blog" false) }}
+<script src="{{ "js/blog.js" | relURL }}?v=4" defer></script>
+</body>
+</html>

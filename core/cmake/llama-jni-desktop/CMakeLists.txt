@@ -78,6 +78,15 @@ if(NOT DEFINED GGML_NATIVE)
     set(GGML_NATIVE OFF CACHE BOOL "ggml: optimize the build for the current system (OFF = portable)" FORCE)
 endif()
 
+if(WIN32)
+    # MSVC 14.40+ makes std::mutex's constructor constexpr. A statically-initialised std::mutex
+    # (e.g. g_mu in whisper_stt.cpp) then crashes with a null dereference inside msvcp140.dll when
+    # the process loads an OLDER msvcp140.dll than the toolset that built us. A JVM-hosted app
+    # (JBR / jpackage runtime) is exactly that case. Apply it to EVERY target (llama_jni, whisper,
+    # llama, ggml, mtmd), not only ggml-base. Must come before the add_subdirectory() calls.
+    add_compile_definitions(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+endif()
+
 add_subdirectory("${LLAMA_CPP_DIR}" "${CMAKE_BINARY_DIR}/llama-wrapper-build")
 
 if(WIN32 AND TARGET ggml-base)
@@ -186,8 +195,12 @@ add_library(mtmd_sources OBJECT
     "${MTMD_DIR}/mtmd-helper.cpp"
     "${MTMD_DIR}/mtmd-audio.cpp"
     "${MTMD_DIR}/mtmd-image.cpp"
-    "${MTMD_DIR}/clip.cpp"
+    "${MTMD_DIR}/mtmd-model.cpp"
+    "${MTMD_DIR}/mtmd-subcontext.cpp"
+    "${MTMD_DIR}/mtmd-graph.cpp"
     "${MTMD_DIR}/models/cogvlm.cpp"
+    "${MTMD_DIR}/models/drama3-gen.cpp"
+    "${MTMD_DIR}/models/magevl.cpp"
     "${MTMD_DIR}/models/conformer.cpp"
     "${MTMD_DIR}/models/deepseekocr.cpp"
     "${MTMD_DIR}/models/deepseekocr2.cpp"
@@ -349,4 +362,10 @@ elseif(TARGET llama-common)
     message(STATUS "Linking llama.cpp target: llama-common")
 endif()
 
-set_target_properties(llama_jni PROPERTIES OUTPUT_NAME "llama_jni")
+# File name of the produced library. Linux x86_64 ships extra variants next to the default one
+# (llama_jni_compat, llama_jni_vulkan, ...); the JVM loader picks the right one at runtime. The JNI
+# symbols are identical in every variant, only the file name and the ggml flags differ.
+if(NOT DEFINED LLAMATIK_JNI_NAME OR LLAMATIK_JNI_NAME STREQUAL "")
+    set(LLAMATIK_JNI_NAME "llama_jni")
+endif()
+set_target_properties(llama_jni PROPERTIES OUTPUT_NAME "${LLAMATIK_JNI_NAME}")

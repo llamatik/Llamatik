@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.LanguageCode }}" dir="{{ .Site.Language.LanguageDirection | default "ltr" }}">
+<head>
+{{- $title := cond .IsHome (i18n "meta_title") (printf "%s — Llamatik" (.Params.meta_title | default .Title)) -}}
+{{- if .IsSection }}{{ $title = printf "%s — Llamatik" (i18n "blog_meta_title") }}{{ end -}}
+{{- $desc := cond .IsSection (i18n "blog_meta_desc") (.Params.description | default (i18n "meta_desc")) -}}
+{{- $img := .Params.image | default "images/llamatik-lead-image.png" -}}
+{{ partial "lt-head.html" (dict "page" . "title" $title "desc" $desc "type" (cond .IsPage "article" "website") "image" $img "blog" true) }}
+{{ block "meta_tags" . }}{{ end }}
+</head>
+<body class="lt blog-page">
+{{ partial "lt-nav.html" (dict "page" . "blog" true) }}
+<main class="blog-main">
+{{ block "main" . }}{{ end }}
+</main>
+{{ partial "lt-footer.html" (dict "page" . "blog" true) }}
+<script src="{{ "js/blog.js" | relURL }}?v=3" defer></script>
+</body>
+</html>

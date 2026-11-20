@@ -219,6 +219,9 @@ internal object EnglishLocalization : Localization {
     override val videoSaveError = "Failed to save video."
     override val allCachedModelsRemoved = "All cached models and PDF RAG store were successfully removed."
     override val settings = "Settings"
+    override val diagnosticsTitle = "Share diagnostics"
+    override val diagnosticsDescription = "Send crash reports and basic usage statistics to help improve Llamatik. Off by default. Does not include your prompts, chats, documents or voice."
+    override val privacyPolicy = "Privacy policy"
     override val agentMode = "Agent Mode"
     override val agentModeDescription = "Let the AI take actions on your device"
     override val agentModeInfoTitle = "Agent Mode — Experimental"
@@ -251,6 +254,8 @@ internal object EnglishLocalization : Localization {
     override val chatsInFolder = "Chats in folder"
 
     override val downloadFromUrl = "Download from URL"
+    override val importFromFile = "Import from file"
+    override val importFromFileUnsupported = "This platform cannot load models from a local file path."
     override val modelUrlLabel = "Model URL"
     override val modelNameLabel = "Model name"
     override val categoryLabel = "Category"

@@ -6,10 +6,10 @@ description: "Get in touch with the Llamatik team"
 Have a question about Llamatik? Want to contribute, collaborate, or integrate llama.cpp into your
 project using Kotlin? We’d love to hear from you.
 
-💬 General inquiries: [hello@multiplatformkickstarter.com](mailto:hello@multiplatformkickstarter.com)
+💬 General inquiries: [info@llamatik.com](mailto:info@llamatik.com)
 
 🛠️ Technical
-support: [support@multiplatformkickstarter.com](mailto:support@@multiplatformkickstarter.com)
+support: [support@multiplatformkickstarter.com](mailto:support@multiplatformkickstarter.com)
 
 🧑‍💻 Interested in contributing? Check out
 our [GitHub repository](https://github.com/ferranpons/llamatik)

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.LanguageCode }}" dir="{{ .Site.Language.LanguageDirection | default "ltr" }}">
+<head>
+{{- $title := printf "%s — Llamatik" .Title -}}
+{{- $desc := .Params.description | default (i18n "meta_desc") -}}
+{{- if .IsSection }}{{ $title = i18n "about_meta_title" }}{{ $desc = i18n "about_lead" }}{{ end -}}
+{{ partial "lt-head.html" (dict "page" . "title" $title "desc" ($desc | truncate 200) "blog" true) }}
+</head>
+<body class="lt blog-page">
+{{ partial "lt-nav.html" (dict "page" . "blog" false) }}
+<main class="blog-main">
+{{ block "main" . }}{{ end }}
+</main>
+{{ partial "lt-footer.html" (dict "page" . "blog" false) }}
+<script src="{{ "js/blog.js" | relURL }}?v=4" defer></script>
+</body>
+</html>

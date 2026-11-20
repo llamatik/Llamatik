@@ -39,6 +39,14 @@ struct ggml_tensor * ggml_quantize_i8_convrot(
         struct ggml_tensor  * a,
         int                   group_size);
 
+// Removed from llama.cpp's ggml in v1.0.0, still used by stable-diffusion.cpp
+// (minimax_h3_audio_vae). Re-implemented in sd_ggml_shim.cpp on top of
+// ggml_fill/ggml_tri; only n_past == 0 is supported.
+struct ggml_tensor * ggml_diag_mask_inf(
+        struct ggml_context * ctx,
+        struct ggml_tensor  * a,
+        int                   n_past);
+
 #ifdef __cplusplus
 }
 #endif

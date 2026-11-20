@@ -1,0 +1,19 @@
+{{- /* Language switcher. Context: the current page. */ -}}
+{{- $page := . -}}
+{{- $cur := $page.Site.Language.Lang -}}
+<div class="lang" id="lang">
+  <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ i18n "nav_language" }}">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+    <span>{{ upper $page.Site.Language.Lang }}</span>
+  </button>
+  <ul class="lang-menu" id="langMenu" hidden>
+    {{- range site.Languages }}
+      {{- $l := . -}}
+      {{- $target := "" -}}
+      {{- range $page.AllTranslations }}{{ if eq .Language.Lang $l.Lang }}{{ $target = .Permalink }}{{ end }}{{ end -}}
+      {{- if eq $l.Lang $cur }}{{ $target = $page.Permalink }}{{ end -}}
+      {{- if not $target }}{{ range site.Home.AllTranslations }}{{ if eq .Language.Lang $l.Lang }}{{ $target = .Permalink }}{{ end }}{{ end }}{{ end }}
+    <li><a href="{{ $target }}" hreflang="{{ $l.LanguageCode }}" lang="{{ $l.LanguageCode }}"{{ if eq $l.Lang $cur }} aria-current="true" class="on"{{ end }}>{{ $l.LanguageName }}</a></li>
+    {{- end }}
+  </ul>
+</div>

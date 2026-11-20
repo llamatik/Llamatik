@@ -1,0 +1,40 @@
+{{ define "main" }}
+{{ $dl := "download/" | relLangURL }}
+{{ $ct := "contact/" | relLangURL }}
+{{ $bl := "blog/" | relLangURL }}
+{{ $ld := slice }}
+<section class="wrap blog-hero">
+  <p class="eyebrow">{{ i18n "faq_eyebrow" }}</p>
+  <h1 class="blog-title doc-title">{{ partial "t.html" "faq_title" }}</h1>
+  <p class="lead">{{ i18n "faq_lead" }}</p>
+</section>
+
+<div class="wrap faq">
+  <div class="faq-list">
+    {{ range $i, $it := .Params.items }}
+      {{ $a := replace $it.a "](/download/)" (printf "](%s)" $dl) }}
+      {{ $a = replace $a "](/contact/)" (printf "](%s)" $ct) }}
+      {{ $a = replace $a "](/blog/)" (printf "](%s)" $bl) }}
+      {{ $html := $a | markdownify }}
+      {{ $ld = $ld | append (dict "@type" "Question" "name" $it.q "acceptedAnswer" (dict "@type" "Answer" "text" ($html | plainify))) }}
+      <details class="faq-item reveal"{{ if eq $i 0 }} open{{ end }}>
+        <summary><span>{{ $it.q }}</span><i class="faq-chev" aria-hidden="true"></i></summary>
+        <div class="faq-a">{{ $html }}</div>
+      </details>
+    {{ end }}
+  </div>
+
+  <div class="post-cta faq-more reveal">
+    <div>
+      <h2>{{ i18n "faq_more_t" }}</h2>
+      <p>{{ i18n "faq_more_d" }}</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn-solid" href="https://github.com/ferranpons/Llamatik/issues" target="_blank" rel="noopener">{{ i18n "dev_github" }}</a>
+      <a class="btn btn-ghost" href="{{ $ct }}">{{ i18n "foot_contact" }}</a>
+    </div>
+  </div>
+</div>
+{{ $schema := dict "@context" "https://schema.org" "@type" "FAQPage" "inLanguage" .Site.Language.LanguageCode "mainEntity" $ld }}
+<script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+{{ end }}

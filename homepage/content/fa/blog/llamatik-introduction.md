@@ -1,64 +1,56 @@
 ---
-title: "Introducing Llamatik Offline LLMs for Kotlin Multiplatform"
+title: "معرفی Llamatik: مدل‌های زبانی آفلاین برای Kotlin Multiplatform"
 date: 2025-07-22T09:00:00-05:00
-description: "Meet Llamatik — a multiplatform Kotlin library to run llama.cpp locally on Android, iOS, and desktop, complete with an HTTP server."
+description: "با Llamatik آشنا شوید؛ کتابخانه‌ای چندپلتفرمی در Kotlin برای اجرای محلی llama.cpp روی Android، iOS و دسکتاپ، همراه با یک سرور HTTP."
 image: "images/blog/a-pair-of-llamas-in-a-field-with-clouds-and-mountain.svg"
 tags: ["Kotlin", "Multiplatform", "LLM", "llama.cpp", "Offline AI"]
 showDate: true
 draft: false
 ---
 
-🦙 Introducing Llamatik: Offline LLMs for Kotlin Multiplatform
+🦙 معرفی Llamatik: مدل‌های زبانی آفلاین برای Kotlin Multiplatform
 
-We’re thrilled to introduce Llamatik — an open-source Kotlin Multiplatform library that brings local
-Large Language Models (LLMs) to Android, iOS, desktop, and beyond using the power of llama.cpp.
+با خوشحالی Llamatik را معرفی می‌کنیم؛ کتابخانه‌ای متن‌باز در Kotlin Multiplatform که با اتکا به قدرت llama.cpp، مدل‌های زبانی بزرگ (LLM) محلی را به Android، iOS، دسکتاپ و فراتر از آن می‌آورد.
 
-Llamatik makes it simple and efficient to integrate offline, on-device inference and embeddings into
-your KMP apps, whether you’re building an AI assistant, a RAG chatbot, or an edge intelligence tool.
+Llamatik یکپارچه‌سازی استنتاج و امبدینگ آفلاین و روی دستگاه را در برنامه‌های KMP ساده و کارآمد می‌کند، چه یک دستیار هوش مصنوعی بسازید، چه یک چت‌بات RAG یا ابزاری برای هوش لبه‌ای.
 
 ⸻
 
-✨ Why Llamatik?
+✨ چرا Llamatik؟
 
-While the AI ecosystem is rich with APIs, most Kotlin developers are still tied to cloud-based
-models. That means latency, privacy risks, and ongoing costs.
+با اینکه اکوسیستم هوش مصنوعی پر از API است، بیشتر توسعه‌دهندگان Kotlin هنوز به مدل‌های ابری وابسته‌اند. یعنی تأخیر، خطرهای حریم خصوصی و هزینه‌های مداوم.
 
-We believe the future of AI is:
+ما باور داریم آینده‌ی هوش مصنوعی این‌گونه است:
 
-• 🔐 Private: Your data stays on-device.
+• 🔐 خصوصی: داده‌های شما روی دستگاه می‌ماند.
 
-• 📱 Multiplatform: One codebase for Android, iOS, macOS, Linux, and Windows.
+• 📱 چندپلتفرمی: یک کدبیس برای Android، iOS، macOS، Linux و Windows.
 
-• ⚡ Performant: Built for small, quantized models that run fast on consumer hardware.
+• ⚡ کارآمد: ساخته‌شده برای مدل‌های کوچک و کوانتیزه که روی سخت‌افزار مصرفی سریع اجرا می‌شوند.
 
-Llamatik bridges the gap between llama.cpp’s C++ backend and Kotlin’s modern multiplatform tooling —
-giving you total control over your models and your data.
+Llamatik شکاف میان بک‌اند C++ در llama.cpp و ابزارهای چندپلتفرمی مدرن Kotlin را پر می‌کند و کنترل کامل مدل‌ها و داده‌هایتان را در اختیار شما می‌گذارد.
 
 ⸻
 
-💡 What Can You Do with It?
+💡 با آن چه کارهایی می‌توان کرد؟
 
-With Llamatik, you can:
+با Llamatik می‌توانید:
 
-• 🧠 Run quantized LLMs like Phi-2, Mistral, or TinyLlama completely offline.
+• 🧠 مدل‌های زبانی کوانتیزه‌ای مانند Phi-2، Mistral یا TinyLlama را کاملاً آفلاین اجرا کنید.
 
-• 🔍 Generate embeddings using models like nomic-embed-text or bge-small locally.
+• 🔍 با مدل‌هایی مانند nomic-embed-text یا bge-small به‌صورت محلی امبدینگ تولید کنید.
 
-• ⚡ Launch your own HTTP inference server using Ktor — fully self-contained, built into Llamatik,
-and powered by llama.cpp.
+• ⚡ سرور استنتاج HTTP خودتان را با Ktor راه بیندازید؛ کاملاً مستقل، داخل Llamatik و مبتنی بر llama.cpp.
 
-• 🌐 Connect to remote llama.cpp endpoints (like llama-cpp-python, llama-server, or Ollama) with the
-bundled HTTP client.
+• 🌐 با کلاینت HTTP همراه کتابخانه، به endpointهای راه‌دور llama.cpp (مانند llama-cpp-python، llama-server یا Ollama) متصل شوید.
 
-• 🔁 Use the same API across Android, iOS, and other native platforms — no platform-specific code
-needed.
+• 🔁 در Android، iOS و دیگر پلتفرم‌های نیتیو از همان API استفاده کنید؛ بدون هیچ کد مخصوص پلتفرم.
 
 ⸻
 
-🌐 Built-in HTTP Inference Server
+🌐 سرور استنتاج HTTP داخلی
 
-Llamatik includes a ready-to-use Ktor-based HTTP server that wraps your local llama.cpp models. You
-can spin it up with a single call and expose endpoints like:
+Llamatik یک سرور HTTP آماده‌ی مبتنی بر Ktor دارد که مدل‌های محلی llama.cpp شما را در بر می‌گیرد. با یک فراخوانی ساده آن را بالا می‌آورید و endpointهایی مانند این در دسترس قرار می‌گیرند:
 
 POST /v1/chat/completions
 
@@ -66,35 +58,34 @@ POST /v1/embeddings
 
 GET /v1/models
 
-This makes it easy to:
+این کار این امکانات را فراهم می‌کند:
 
-• 🔗 Connect your own apps (or other devices) to a shared local model
+• 🔗 برنامه‌های خودتان (یا دستگاه‌های دیگر) را به یک مدل محلی مشترک وصل کنید
 
-• 🧪 Use OpenAI-compatible tooling (e.g. LangChain, LlamaIndex) with your local server
+• 🧪 ابزارهای سازگار با OpenAI (مثلاً LangChain و LlamaIndex) را با سرور محلی‌تان به کار ببرید
 
-• ⚙️ Integrate into your own edge deployments or experiments
+• ⚙️ آن را در استقرارها یا آزمایش‌های لبه‌ای خودتان ادغام کنید
 
-No Python needed. No Docker required. Just Kotlin + Llamatik.
-
-⸻
-
-📦 What’s Inside?
-
-• 🦙 Native bindings to llama.cpp for Kotlin/Native targets (no JNI or JNI-only limitations).
-
-• 🧠 Multi-model context manager (for simultaneous generation + embeddings).
-
-• 🛰️ Optional HTTP client and server.
-
-• 🧱 Model loading, prompt building, and memory-efficient execution tailored for mobile.
-
-• 🛠️ Simple, extensible API — built for Kotlin, not adapted from Python.
+بدون Python. بدون Docker. فقط Kotlin و Llamatik.
 
 ⸻
 
-📢 Get Involved
+📦 در بسته چه چیزی هست؟
 
-Llamatik is open-source and community-driven. Whether you’re building AI-first apps or simply
-exploring what’s possible offline, we’d love to hear from you.
+• 🦙 بایندینگ‌های نیتیو به llama.cpp برای هدف‌های Kotlin/Native (بدون محدودیت‌های JNI).
 
-🔗 [GitHub Repo](https://github.com/ferranpons/Llamatik)
+• 🧠 مدیر زمینه‌ی چندمدلی (برای تولید متن و امبدینگ هم‌زمان).
+
+• 🛰️ کلاینت و سرور HTTP اختیاری.
+
+• 🧱 بارگذاری مدل، ساخت prompt و اجرای بهینه از نظر حافظه، متناسب با موبایل.
+
+• 🛠️ API ساده و توسعه‌پذیر؛ ساخته‌شده برای Kotlin، نه اقتباس‌شده از Python.
+
+⸻
+
+📢 مشارکت کنید
+
+Llamatik متن‌باز و جامعه‌محور است. چه اپلیکیشن‌های هوش مصنوعی‌محور بسازید و چه فقط در حال کشف امکانات حالت آفلاین باشید، خوشحال می‌شویم نظرتان را بشنویم.
+
+🔗 [مخزن GitHub](https://github.com/ferranpons/Llamatik)

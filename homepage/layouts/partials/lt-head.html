@@ -1,0 +1,41 @@
+{{- /* Shared <head> content. Context: dict "page" . "title" "..." "desc" "..." "ogdesc" "..." "type" "website|article" "image" "..." */ -}}
+{{- $page := .page -}}
+{{- $lang := $page.Site.Language.Lang -}}
+<meta charset="utf-8">
+<script>document.documentElement.classList.add('js')</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ .title }}</title>
+{{ with .desc }}<meta name="description" content="{{ . }}">{{ end }}
+<meta name="theme-color" content="#07070b">
+<link rel="icon" type="image/png" href="{{ "favicon-32x32.png" | relURL }}">
+<link rel="canonical" href="{{ $page.Permalink }}">
+{{ range $page.AllTranslations }}<link rel="alternate" hreflang="{{ .Language.LanguageCode }}" href="{{ .Permalink }}">
+{{ if eq .Language.Lang "en" }}<link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+{{ end }}{{ end }}
+<meta property="og:title" content="{{ .title }}">
+<meta property="og:type" content="{{ .type | default "website" }}">
+<meta property="og:url" content="{{ $page.Permalink }}">
+<meta property="og:locale" content="{{ replace $page.Site.Language.LanguageCode "-" "_" }}">
+{{- $og := .image | default "images/llamatik-lead-image.png" -}}{{- if strings.HasSuffix $og ".svg" }}{{ $og = "images/llamatik-lead-image.png" }}{{ end -}}
+<meta property="og:image" content="{{ $og | absURL }}">
+{{ with .ogdesc | default .desc }}<meta property="og:description" content="{{ . }}">{{ end }}
+{{ if $page.IsHome }}{{ $ld := dict "@context" "https://schema.org" "@graph" (slice (dict "@type" "SoftwareApplication" "name" "Llamatik" "url" $page.Permalink "description" .desc "applicationCategory" "UtilitiesApplication" "operatingSystem" "Android, iOS, macOS, Windows, Linux, Web" "inLanguage" $page.Site.Language.LanguageCode "isAccessibleForFree" true "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD") "license" "https://github.com/ferranpons/Llamatik") (dict "@type" "Organization" "name" "Llamatik" "url" ("/" | absURL) "logo" ("android-chrome-512x512.png" | absURL) "email" "info@llamatik.com" "sameAs" (slice "https://github.com/ferranpons/Llamatik" "https://x.com/llamatikAi" "https://discord.gg/QVcc6Bcd57"))) }}<script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>{{ end }}
+{{- /* GitHub numbers are fetched once at build time, so visitors' browsers never contact api.github.com. */ -}}
+{{- $gh := dict -}}
+{{- with try (resources.GetRemote "https://api.github.com/repos/ferranpons/Llamatik") -}}
+  {{- with .Value }}{{ with transform.Unmarshal . }}{{ $gh = merge $gh (dict "stars" .stargazers_count) }}{{ end }}{{ end -}}
+{{- end -}}
+{{- with try (resources.GetRemote "https://api.github.com/repos/ferranpons/Llamatik/releases/latest") -}}
+  {{- with .Value }}{{ with transform.Unmarshal . }}{{ $as := slice }}{{ range .assets }}{{ $as = $as | append (dict "name" .name "url" .browser_download_url) }}{{ end }}{{ $gh = merge $gh (dict "assets" $as) }}{{ end }}{{ end -}}
+{{- end -}}
+{{ with $gh }}<script>window.LT_GH={{ . | jsonify | safeJS }}</script>{{ end }}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@llamatikAi">
+<link rel="preload" href="{{ "fonts/inter-latin.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{ "css/fonts.css" | relURL }}?v=1">
+{{- /* Latin/Cyrillic/Arabic/Devanagari are self-hosted; CJK uses the system fonts (the web fonts are several MB). */ -}}
+{{- $fx := dict "zh" "'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC'" "ja" "'Hiragino Sans','Yu Gothic','Meiryo','Noto Sans CJK JP'" "hi" "'Noto Sans Devanagari'" "fa" "Vazirmatn" -}}
+{{ with index $fx $lang }}<style>:root{--fx:{{ . | safeCSS }}}</style>{{ end }}
+<link rel="stylesheet" href="{{ "css/landing.css" | relURL }}?v=11">
+{{ if .blog }}<link rel="stylesheet" href="{{ "css/blog.css" | relURL }}?v=3">{{ end }}
+<script>window.LT={{ partial "lt-js-i18n.html" . | safeJS }};</script>

@@ -63,6 +63,11 @@ private data class CustomUrlModelStore(
     val models: List<PersistedCustomUrlModel> = emptyList(),
 )
 
+/** New catalog name -> the name it was stored under before it was renamed (see getSavedModelPath). */
+private val LEGACY_MODEL_NAMES = mapOf(
+    "Qwen 2.5 1.5B Instruct Q2 K" to "Qwen 2.5 5B Instruct",
+)
+
 class ModelsRepository(private val service: ServiceClient) {
     val localization = getCurrentLocalization()
 
@@ -197,7 +202,7 @@ class ModelsRepository(private val service: ServiceClient) {
                 systemPrompt = localization.smolVLM500SystemPrompt.trimIndent()
             ),
             LlamaModel(
-                name = "Qwen 2.5 5B Instruct",
+                name = "Qwen 2.5 1.5B Instruct Q2 K",
                 multilingual = true,
                 sizeMb = 753,
                 url = "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q2_k.gguf?download=true",
@@ -392,7 +397,17 @@ class ModelsRepository(private val service: ServiceClient) {
     }
 
     fun getSavedModelPath(modelName: String): String {
-        return Settings().getString(modelName, "")
+        val settings = Settings()
+        val current = settings.getString(modelName, "")
+        if (current.isNotEmpty()) return current
+        // Catalog entries that were renamed keep their downloaded file: move the path stored under the old name.
+        val legacyName = LEGACY_MODEL_NAMES[modelName] ?: return ""
+        val legacyPath = settings.getString(legacyName, "")
+        if (legacyPath.isNotEmpty()) {
+            settings.putString(modelName, legacyPath)
+            settings.remove(legacyName)
+        }
+        return legacyPath
     }
 
     fun saveModelPath(modelName: String, modelPath: String) {
@@ -400,7 +415,9 @@ class ModelsRepository(private val service: ServiceClient) {
     }
 
     fun deleteModelPath(modelName: String) {
-        Settings().remove(modelName)
+        val settings = Settings()
+        settings.remove(modelName)
+        LEGACY_MODEL_NAMES[modelName]?.let { settings.remove(it) }
     }
 
     // ---- User-imported model persistence ----
@@ -463,7 +480,8 @@ class ModelsRepository(private val service: ServiceClient) {
                         url = persisted.url,
                         sizeMb = 0,
                         localPath = persisted.localPath,
-                        source = ModelSource.CustomUrlDownload,
+                        // A blank URL marks a local file referenced in place (never downloaded).
+                        source = if (persisted.url.isBlank()) ModelSource.UserImported else ModelSource.CustomUrlDownload,
                     )
                     model to category
                 }

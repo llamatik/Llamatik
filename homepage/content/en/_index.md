@@ -6,6 +6,15 @@ intro_image: "images/llamatik-lead-image.png"
 intro_image_absolute: false
 intro_image_hide_on_mobile: true
 is_pricing: false
+aliases:
+  - "/features/"
+  - "/opensource/"
+  - "/pricing/"
+  - "/pricing/free/"
+  - "/pricing/starter/"
+  - "/pricing/business/"
+  - "/templates/"
+  - "/templates/adoptme/"
 ---
 
 # Private AI that runs on your device.

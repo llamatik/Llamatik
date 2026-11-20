@@ -274,7 +274,7 @@ The dependency chain is strictly layered — each module only depends on modules
 
 | Library | Version | Versioning |
 |---|---|---|
-| llama.cpp | [v0.9.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.9.0) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
+| llama.cpp | [v1.0.0](https://github.com/ggml-org/llama.cpp/releases/tag/v1.0.0) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
 | whisper.cpp | [v1.9.5](https://github.com/ggml-org/whisper.cpp/releases/tag/v1.9.5) | Semantic versioning (`vMAJOR.MINOR.PATCH`) |
 | stable-diffusion.cpp | [master-1088-32d516c](https://github.com/leejet/stable-diffusion.cpp/releases/tag/master-1088-32d516c) | Git tag (no semver) |
 
@@ -1178,6 +1178,8 @@ LLAMATIK_CMAKE_ARGS="-DGGML_CUDA=ON" ./gradlew :core:build
 ```
 
 These flags are appended to the CMake configure step for Apple (macOS/iOS wrapper), desktop JNI, and Android targets. The WASM build is intentionally excluded. See `CONTRIBUTING.md` for full details.
+
+On Linux x86_64 the desktop JAR ships several builds of the JNI library and `DesktopNativeLoader` picks the one that fits the machine at load time: `llama_jni` (AVX2 + FMA + F16C, every CPU since Haswell), `llama_jni_compat` (older CPUs such as Sandy Bridge, which would otherwise die with `SIGILL` in `ggml_cpu_init`), and, when built with `-Pllamatik.linux.vulkan=true` (needs `libvulkan-dev` and `glslc`), `llama_jni_vulkan` / `llama_jni_vulkan_compat` so `gpuLayers` actually offloads to the GPU. A Vulkan build is tried first and the loader falls back to the CPU build if `libvulkan.so.1` is missing; set `-Dllamatik.native.vulkan=false` (or `LLAMATIK_NATIVE_VULKAN=false`) to skip it. On a CPU that needs the compat build when none is bundled, loading fails with an `UnsatisfiedLinkError` instead of crashing the JVM.
 
 On Android `arm64-v8a`, the CPU backend is built for several ARM feature levels and the best one the device supports is selected at load time; pass `-Pllamatik.android.cpuVariants=false` for a single baseline build. See `CONTRIBUTING.md` for details.
 

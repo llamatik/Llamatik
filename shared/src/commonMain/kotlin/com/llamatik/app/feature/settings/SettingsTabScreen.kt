@@ -51,6 +51,8 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.llamatik.app.feature.debugmenu.viewmodel.DebugMenuViewModel
 import com.llamatik.app.feature.models.ModelsTabScreen
+import com.llamatik.app.feature.privacy.DiagnosticsConsentRepository
+import com.llamatik.app.feature.privacy.DiagnosticsSettingsRow
 import com.llamatik.app.feature.server.ServerConnectionRepository
 import com.llamatik.app.feature.server.ServerSettingsScreen
 import com.llamatik.app.feature.sharing.ShareDeviceRepository
@@ -110,6 +112,7 @@ class SettingsTabScreen : Screen {
         val serverRepository = remember { KoinPlatform.getKoin().get<ServerConnectionRepository>() }
         val activeServer by serverRepository.activeServer.collectAsState()
         val sharingStatus by remember { KoinPlatform.getKoin().get<ShareDeviceRepository>() }.status.collectAsState()
+        val diagnosticsConsent = remember { KoinPlatform.getKoin().get<DiagnosticsConsentRepository>() }
 
         if (state.currentLanguage != getCurrentLanguage()) {
             SetLanguage(state.currentLanguage)
@@ -234,6 +237,11 @@ class SettingsTabScreen : Screen {
                                 buttonLabel = localization.open,
                                 onClick = onShowOnboarding
                             )
+                        }
+
+                        if (diagnosticsConsent.isSupported) {
+                            Spacer(Modifier.size(16.dp))
+                            DiagnosticsSettingsRow(diagnosticsConsent)
                         }
 
                         if (onAbout != null) {

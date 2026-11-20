@@ -1,26 +1,8 @@
-{{ define "body_classes" }}page-default-single{{ end }}
-
 {{ define "meta_tags" }}
-  {{ $image := .Params.image | default .Site.Params.seo.meta_og_image }}
-  {{ with .Params.description }}<meta name="description" content="{{ . }}"/>{{ end }}
-  <link rel="canonical" href="{{ .Permalink }}"/>
-  <meta property="og:title" content="{{ .Params.meta_title | default .Title }}"/>
-  <meta property="og:type" content="article"/>
-  <meta property="og:url" content="{{ .Permalink }}"/>
-  <meta property="og:site_name" content="{{ .Site.Title }}"/>
-  {{ with $image }}<meta property="og:image" content="{{ . | absURL }}"/>{{ end }}
-  {{ with .Params.image_alt }}<meta property="og:image:alt" content="{{ . }}"/>{{ end }}
-  {{ with .Params.description }}<meta property="og:description" content="{{ . }}"/>{{ end }}
   {{ with .Date }}<meta property="article:published_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}"/>{{ end }}
   {{ with .Lastmod }}<meta property="article:modified_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}"/>{{ end }}
-  {{ range .Params.categories }}<meta property="article:section" content="{{ . }}"/>{{ end }}
   {{ range .Params.tags }}<meta property="article:tag" content="{{ . }}"/>{{ end }}
-  <meta name="twitter:card" content="summary_large_image"/>
-  {{ with .Site.Params.seo.meta_twitter_site }}<meta name="twitter:site" content="{{ . }}"/>{{ end }}
-  {{ with .Site.Params.seo.meta_twitter_creator }}<meta name="twitter:creator" content="{{ . }}"/>{{ end }}
-  <meta name="twitter:title" content="{{ .Params.meta_title | default .Title }}"/>
-  {{ with .Params.description }}<meta name="twitter:description" content="{{ . }}"/>{{ end }}
-  {{ with $image }}<meta name="twitter:image" content="{{ . | absURL }}"/>{{ end }}
+  {{ $image := .Params.image | default "images/llamatik-lead-image.png" }}
   {{ $ld := dict
       "@context" "https://schema.org"
       "@type" "BlogPosting"
@@ -28,22 +10,47 @@
       "description" (.Params.description | default .Summary | plainify)
       "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
       "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+      "inLanguage" .Site.Language.LanguageCode
       "mainEntityOfPage" .Permalink
+      "image" ($image | absURL)
       "author" (dict "@type" "Organization" "name" (.Params.author | default .Site.Title) "url" "https://www.llamatik.com/")
       "publisher" (dict "@type" "Organization" "name" .Site.Title "url" "https://www.llamatik.com/" "logo" (dict "@type" "ImageObject" "url" ("images/logo/LlamatikLogo.svg" | absURL))) }}
-  {{ with $image }}{{ $ld = merge $ld (dict "image" (. | absURL)) }}{{ end }}
-  {{ with .Params.tags }}{{ $ld = merge $ld (dict "keywords" (delimit . ", ")) }}{{ end }}
   <script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
 {{ end }}
 
 {{ define "main" }}
-<div class="container pb-6 pt-6 pt-md-14 pb-md-14">
-  <div class="row justify-content-start">
-    <div class="col-12 col-md-8">
-      <h1 class="title">{{ .Title }}</h1>
-
-      <div class="content">{{ .Content }}</div>
+<div class="read-progress" id="readProgress"></div>
+<article class="post">
+  <header class="wrap post-head">
+    <a class="back" href="{{ "blog/" | relLangURL }}">{{ i18n "blog_all_posts" }}</a>
+    {{ with .Params.tags }}<div class="pc-tags">{{ range first 4 . }}<span>{{ . }}</span>{{ end }}</div>{{ end }}
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.description }}<p class="lead">{{ . }}</p>{{ end }}
+    <div class="post-meta">
+      <span class="by"><img src="{{ "images/logo/LlamatikLogo.svg" | relURL }}" alt="" width="22" height="22">{{ .Params.author | default (i18n "blog_by") }}</span><i></i>
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format ":date_medium" .Date }}</time><i></i><span>{{ i18n "min_read" .ReadingTime }}</span>
     </div>
+  </header>
+  {{ with .Params.image }}
+  <figure class="wrap post-cover"><img src="{{ . | absURL }}" alt="{{ $.Params.image_alt | default $.Title }}"></figure>
+  {{ end }}
+  <div class="wrap post-wrap"><div class="prose">{{ .Content }}</div></div>
+
+  <div class="wrap post-end">
+    <div class="post-cta">
+      <div>
+        <h3>{{ partial "t.html" "post_cta_t" }}</h3>
+        <p>{{ i18n "post_cta_d" }}</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn-solid" href="/prompt/">{{ i18n "post_cta_web" }}</a>
+        <a class="btn btn-ghost" href="{{ "/" | relLangURL }}#download">{{ i18n "post_cta_dl" }}</a>
+      </div>
+    </div>
+    <nav class="post-nav">
+      {{ with .PrevInSection }}<a href="{{ .RelPermalink }}"><small>{{ i18n "blog_more" }}</small><b>{{ .Title }}</b></a>{{ else }}<span></span>{{ end }}
+      {{ with .NextInSection }}<a class="r" href="{{ .RelPermalink }}"><small>{{ i18n "blog_more" }}</small><b>{{ .Title }}</b></a>{{ end }}
+    </nav>
   </div>
-</div>
+</article>
 {{ end }}

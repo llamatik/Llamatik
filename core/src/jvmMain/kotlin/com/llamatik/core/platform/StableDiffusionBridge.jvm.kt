@@ -1,6 +1,5 @@
 package com.llamatik.core.platform
 
-import java.io.File
 import java.nio.file.Files
 import kotlin.io.path.Path
 
@@ -127,24 +126,6 @@ actual object StableDiffusionBridge {
     ): ByteArray
 
     private fun loadNativeFromResources() {
-        val os = System.getProperty("os.name").lowercase()
-        val platform = when {
-            os.contains("mac") -> "macos"
-            os.contains("linux") -> "linux"
-            os.contains("win") -> "windows"
-            else -> error("Unsupported OS: $os")
-        }
-
-        val libFileName = System.mapLibraryName("llama_jni")
-        val resourcePath = "/native/$platform/$libFileName"
-
-        val input = object {}.javaClass.getResourceAsStream(resourcePath)
-            ?: error("Native library not found in resources: $resourcePath")
-
-        val out = File.createTempFile("llama_jni_", libFileName)
-        out.deleteOnExit()
-        input.use { it.copyTo(out.outputStream()) }
-
-        System.load(out.absolutePath)
+        DesktopNativeLoader.loadJni()
     }
 }

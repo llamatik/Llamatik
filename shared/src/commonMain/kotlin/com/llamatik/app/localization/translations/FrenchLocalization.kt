@@ -219,6 +219,9 @@ Vos priorités :
     override val videoSaveError = "Échec de l'enregistrement de la vidéo."
     override val allCachedModelsRemoved = "Tous les modèles en cache et l’index PDF RAG ont été supprimés avec succès."
     override val settings = "Paramètres"
+    override val diagnosticsTitle = "Partager les données de diagnostic"
+    override val diagnosticsDescription = "Envoyez des rapports de plantage et des statistiques d'usage de base pour aider à améliorer Llamatik. Désactivé par défaut. N'inclut pas vos prompts, vos chats, vos documents ni votre voix."
+    override val privacyPolicy = "Politique de confidentialité"
     override val agentMode = "Mode Agent"
     override val agentModeDescription = "Permet à l'IA d'effectuer des actions sur votre appareil"
     override val agentModeInfoTitle = "Mode Agent — Expérimental"
@@ -251,6 +254,8 @@ Vos priorités :
     override val chatsInFolder = "Chats dans le dossier"
 
     override val downloadFromUrl = "Télécharger depuis URL"
+    override val importFromFile = "Importer depuis un fichier"
+    override val importFromFileUnsupported = "Cette plateforme ne peut pas charger de modèles depuis un chemin de fichier local."
     override val modelUrlLabel = "URL du modèle"
     override val modelNameLabel = "Nom du modèle"
     override val categoryLabel = "Catégorie"

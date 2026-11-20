@@ -1,0 +1,135 @@
+# Model catalog shown on /models/. Mirrors the built-in catalog in the app (ModelsRepository.kt).
+# size_mb = download size. ram_mb = rough guide for free RAM needed while running (1.5 x size + overhead).
+# Edit here; every language updates.
+- cat: chat
+  name: "Gemma 3 270M Instruct (Q8_0)"
+  size_mb: 292
+  ram_mb: 750
+  repo: "https://huggingface.co/ggml-org/gemma-3-270m-it-GGUF"
+  tags: [fast, multi]
+- cat: chat
+  name: "Gemma 3 1B Instruct (Q4_K_M)"
+  size_mb: 806
+  ram_mb: 1550
+  repo: "https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF"
+  tags: [balanced]
+- cat: chat
+  name: "Qwen 3 1.7B (Q8_0)"
+  size_mb: 1830
+  ram_mb: 3050
+  repo: "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF"
+  tags: [best, multi]
+- cat: chat
+  name: "Qwen 2.5 1.5B Instruct (Q2_K)"
+  size_mb: 753
+  ram_mb: 1450
+  repo: "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF"
+  tags: [multi, compressed]
+- cat: chat
+  name: "Llama 3.2 1B Instruct (Q2_K)"
+  size_mb: 581
+  ram_mb: 1200
+  repo: "https://huggingface.co/unsloth/Llama-3.2-1B-Instruct-GGUF"
+  tags: [multi, compressed]
+- cat: chat
+  name: "Phi-1.5 (Q2_K)"
+  size_mb: 613
+  ram_mb: 1250
+  repo: "https://huggingface.co/TKDKid1000/phi-1_5-GGUF"
+  tags: [compressed]
+- cat: vision
+  name: "SmolVLM 256M Instruct"
+  size_mb: 175
+  ram_mb: 600
+  repo: "https://huggingface.co/ggml-org/SmolVLM-256M-Instruct-GGUF"
+  tags: [fast]
+- cat: vision
+  name: "SmolVLM 500M Instruct"
+  size_mb: 437
+  ram_mb: 1000
+  repo: "https://huggingface.co/ggml-org/SmolVLM-500M-Instruct-GGUF"
+  tags: [balanced]
+- cat: voice
+  name: "Whisper Tiny (q8_0)"
+  size_mb: 44
+  ram_mb: 200
+  repo: "https://huggingface.co/ggerganov/whisper.cpp"
+  tags: [fast, multi]
+- cat: voice
+  name: "Whisper Tiny"
+  size_mb: 78
+  ram_mb: 250
+  repo: "https://huggingface.co/ggerganov/whisper.cpp"
+  tags: [multi]
+- cat: voice
+  name: "Whisper Base (q8_0)"
+  size_mb: 82
+  ram_mb: 250
+  repo: "https://huggingface.co/ggerganov/whisper.cpp"
+  tags: [balanced, multi]
+- cat: voice
+  name: "Whisper Base"
+  size_mb: 148
+  ram_mb: 350
+  repo: "https://huggingface.co/ggerganov/whisper.cpp"
+  tags: [multi]
+- cat: voice
+  name: "Whisper Small (q8_0)"
+  size_mb: 264
+  ram_mb: 500
+  repo: "https://huggingface.co/ggerganov/whisper.cpp"
+  tags: [best, multi]
+- cat: voice
+  name: "Whisper Medium (q8_0)"
+  size_mb: 823
+  ram_mb: 1350
+  repo: "https://huggingface.co/ggerganov/whisper.cpp"
+  tags: [best, multi, heavy]
+- cat: embed
+  name: "Nomic Embed Text v1.5 (Q4_0)"
+  size_mb: 77
+  ram_mb: 250
+  repo: "https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF"
+  tags: [docs]
+- cat: image
+  name: "DreamShaper 8 LCM (Q4_0)"
+  size_mb: 1600
+  ram_mb: 3400
+  repo: "https://huggingface.co/haven-ai-companion/dreamshaper8-lcm-gguf"
+  tags: [fast]
+- cat: image
+  name: "Stable Diffusion v1.5 (Q4_0)"
+  size_mb: 1750
+  ram_mb: 3650
+  repo: "https://huggingface.co/gpustack/stable-diffusion-v1-5-GGUF"
+  tags: [balanced]
+- cat: image
+  name: "SD Turbo v2.1 (Q4_0)"
+  size_mb: 2190
+  ram_mb: 4300
+  repo: "https://huggingface.co/gpustack/stable-diffusion-v2-1-turbo-GGUF"
+  tags: [fast]
+- cat: image
+  name: "DreamShaper XL v2 Turbo (Q4_K_S)"
+  size_mb: 2800
+  ram_mb: 5200
+  repo: "https://huggingface.co/off-grid-ai/dreamshaper-xl-v2-turbo-GGUF"
+  tags: [best, heavy]
+- cat: video
+  name: "Wan 2.1 T2V 1.3B (Q4_0)"
+  size_mb: 866
+  ram_mb: 2800
+  repo: "https://huggingface.co/samuelchristlie/Wan2.1-T2V-1.3B-GGUF"
+  tags: [extra]
+- cat: video
+  name: "Wan 2.2 TI2V 5B (Q4_0)"
+  size_mb: 3030
+  ram_mb: 6050
+  repo: "https://huggingface.co/QuantStack/Wan2.2-TI2V-5B-GGUF"
+  tags: [heavy, extra]
+- cat: video
+  name: "Wan 2.1 I2V 14B 480P (Q4_0)"
+  size_mb: 10200
+  ram_mb: 16800
+  repo: "https://huggingface.co/city96/Wan2.1-I2V-14B-480P-gguf"
+  tags: [heavy, extra]

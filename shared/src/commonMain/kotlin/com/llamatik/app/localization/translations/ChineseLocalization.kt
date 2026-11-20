@@ -219,6 +219,9 @@ internal object ChineseLocalization : Localization {
     override val videoSaveError = "保存视频失败。"
     override val allCachedModelsRemoved = "所有缓存模型和 PDF RAG 存储已成功删除。"
     override val settings = "设置"
+    override val diagnosticsTitle = "分享诊断数据"
+    override val diagnosticsDescription = "发送崩溃报告和基础使用统计，帮助改进 Llamatik。默认关闭。不包含你的提示词、聊天、文档或语音。"
+    override val privacyPolicy = "隐私政策"
     override val agentMode = "智能代理模式"
     override val agentModeDescription = "允许 AI 在您的设备上执行操作"
     override val agentModeInfoTitle = "智能代理模式 — 实验性"
@@ -251,6 +254,8 @@ internal object ChineseLocalization : Localization {
     override val chatsInFolder = "文件夹中的聊天"
 
     override val downloadFromUrl = "从URL下载"
+    override val importFromFile = "从文件导入"
+    override val importFromFileUnsupported = "此平台无法从本地文件路径加载模型。"
     override val modelUrlLabel = "模型URL"
     override val modelNameLabel = "模型名称"
     override val categoryLabel = "类别"
