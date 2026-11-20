@@ -407,6 +407,36 @@ agent.<span class="f">stream</span>(<span class="s">"What is 17% of 2,340?"</spa
   </div>
 </section>
 
+<!-- COMPARE -->
+<section class="sec" id="compare">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">{{ i18n "cmp_eyebrow" }}</p>
+      <h2>{{ partial "t.html" "cmp_title" }}</h2>
+      <p class="lead">{{ i18n "cmp_lead" }}</p>
+    </div>
+    <div class="cmp-wrap reveal">
+      <table class="cmp">
+        <thead><tr><th scope="col">{{ i18n "cmp_feature" }}</th><th scope="col" class="me">Llamatik</th><th scope="col">Ollama</th><th scope="col">LM Studio</th><th scope="col">llama.app</th><th scope="col">ChatGPT</th><th scope="col">Claude</th></tr></thead>
+        <tbody>
+        <tr><th scope="row">{{ i18n "cmp_r1" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r2" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r3" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r4" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r5" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r6" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r7" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r11" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r8" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="n">{{ partial "cmp-mark.html" "n" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r9" }}</th><td class="y" data-me>{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td></tr>
+        <tr><th scope="row">{{ i18n "cmp_r10" }}</th><td class="n" data-me>{{ partial "cmp-mark.html" "n" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="p">{{ partial "cmp-mark.html" "p" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td><td class="y">{{ partial "cmp-mark.html" "y" }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cmp-note reveal">{{ i18n "cmp_note" }}</p>
+  </div>
+</section>
+
 <!-- FINAL CTA -->
 <section class="sec final">
   <div class="wrap">
