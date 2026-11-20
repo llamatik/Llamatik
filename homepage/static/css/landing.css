@@ -260,6 +260,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .foot-cols div{display:flex;flex-direction:column;gap:10px}
 .foot-cols h2{font-size:12px;font-weight:600;line-height:1.4;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
 .foot-cols a{color:var(--mut);font-size:14.5px}.foot-cols a:hover{color:var(--text)}
+.foot-social{grid-column:1/-1;display:flex;gap:10px;margin-top:14px}
+.foot-social a{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--mut);transition:color .2s,border-color .2s,background .2s}
+.foot-social a:hover{color:var(--text);border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.06)}
 .foot-copy{margin-top:40px;font-size:13px;color:var(--dim)}
 
 /* toast + reveal */
@@ -403,6 +406,7 @@ html:lang(ja) body,html:lang(zh) body{line-height:1.7}
 .doc-wrap{padding-bottom:100px}
 .ct{padding-bottom:100px;max-width:980px}
 .ct-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.ct-grid>.ct-card:last-child:nth-child(odd){grid-column:1/-1}
 .ct-card{display:flex;flex-direction:column;gap:8px;padding:28px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line);transition:transform .25s,border-color .25s,background .25s}
 .ct-card:hover{transform:translateY(-4px);border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.05)}
 .ct-card h3{font-size:20px;letter-spacing:-.02em;margin-top:8px}

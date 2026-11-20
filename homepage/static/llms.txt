@@ -13,6 +13,10 @@ Prompts, chats, documents and voice are processed locally. Diagnostics (Android 
 - [Blog](https://www.llamatik.com/blog/): release notes and guides
 - [Privacy policy](https://www.llamatik.com/privacy/)
 
+## Community
+- [Discord](https://discord.gg/QVcc6Bcd57): chat with the community
+- [X / Twitter](https://x.com/llamatikAi): release news
+
 ## Source
 - [Llamatik on GitHub](https://github.com/ferranpons/Llamatik)
 - [Llamatik Server on GitHub](https://github.com/ferranpons/Llamatik-server)
