@@ -1,28 +1,31 @@
 ---
-title: 'FAQ'
-description: 'Frequently Asked Questions.'
-intro_image: "images/illustrations/curiosity-search-amico.svg"
-intro_image_absolute: false
-intro_image_hide_on_mobile: false
-is_pricing: false
+title: "FAQ"
+description: "Answers about running private, on-device AI with Llamatik."
+items:
+  - q: "What is Llamatik?"
+    a: "Llamatik is a free, open-source platform for private, on-device AI. It includes the **Llamatik app** (Android, iOS, macOS, Windows, Linux and the web), a **Kotlin Multiplatform SDK**, a self-hosted **server**, and **Llamatik Code**, an AI coding assistant for JetBrains IDEs. It is built on open engines: llama.cpp, whisper.cpp and stable-diffusion.cpp."
+  - q: "Does it work offline?"
+    a: "Yes. Once a model is downloaded, chat, vision, voice and image generation run on your device without an internet connection. You only need to be online to download models and updates."
+  - q: "Is my data sent anywhere?"
+    a: "Not by default. Prompts, documents and voice are processed on your device, and there is no account to create. Data only leaves your device if you choose to connect the app to a Llamatik Server or to another device with **Share this device**. Those connections currently use plain HTTP, so keep them on networks you trust."
+  - q: "Which devices and operating systems are supported?"
+    a: "Android 8.0 or newer, iPhone and iPad with iOS 16.6 or newer, macOS (Apple Silicon and Intel), Windows 10 or newer, Debian and Ubuntu based Linux (.deb), and modern browsers through WebAssembly. Get them all on the [download page](/download/)."
+  - q: "Which models can I run?"
+    a: "Any model in GGUF format that llama.cpp supports. The app has a built-in catalog (for example Gemma 3, SmolVLM and Whisper models), or you can load a `.gguf` file you already have on your device. Speech-to-text uses Whisper models, image analysis uses vision models such as SmolVLM, and images and video use stable-diffusion.cpp models."
+  - q: "How much memory and storage do I need?"
+    a: "It depends on the model. As a rule of thumb, a quantized model needs about as much free memory as its file size, plus some room for the conversation. A 1B-parameter model at 4-bit quantization is under 1 GB and can run on many recent phones; larger models need more RAM. If the app closes or feels slow, try a smaller or more heavily quantized model."
+  - q: "Can it generate images and video, or transcribe speech?"
+    a: "Yes. The native apps can generate images and short videos with stable-diffusion.cpp, transcribe audio offline with Whisper, and answer questions about pictures with on-device vision models. Which features are available depends on the platform and the models you download. The web app is focused on chat."
+  - q: "What is the difference between the app, the SDK and the server?"
+    a: "The **app** is the ready-to-use product. The **SDK** (`com.llamatik:core`, `sdk` and `sdk-agent` on Maven Central) lets you build the same capabilities into your own Kotlin Multiplatform app. The **server** exposes the same API over HTTP so you can self-host models on a more powerful machine, and apps built on the SDK can use it without code changes."
+  - q: "Can I use a more powerful computer from my phone?"
+    a: "Yes. Turn on **Share this device** on a computer, phone or tablet and your other Llamatik devices on the same network can discover it and use its loaded models, after you approve each device. You can also connect the app to a self-hosted Llamatik Server."
+  - q: "Is Llamatik free? What is the license?"
+    a: "The apps are free and need no account. The source code is open source under the MIT license; the Llamatik name, logo and visual assets are proprietary and covered by a separate license. Llamatik Code has a free tier and a paid Pro tier with extra features."
+  - q: "Can I use Llamatik in my own app?"
+    a: "Yes. Add `com.llamatik:core` (inference), `com.llamatik:sdk` (chat, models, RAG, agents) or `com.llamatik:sdk-agent` to a Kotlin Multiplatform project; they target Android, iOS, desktop and WASM. See the [documentation](https://docs.llamatik.com) and [GitHub](https://github.com/ferranpons/Llamatik)."
+  - q: "How does the prompt box on the home page work?"
+    a: "When you press Enter you choose where Llamatik answers: in the web app, in a downloaded app (your prompt is copied), or just copy it. For the web app, the text is passed to the page in the URL fragment (the part after `#`), which browsers never send to any server. The first time, the web app still needs to download a model into your browser."
+  - q: "Where can I get help or report a bug?"
+    a: "Open an issue on [GitHub](https://github.com/ferranpons/Llamatik/issues) or reach out through the [contact page](/contact/)."
 ---
-
-**How customizable are the components?**
-
-You get access to the full source code. You can use the components as is in your project, or use as a base to your own components.
-
-**How often are new features added?**
-
-New features are added constantly. Our goal is to provide you with every single pattern found in all mobile apps, so there are a lot of ideas and releases planned. New features are posted on [Twitter](https://twitter.com/mpkickstarter) as soon as they are available. We also send a monthly update [via email](https://multiplatformkickstarter.substack.com/) to notify you.
-
-**What is your refund policy for PRO Templates?**
-
-We offer a 7-day money back guarantee, no questions asked. If you are not satisfied with your purchase, you can request a refund within 7 days of your purchase.
-
-**What is Kotlin Multiplatform?**
-
-Is a technology designed and created by JetBrains to simplify the development of cross-platform projects. It reduces time spent writing and maintaining the same code for different platforms while retaining the flexibility and benefits of native programming.
-
-**What is Compose Multiplatform?**
-
-Is a declarative framework for sharing UIs across multiple platforms with Kotlin. It is based on Jetpack Compose and developed by JetBrains and open-source contributors.

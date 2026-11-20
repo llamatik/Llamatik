@@ -1,28 +1,31 @@
 ---
-title: 'FAQ'
-description: 'Frequently Asked Questions.'
-intro_image: "images/illustrations/curiosity-search-amico.svg"
-intro_image_absolute: false
-intro_image_hide_on_mobile: false
-is_pricing: false
+title: "FAQ"
+description: "Llamatikで、プライベートなオンデバイスAIを使うための回答集です。"
+items:
+  - q: "Llamatikとは何ですか？"
+    a: "Llamatikは、プライベートなオンデバイスAIのための無料のオープンソースプラットフォームです。**Llamatikアプリ**（Android、iOS、macOS、Windows、Linux、Web）、**Kotlin Multiplatform SDK**、セルフホスト型の**サーバー**、JetBrains IDE向けのAIコーディングアシスタント **Llamatik Code** で構成されています。基盤にはオープンなエンジンの llama.cpp、whisper.cpp、stable-diffusion.cpp を採用しています。"
+  - q: "オフラインでも使えますか？"
+    a: "はい。モデルをダウンロードすれば、チャット、ビジョン、音声、画像生成はインターネットに接続しなくてもデバイス上で動作します。オンラインが必要なのは、モデルやアップデートをダウンロードするときだけです。"
+  - q: "データはどこかに送信されますか？"
+    a: "デフォルトでは送信されません。プロンプト、ドキュメント、音声はすべてデバイス上で処理され、アカウントの作成も不要です。データがデバイスの外に出るのは、アプリを Llamatik Server や、**デバイス共有**を使った別のデバイスに接続した場合だけです。これらの接続は現在プレーンな HTTP を使用しているため、信頼できるネットワーク内でご利用ください。"
+  - q: "対応しているデバイスとOSは？"
+    a: "Android 8.0以降、iOS 16.6以降のiPhoneとiPad、macOS（Apple SiliconとIntel）、Windows 10以降、DebianおよびUbuntu系のLinux（.deb）、そしてWebAssembly経由の最新ブラウザに対応しています。すべて[ダウンロードページ](/download/)から入手できます。"
+  - q: "どのモデルを実行できますか？"
+    a: "llama.cppが対応するGGUF形式のモデルであれば何でも実行できます。アプリには内蔵カタログ（Gemma 3、SmolVLM、Whisperモデルなど）があり、デバイスにある `.gguf` ファイルを読み込むこともできます。音声認識にはWhisperモデル、画像解析にはSmolVLMなどのビジョンモデル、画像と動画の生成にはstable-diffusion.cppモデルを使用します。"
+  - q: "必要なメモリとストレージの容量は？"
+    a: "モデルによって異なります。目安として、量子化されたモデルには、そのファイルサイズと同程度の空きメモリに加え、会話のための余裕が必要です。4ビット量子化の1Bパラメータモデルは1 GB未満で、最近の多くのスマートフォンで動作します。より大きなモデルにはさらに多くのRAMが必要です。アプリが終了したり動作が重く感じたりする場合は、より小さいモデル、またはより強く量子化されたモデルをお試しください。"
+  - q: "画像や動画の生成、音声の文字起こしもできますか？"
+    a: "はい。ネイティブアプリでは、stable-diffusion.cppによる画像と短い動画の生成、Whisperによるオフラインでの音声文字起こし、オンデバイスのビジョンモデルによる画像についての質問への回答に対応しています。利用できる機能は、プラットフォームとダウンロードしたモデルによって異なります。Webアプリはチャットが中心です。"
+  - q: "アプリ、SDK、サーバーの違いは何ですか？"
+    a: "**アプリ**はすぐに使える製品です。**SDK**（Maven Centralの `com.llamatik:core`、`sdk`、`sdk-agent`）を使うと、同じ機能を独自のKotlin Multiplatformアプリに組み込めます。**サーバー**は同じAPIをHTTPで公開するので、より高性能なマシンでモデルをセルフホストでき、SDKで作ったアプリはコードを変更せずに利用できます。"
+  - q: "スマートフォンから高性能なコンピューターを使えますか？"
+    a: "はい。コンピューター、スマートフォン、タブレットで**デバイス共有**をオンにすると、同じネットワーク上の他のLlamatikデバイスがそれを検出し、読み込まれているモデルを利用できます。利用は、デバイスごとに承認した後に可能になります。セルフホストのLlamatik Serverにアプリを接続することもできます。"
+  - q: "Llamatikは無料ですか？ライセンスは？"
+    a: "アプリは無料で、アカウントも不要です。ソースコードはMITライセンスのオープンソースです。Llamatikの名称、ロゴ、ビジュアル素材は独自のものであり、別のライセンスが適用されます。Llamatik Codeには無料プランと、追加機能のある有料のProプランがあります。"
+  - q: "自分のアプリでLlamatikを使えますか？"
+    a: "はい。Kotlin Multiplatformプロジェクトに、`com.llamatik:core`（推論）、`com.llamatik:sdk`（チャット、モデル、RAG、エージェント）、または `com.llamatik:sdk-agent` を追加してください。Android、iOS、デスクトップ、WASMをターゲットにしています。詳しくは[ドキュメント](https://docs.llamatik.com)と[GitHub](https://github.com/ferranpons/Llamatik)をご覧ください。"
+  - q: "ホームページのプロンプトボックスはどのように動作しますか？"
+    a: "Enterキーを押すと、Llamatikが回答する場所を選べます。Webアプリ、ダウンロード済みのアプリ（プロンプトはコピーされます）、またはコピーのみです。Webアプリの場合、テキストはURLフラグメント（`#` の後ろの部分）でページに渡されます。フラグメントはブラウザからサーバーへ送信されることはありません。初回は、Webアプリがブラウザにモデルをダウンロードする必要があります。"
+  - q: "ヘルプやバグ報告はどこにありますか？"
+    a: "[GitHub](https://github.com/ferranpons/Llamatik/issues)でissueを作成するか、[お問い合わせページ](/contact/)からご連絡ください。"
 ---
-
-**How customizable are the components?**
-
-You get access to the full source code. You can use the components as is in your project, or use as a base to your own components.
-
-**How often are new features added?**
-
-New features are added constantly. Our goal is to provide you with every single pattern found in all mobile apps, so there are a lot of ideas and releases planned. New features are posted on [Twitter](https://twitter.com/mpkickstarter) as soon as they are available. We also send a monthly update [via email](https://multiplatformkickstarter.substack.com/) to notify you.
-
-**What is your refund policy for PRO Templates?**
-
-We offer a 7-day money back guarantee, no questions asked. If you are not satisfied with your purchase, you can request a refund within 7 days of your purchase.
-
-**What is Kotlin Multiplatform?**
-
-Is a technology designed and created by JetBrains to simplify the development of cross-platform projects. It reduces time spent writing and maintaining the same code for different platforms while retaining the flexibility and benefits of native programming.
-
-**What is Compose Multiplatform?**
-
-Is a declarative framework for sharing UIs across multiple platforms with Kotlin. It is based on Jetpack Compose and developed by JetBrains and open-source contributors.

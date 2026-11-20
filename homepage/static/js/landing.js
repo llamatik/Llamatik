@@ -122,7 +122,8 @@
   function promptText() { return input.value.trim(); }
   function updateRoute() {
     var p = promptText();
-    routeWeb.href = WEB_APP + (p ? '?prompt=' + encodeURIComponent(p) : '');
+    // A URL fragment (#...) is never sent to any server, unlike a ?query: the prompt stays in the browser.
+    routeWeb.href = WEB_APP + (p ? '#prompt=' + encodeURIComponent(p) : '');
   }
   function openRoute() {
     if (!promptText()) return;
