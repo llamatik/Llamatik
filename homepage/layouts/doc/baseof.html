@@ -4,6 +4,7 @@
 {{- $title := printf "%s — Llamatik" .Title -}}
 {{- $desc := .Params.description | default (i18n "meta_desc") -}}
 {{- if eq .Params.layout "contact" }}{{ $title = i18n "contact_meta_title" }}{{ $desc = i18n "contact_lead" }}{{ end -}}
+{{- if eq .Params.layout "models" }}{{ $title = i18n "mdl_meta_title" }}{{ $desc = i18n "mdl_lead" }}{{ end -}}
 {{ partial "lt-head.html" (dict "page" . "title" $title "desc" ($desc | truncate 200) "blog" true) }}
 </head>
 <body class="lt blog-page">

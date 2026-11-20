@@ -40,6 +40,11 @@ private data class ImportedModelStore(
     val models: List<PersistedImportedModel> = emptyList(),
 )
 
+/** New catalog name -> the name it was stored under before it was renamed (see getSavedModelPath). */
+private val LEGACY_MODEL_NAMES = mapOf(
+    "Qwen 2.5 1.5B Instruct Q2 K" to "Qwen 2.5 5B Instruct",
+)
+
 class ModelsRepository(
     private val fileAccess: LlamatikFileAccess,
     private val httpClient: LlamatikHttpClient,
@@ -149,7 +154,7 @@ class ModelsRepository(
             systemPrompt = smolVlm500SystemPrompt.trimIndent()
         ),
         LlamaModel(
-            name = "Qwen 2.5 5B Instruct",
+            name = "Qwen 2.5 1.5B Instruct Q2 K",
             sizeMb = 753,
             url = "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q2_k.gguf?download=true",
             template = QwenChat,
@@ -264,15 +269,28 @@ class ModelsRepository(
         ),
     )
 
-    fun getSavedModelPath(modelName: String): String =
-        Settings().getString(modelName, "")
+    fun getSavedModelPath(modelName: String): String {
+        val settings = Settings()
+        val current = settings.getString(modelName, "")
+        if (current.isNotEmpty()) return current
+        // Catalog entries that were renamed keep their downloaded file: move the path stored under the old name.
+        val legacyName = LEGACY_MODEL_NAMES[modelName] ?: return ""
+        val legacyPath = settings.getString(legacyName, "")
+        if (legacyPath.isNotEmpty()) {
+            settings.putString(modelName, legacyPath)
+            settings.remove(legacyName)
+        }
+        return legacyPath
+    }
 
     fun saveModelPath(modelName: String, modelPath: String) {
         Settings().putString(modelName, modelPath)
     }
 
     fun deleteModelPath(modelName: String) {
-        Settings().remove(modelName)
+        val settings = Settings()
+        settings.remove(modelName)
+        LEGACY_MODEL_NAMES[modelName]?.let { settings.remove(it) }
     }
 
     fun getImportedModels(): List<LlamaModel> {

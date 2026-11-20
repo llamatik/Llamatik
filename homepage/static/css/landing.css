@@ -483,3 +483,25 @@ html:lang(ja) .grad,html:lang(zh) .grad{display:inline-block;max-width:100%}
 .quote figcaption{margin-top:auto;font-size:13px;color:var(--dim)}
 .quote figcaption b{color:var(--mut);font-weight:600}
 @media(max-width:700px){.quotes{grid-template-columns:1fr}}
+
+/* models page */
+.mdl{padding-bottom:80px}
+.mdl-h{font-size:clamp(22px,2.6vw,30px);letter-spacing:-.025em;margin:56px 0 18px;text-align:start}
+.mdl-start{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.mdl-card{padding:26px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
+.mdl-card b{display:block;font-size:18px;margin-bottom:8px}
+.mdl-card h2{font-size:22px;letter-spacing:-.02em;margin-bottom:10px}
+.mdl-card p{color:var(--mut);margin:0}
+.mdl-two{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:56px}
+.mdl-tbl{max-width:none}
+.mdl-t{min-width:560px}
+.mdl-t th,.mdl-t td{text-align:start}
+.mdl-t tbody th{min-width:220px}
+.mdl-t tbody th a{color:var(--text);text-decoration:none;border-bottom:1px dotted var(--dim)}
+.mdl-t tbody th a:hover{border-bottom-color:var(--text)}
+.mdl-t thead th:first-child{min-width:220px}
+.mdl-tags{display:flex;flex-wrap:wrap;gap:6px}
+.mdl-tag{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--mut);white-space:nowrap}
+.mdl-tag.t-fast,.mdl-tag.t-best{color:#34d399;border-color:rgba(52,211,153,.35)}
+.mdl-tag.t-heavy,.mdl-tag.t-extra{color:#fbbf24;border-color:rgba(251,191,36,.35)}
+@media(max-width:700px){.mdl-start,.mdl-two{grid-template-columns:1fr}}
