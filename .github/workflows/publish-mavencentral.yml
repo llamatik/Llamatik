@@ -62,7 +62,7 @@ jobs:
         run: |
           sudo apt-get update
           # libvulkan-dev + glslc: needed for the optional Linux Vulkan native variants
-          sudo apt-get install -y cmake ninja-build libvulkan-dev glslc
+          sudo apt-get install -y cmake ninja-build libvulkan-dev glslc glslang-tools spirv-headers
           cmake --version
 
       - name: Install Windows deps (cmake + ninja)

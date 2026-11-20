@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 project(llama_jni)
 
+# MSVC only exposes M_PI & co. with this define (llama.cpp mtmd-audio.cpp relies on it).
+if(MSVC)
+    add_compile_definitions(_USE_MATH_DEFINES)
+endif()
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
