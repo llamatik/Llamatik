@@ -325,6 +325,9 @@ interface Localization {
 
     // Share this device (embedded server)
     val shareDeviceTitle: String get() = "Share this device"
+    val diagnosticsTitle: String get() = "Share diagnostics"
+    val diagnosticsDescription: String get() = "Send crash reports and basic usage statistics to help improve Llamatik. Off by default. Does not include your prompts, chats, documents or voice."
+    val privacyPolicy: String get() = "Privacy policy"
     val shareDeviceSubtitleOn: String get() = "Sharing on"
     val shareDeviceDescription: String get() =
         "Let other Llamatik devices on your network send prompts to this device and use the models you have loaded. " +

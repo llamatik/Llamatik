@@ -3,7 +3,7 @@
 # ---------- meta ----------
 meta_title: "Llamatik — L'IA privée qui tourne sur votre appareil"
 meta_desc: "Discutez, voyez, écoutez et créez avec une IA qui tourne sur vos propres appareils. Apps gratuites pour Android, iOS, macOS, Windows, Linux et le navigateur — plus un SDK Kotlin open source, un serveur auto-hébergé et un assistant de code IA pour votre IDE."
-meta_og_desc: "Chat, vision, voix, génération d'images et de vidéos — sur vos propres appareils. Open source. Sans compte. Sans suivi."
+meta_og_desc: "Chat, vision, voix, génération d'images et de vidéos — sur vos propres appareils. Open source. Sans compte. Vos prompts ne quittent jamais votre appareil sans votre accord."
 blog_meta_title: "Blog"
 blog_meta_desc: "Actualités, notes de version et analyses approfondies sur les LLM embarqués, pensés Kotlin."
 
@@ -25,7 +25,7 @@ nav_language: "Langue"
 announce_a: "Llamatik 2.0 est là"
 announce_b: "SDK, Agents, Vidéo, Partage d'appareil"
 hero_title: "L'IA privée qui vit<br>sur <g>vos appareils.</g>"
-hero_sub: "Discutez, voyez, écoutez et créez — avec des modèles qui tournent sur votre téléphone, votre ordinateur et votre navigateur. Sans compte. Sans suivi. Rien ne quitte votre appareil sans votre accord."
+hero_sub: "Discutez, voyez, écoutez et créez — avec des modèles qui tournent sur votre téléphone, votre ordinateur et votre navigateur. Sans compte. Sans publicité. Vos prompts ne quittent jamais votre appareil sans votre accord."
 ask_label: "Demandez ce que vous voulez à Llamatik"
 ask_placeholder: "Demandez ce que vous voulez…"
 modes_aria: "Idées de prompts"
@@ -112,7 +112,7 @@ f_fast_t: "Prédiction multi-tokens"
 f_fast_d: "Rédaction spéculative pour les modèles compatibles (Qwen3.5, GLM-4) — plus de tokens par seconde."
 f_priv_tag: "Confidentialité"
 f_priv_t: "Hors ligne par défaut"
-f_priv_d: "Modèles et chats restent sur votre appareil. Sans compte, sans suivi, et un avertissement clair avant toute connexion à un serveur."
+f_priv_d: "Modèles et chats restent sur votre appareil. Sans compte, sans publicité, avec des diagnostics facultatifs désactivés par défaut, et un avertissement clair avant toute connexion à un serveur."
 
 # ---------- share this device ----------
 net_eyebrow: "Partager cet appareil"

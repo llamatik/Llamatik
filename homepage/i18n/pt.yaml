@@ -3,7 +3,7 @@
 # ---------- meta ----------
 meta_title: "Llamatik — IA privada que roda no seu dispositivo"
 meta_desc: "Converse, veja, ouça e crie com uma IA que roda nos seus próprios dispositivos. Apps gratuitos para Android, iOS, macOS, Windows, Linux e navegador — além de um SDK Kotlin de código aberto, um servidor próprio e um assistente de programação com IA para a sua IDE."
-meta_og_desc: "Chat, visão, voz, geração de imagens e vídeos — rodando nos seus próprios dispositivos. Código aberto. Sem conta. Sem rastreamento."
+meta_og_desc: "Chat, visão, voz, geração de imagens e vídeos — rodando nos seus próprios dispositivos. Código aberto. Sem conta. Seus prompts nunca saem do seu dispositivo, a menos que você queira."
 blog_meta_title: "Blog"
 blog_meta_desc: "Novidades, notas de versão e análises aprofundadas sobre LLMs no dispositivo com foco em Kotlin."
 
@@ -25,7 +25,7 @@ nav_language: "Idioma"
 announce_a: "O Llamatik 2.0 chegou"
 announce_b: "SDK, Agentes, Vídeo, Compartilhar este dispositivo"
 hero_title: "IA privada que vive<br>nos <g>seus dispositivos.</g>"
-hero_sub: "Converse, veja, ouça e crie — com modelos que rodam no seu celular, notebook e navegador. Sem conta. Sem rastreamento. Nada sai do seu dispositivo, a menos que você queira."
+hero_sub: "Converse, veja, ouça e crie — com modelos que rodam no seu celular, notebook e navegador. Sem conta. Sem anúncios. Seus prompts nunca saem do seu dispositivo, a menos que você queira."
 ask_label: "Pergunte qualquer coisa ao Llamatik"
 ask_placeholder: "Pergunte qualquer coisa…"
 modes_aria: "Ideias de prompts"
@@ -112,7 +112,7 @@ f_fast_t: "Predição de múltiplos tokens"
 f_fast_d: "Rascunho especulativo para modelos compatíveis (Qwen3.5, GLM-4) — mais tokens por segundo."
 f_priv_tag: "Privacidade"
 f_priv_t: "Offline por padrão"
-f_priv_d: "Modelos e chats ficam no seu dispositivo. Sem conta, sem rastreamento e com um aviso claro antes de você se conectar a um servidor."
+f_priv_d: "Modelos e chats ficam no seu dispositivo. Sem conta, sem anúncios, com diagnósticos opcionais desativados por padrão e com um aviso claro antes de você se conectar a um servidor."
 
 # ---------- share this device ----------
 net_eyebrow: "Compartilhar este dispositivo"

@@ -5,7 +5,7 @@
 # ---------- meta ----------
 meta_title: "Llamatik — Private KI, die auf deinem Gerät läuft"
 meta_desc: "Chatten, sehen, hören und kreieren mit KI, die auf deinen eigenen Geräten läuft. Kostenlose Apps für Android, iOS, macOS, Windows, Linux und den Browser — plus ein Open-Source-Kotlin-SDK, ein selbst gehosteter Server und ein KI-Coding-Assistent für deine IDE."
-meta_og_desc: "Chat, Vision, Sprache, Bild- und Videogenerierung — direkt auf deinen eigenen Geräten. Open Source. Kein Konto. Kein Tracking."
+meta_og_desc: "Chat, Vision, Sprache, Bild- und Videogenerierung — direkt auf deinen eigenen Geräten. Open Source. Kein Konto. Deine Prompts verlassen dein Gerät nie, es sei denn, du willst es."
 blog_meta_title: "Blog"
 blog_meta_desc: "Neuigkeiten, Release Notes und Deep Dives zu Kotlin-first On-Device-LLMs."
 
@@ -27,7 +27,7 @@ nav_language: "Sprache"
 announce_a: "Llamatik 2.0 ist da"
 announce_b: "SDK, Agenten, Video, Gerät teilen"
 hero_title: "Private KI, die<br>auf <g>deinen Geräten lebt.</g>"
-hero_sub: "Chatten, sehen, hören und kreieren — mit Modellen, die auf Handy, Laptop und im Browser laufen. Kein Konto. Kein Tracking. Nichts verlässt dein Gerät, es sei denn, du willst es."
+hero_sub: "Chatten, sehen, hören und kreieren — mit Modellen, die auf Handy, Laptop und im Browser laufen. Kein Konto. Keine Werbung. Deine Prompts verlassen dein Gerät nie, es sei denn, du willst es."
 ask_label: "Frag Llamatik, was du willst"
 ask_placeholder: "Frag einfach los…"
 modes_aria: "Prompt-Ideen"
@@ -114,7 +114,7 @@ f_fast_t: "Multi-Token-Vorhersage"
 f_fast_d: "Spekulatives Drafting für unterstützte Modelle (Qwen3.5, GLM-4) — mehr Tokens pro Sekunde."
 f_priv_tag: "Privatsphäre"
 f_priv_t: "Standardmäßig offline"
-f_priv_d: "Modelle und Chats bleiben auf deinem Gerät. Kein Konto, kein Tracking und eine klare Warnung, bevor du dich jemals mit einem Server verbindest."
+f_priv_d: "Modelle und Chats bleiben auf deinem Gerät. Kein Konto, keine Werbung, optionale Diagnose, die standardmäßig aus ist, und eine klare Warnung, bevor du dich jemals mit einem Server verbindest."
 
 # ---------- share this device ----------
 net_eyebrow: "Gerät teilen"

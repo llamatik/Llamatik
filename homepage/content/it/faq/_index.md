@@ -7,7 +7,7 @@ items:
   - q: "Funziona offline?"
     a: "Sì. Una volta scaricato un modello, chat, visione, voce e generazione di immagini funzionano sul tuo dispositivo senza connessione a internet. Ti serve la rete solo per scaricare modelli e aggiornamenti."
   - q: "I miei dati vengono inviati da qualche parte?"
-    a: "Non per impostazione predefinita. Prompt, documenti e voce vengono elaborati sul tuo dispositivo e non c'è alcun account da creare. I dati lasciano il dispositivo solo se decidi di collegare l'app a un Llamatik Server o a un altro dispositivo con **Condividi questo dispositivo**. Per ora queste connessioni usano HTTP in chiaro, quindi usale solo su reti di cui ti fidi."
+    a: "Non per impostazione predefinita. Prompt, documenti e voce vengono elaborati sul tuo dispositivo e non c'è alcun account da creare. I dati lasciano il dispositivo solo se scegli di collegare l'app a un Llamatik Server o a un altro dispositivo con **Condividi questo dispositivo**; queste connessioni usano per ora HTTP non cifrato, quindi tienile su reti di cui ti fidi. L'app Android può inoltre inviare report di crash e statistiche d'uso di base, ma solo se lo attivi in Impostazioni (è disattivato per impostazione predefinita e non include i tuoi prompt, chat o documenti). Questo sito non usa cookie né tracker di analisi."
   - q: "Quali dispositivi e sistemi operativi sono supportati?"
     a: "Android 8.0 o successivo, iPhone e iPad con iOS 16.6 o successivo, macOS (Apple Silicon e Intel), Windows 10 o successivo, Linux basato su Debian e Ubuntu (.deb) e i browser moderni tramite WebAssembly. Trovi tutto nella [pagina di download](/download/)."
   - q: "Quali modelli posso usare?"

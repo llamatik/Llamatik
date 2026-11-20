@@ -3,7 +3,7 @@
 # ---------- meta ----------
 meta_title: "Llamatik — L'IA privata che gira sul tuo dispositivo"
 meta_desc: "Chatta, guarda, ascolta e crea con un'IA che gira sui tuoi dispositivi. App gratuite per Android, iOS, macOS, Windows, Linux e browser — più un SDK Kotlin open source, un server self-hosted e un assistente di programmazione IA per il tuo IDE."
-meta_og_desc: "Chat, visione, voce, generazione di immagini e video — sui tuoi dispositivi. Open source. Nessun account. Nessun tracciamento."
+meta_og_desc: "Chat, visione, voce, generazione di immagini e video — sui tuoi dispositivi. Open source. Nessun account. I tuoi prompt non lasciano mai il dispositivo se non lo decidi tu."
 blog_meta_title: "Blog"
 blog_meta_desc: "Novità, note di rilascio e approfondimenti sugli LLM on-device Kotlin-first."
 
@@ -25,7 +25,7 @@ nav_language: "Lingua"
 announce_a: "È arrivato Llamatik 2.0"
 announce_b: "SDK, Agenti, Video, Condividi questo dispositivo"
 hero_title: "L'IA privata che vive<br>sui <g>tuoi dispositivi.</g>"
-hero_sub: "Chatta, guarda, ascolta e crea — con modelli che girano su telefono, laptop e browser. Nessun account. Nessun tracciamento. Nulla lascia il tuo dispositivo se non lo decidi tu."
+hero_sub: "Chatta, guarda, ascolta e crea — con modelli che girano su telefono, laptop e browser. Nessun account. Nessuna pubblicità. I tuoi prompt non lasciano mai il dispositivo se non lo decidi tu."
 ask_label: "Chiedi qualsiasi cosa a Llamatik"
 ask_placeholder: "Chiedi qualsiasi cosa…"
 modes_aria: "Idee per i prompt"
@@ -112,7 +112,7 @@ f_fast_t: "Previsione multi-token"
 f_fast_d: "Bozza speculativa per i modelli che la supportano (Qwen3.5, GLM-4) — più token al secondo."
 f_priv_tag: "Privacy"
 f_priv_t: "Offline per impostazione predefinita"
-f_priv_d: "Modelli e chat restano sul tuo dispositivo. Nessun account, nessun tracciamento e un avviso chiaro prima di collegarti a un server."
+f_priv_d: "Modelli e chat restano sul tuo dispositivo. Nessun account, nessuna pubblicità, diagnostica facoltativa disattivata per impostazione predefinita e un avviso chiaro prima di collegarti a un server."
 
 # ---------- share this device ----------
 net_eyebrow: "Condividi questo dispositivo"

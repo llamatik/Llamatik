@@ -130,7 +130,6 @@
     updateRoute(); route.hidden = false;
     route.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
     routeWeb.focus({ preventScroll: true });
-    if (window.gtag) gtag('event', 'hero_prompt_submit');
   }
   function closeRoute() { route.hidden = true; input.focus(); }
 
@@ -140,11 +139,10 @@
   });
   $('#routeX').addEventListener('click', closeRoute);
   route.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeRoute(); });
-  routeWeb.addEventListener('click', function () { if (window.gtag) gtag('event', 'hero_route_web'); });
+  routeWeb.addEventListener('click', function () { });
   routeApp.addEventListener('click', function () {
     copy(promptText()).then(function (ok) { toast(ok ? LT.toastApp : LT.toastPick); });
     route.hidden = true;
-    if (window.gtag) gtag('event', 'hero_route_app');
   });
   routeCopy.addEventListener('click', function () {
     copy(promptText()).then(function (ok) { toast(ok ? LT.toastCopied : LT.toastFailed); });

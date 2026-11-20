@@ -5,7 +5,7 @@
 # ---------- meta ----------
 meta_title: "Llamatik — 在你的设备上运行的私密 AI"
 meta_desc: "对话、看图、听音、创作，AI 全部运行在你自己的设备上。免费应用覆盖 Android、iOS、macOS、Windows、Linux 和浏览器，另有开源 Kotlin SDK、自托管服务器，以及为 IDE 打造的 AI 编程助手。"
-meta_og_desc: "对话、视觉、语音、图像与视频生成，全部运行在你自己的设备上。开源。无需账号。无追踪。"
+meta_og_desc: "对话、视觉、语音、图像与视频生成，全部运行在你自己的设备上。开源。无需账号。未经你允许，提示词绝不离开设备。"
 blog_meta_title: "博客"
 blog_meta_desc: "关于 Kotlin 优先的端侧 LLM 的更新、发布说明与深度解析。"
 
@@ -27,7 +27,7 @@ nav_language: "语言"
 announce_a: "Llamatik 2.0 来了"
 announce_b: "SDK、智能体、视频、共享此设备"
 hero_title: "私密 AI，就在<br><g>你的设备上。</g>"
-hero_sub: "对话、看图、听音、创作，模型就运行在你的手机、笔记本和浏览器上。无需账号。无追踪。未经你允许，数据绝不离开设备。"
+hero_sub: "对话、看图、听音、创作，模型就运行在你的手机、笔记本和浏览器上。无需账号。无广告。未经你允许，提示词绝不离开设备。"
 ask_label: "向 Llamatik 提问"
 ask_placeholder: "随便问点什么…"
 modes_aria: "提示词灵感"
@@ -114,7 +114,7 @@ f_fast_t: "多 token 预测"
 f_fast_d: "为支持的模型（Qwen3.5、GLM-4）提供推测式草稿，每秒生成更多 token。"
 f_priv_tag: "隐私"
 f_priv_t: "默认离线"
-f_priv_d: "模型和聊天都留在你的设备上。无需账号，无追踪，连接服务器之前还会给出明确警告。"
+f_priv_d: "模型和聊天都留在你的设备上。无需账号，无广告，可选的诊断功能默认关闭，连接服务器之前还会给出明确警告。"
 
 # ---------- share this device ----------
 net_eyebrow: "共享此设备"

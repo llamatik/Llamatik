@@ -7,7 +7,7 @@ items:
   - q: "Funktioniert es offline?"
     a: "Ja. Sobald ein Modell heruntergeladen ist, laufen Chat, Vision, Sprache und Bildgenerierung auf deinem Gerät ohne Internetverbindung. Online musst du nur sein, um Modelle und Updates herunterzuladen."
   - q: "Werden meine Daten irgendwohin gesendet?"
-    a: "Standardmäßig nicht. Prompts, Dokumente und Sprache werden auf deinem Gerät verarbeitet, und du musst kein Konto anlegen. Daten verlassen dein Gerät nur, wenn du die App mit einem Llamatik Server oder über **Gerät teilen** mit einem anderen Gerät verbindest. Diese Verbindungen laufen derzeit über unverschlüsseltes HTTP, nutze sie deshalb nur in Netzwerken, denen du vertraust."
+    a: "Standardmäßig nicht. Prompts, Dokumente und Sprache werden auf deinem Gerät verarbeitet, und du musst kein Konto anlegen. Daten verlassen dein Gerät nur, wenn du die App mit einem Llamatik Server oder über **Gerät teilen** mit einem anderen Gerät verbindest; diese Verbindungen nutzen derzeit unverschlüsseltes HTTP, nutze sie also nur in vertrauenswürdigen Netzwerken. Die Android-App kann außerdem Absturzberichte und einfache Nutzungsstatistiken senden, aber nur, wenn du das in den Einstellungen aktivierst (standardmäßig aus; enthält weder deine Prompts noch Chats oder Dokumente). Diese Website verwendet keine Cookies und keine Analyse-Tracker."
   - q: "Welche Geräte und Betriebssysteme werden unterstützt?"
     a: "Android 8.0 oder neuer, iPhone und iPad mit iOS 16.6 oder neuer, macOS (Apple Silicon und Intel), Windows 10 oder neuer, Linux auf Debian- und Ubuntu-Basis (.deb) sowie moderne Browser über WebAssembly. Alle Downloads findest du auf der [Download-Seite](/download/)."
   - q: "Welche Modelle kann ich ausführen?"

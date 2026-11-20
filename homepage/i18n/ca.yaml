@@ -3,7 +3,7 @@
 # ---------- meta ----------
 meta_title: "Llamatik — IA privada que funciona al teu dispositiu"
 meta_desc: "Xateja, mira, escolta i crea amb una IA que s'executa als teus propis dispositius. Aplicacions gratuïtes per a Android, iOS, macOS, Windows, Linux i el navegador — i també un SDK de Kotlin de codi obert, un servidor autoallotjat i un assistent de programació amb IA per al teu IDE."
-meta_og_desc: "Xat, visió, veu, generació d'imatges i de vídeo — al teu propi dispositiu. Codi obert. Sense compte. Sense rastreig."
+meta_og_desc: "Xat, visió, veu, generació d'imatges i de vídeo — al teu propi dispositiu. Codi obert. Sense compte. Els teus prompts mai no surten del dispositiu si tu no ho vols."
 blog_meta_title: "Blog"
 blog_meta_desc: "Novetats, notes de versió i anàlisis en profunditat sobre LLM al dispositiu amb Kotlin com a base."
 
@@ -25,7 +25,7 @@ nav_language: "Idioma"
 announce_a: "Ja ha arribat Llamatik 2.0"
 announce_b: "SDK, agents, vídeo, comparteix el dispositiu"
 hero_title: "IA privada que viu<br>als <g>teus dispositius.</g>"
-hero_sub: "Xateja, mira, escolta i crea — amb models que s'executen al mòbil, a l'ordinador i al navegador. Sense compte. Sense rastreig. Res no surt del teu dispositiu si tu no ho vols."
+hero_sub: "Xateja, mira, escolta i crea — amb models que s'executen al mòbil, a l'ordinador i al navegador. Sense compte. Sense anuncis. Els teus prompts mai no surten del dispositiu si tu no ho vols."
 ask_label: "Pregunta qualsevol cosa a Llamatik"
 ask_placeholder: "Pregunta el que vulguis…"
 modes_aria: "Idees de prompts"
@@ -112,7 +112,7 @@ f_fast_t: "Predicció multitoken"
 f_fast_d: "Esborrany especulatiu per als models que ho admeten (Qwen3.5, GLM-4) — més tokens per segon."
 f_priv_tag: "Privacitat"
 f_priv_t: "Sense connexió per defecte"
-f_priv_d: "Els models i els xats es queden al teu dispositiu. Sense compte, sense rastreig i amb un avís clar abans de connectar-te a cap servidor."
+f_priv_d: "Els models i els xats es queden al teu dispositiu. Sense compte, sense anuncis, amb diagnòstics opcionals desactivats per defecte i amb un avís clar abans de connectar-te a cap servidor."
 
 # ---------- share this device ----------
 net_eyebrow: "Comparteix aquest dispositiu"

@@ -7,7 +7,7 @@ items:
   - q: "Funciona sense connexió?"
     a: "Sí. Quan un model està descarregat, el xat, la visió, la veu i la generació d'imatges s'executen al teu dispositiu sense connexió a internet. Només cal estar en línia per descarregar models i actualitzacions."
   - q: "S'envien les meves dades a algun lloc?"
-    a: "Per defecte, no. Els prompts, els documents i la veu es processen al teu dispositiu, i no cal crear cap compte. Les dades només surten del dispositiu si decideixes connectar l'aplicació a un Llamatik Server o a un altre dispositiu amb **Comparteix aquest dispositiu**. Actualment aquestes connexions fan servir HTTP sense xifrar, així que mantén-les en xarxes de confiança."
+    a: "No per defecte. Els prompts, els documents i la veu es processen al teu dispositiu i no cal crear cap compte. Les dades només surten del dispositiu si decideixes connectar l'app a un Llamatik Server o a un altre dispositiu amb **Comparteix aquest dispositiu**; aquestes connexions fan servir ara per ara HTTP sense xifrar, així que mantén-les en xarxes de confiança. L'app per a Android també pot enviar informes d'errors i estadístiques d'ús bàsiques, però només si ho actives a Configuració (ve desactivat per defecte i no inclou els teus prompts, xats ni documents). Aquest lloc web no fa servir galetes ni rastrejadors d'analítica."
   - q: "Quins dispositius i sistemes operatius són compatibles?"
     a: "Android 8.0 o posterior, iPhone i iPad amb iOS 16.6 o posterior, macOS (Apple Silicon i Intel), Windows 10 o posterior, Linux basat en Debian i Ubuntu (.deb), i navegadors moderns mitjançant WebAssembly. Aconsegueix-los tots a la [pàgina de descàrregues](/download/)."
   - q: "Quins models puc executar?"

@@ -28,6 +28,7 @@ import com.llamatik.app.feature.news.repositories.NewsRepository
 import com.llamatik.app.feature.news.usecases.GetAllNewsUseCase
 import com.llamatik.app.feature.news.viewmodel.FeedItemDetailViewModel
 import com.llamatik.app.feature.news.viewmodel.NewsFeedViewModel
+import com.llamatik.app.feature.privacy.DiagnosticsConsentRepository
 import com.llamatik.app.feature.reviews.ReviewRequestManager
 import com.llamatik.app.feature.reviews.ReviewService
 import com.llamatik.app.feature.reviews.createReviewService
@@ -69,6 +70,8 @@ import com.llamatik.sdk.agent.permissions.PermissionRepository as SdkPermissionR
 
 val commonModule = module {
     includes(sharingModule)
+    // Opt-in diagnostics: the collector is registered by platforms that have one (Android only).
+    single { DiagnosticsConsentRepository(settings = get(), collector = getOrNull()) }
     factory { (navigator: Navigator) ->
         HomeScreenViewModel(navigator, get(), get(), get(), get())
     }

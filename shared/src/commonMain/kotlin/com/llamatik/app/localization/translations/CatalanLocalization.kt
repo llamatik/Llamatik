@@ -218,6 +218,9 @@ internal object CatalanLocalization : Localization {
     override val allCachedModelsRemoved = "Models eliminats"
 
     override val settings = "Configuració"
+    override val diagnosticsTitle = "Comparteix diagnòstics"
+    override val diagnosticsDescription = "Envia informes d'errors i estadístiques d'ús bàsiques per ajudar a millorar Llamatik. Desactivat per defecte. No inclou els teus prompts, xats, documents ni veu."
+    override val privacyPolicy = "Política de privacitat"
     override val agentMode = "Mode Agent"
     override val agentModeDescription = "Permet a la IA realitzar accions al vostre dispositiu"
     override val agentModeInfoTitle = "Mode Agent — Experimental"

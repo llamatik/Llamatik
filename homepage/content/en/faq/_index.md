@@ -7,7 +7,7 @@ items:
   - q: "Does it work offline?"
     a: "Yes. Once a model is downloaded, chat, vision, voice and image generation run on your device without an internet connection. You only need to be online to download models and updates."
   - q: "Is my data sent anywhere?"
-    a: "Not by default. Prompts, documents and voice are processed on your device, and there is no account to create. Data only leaves your device if you choose to connect the app to a Llamatik Server or to another device with **Share this device**. Those connections currently use plain HTTP, so keep them on networks you trust."
+    a: "Not by default. Prompts, documents and voice are processed on your device, and there is no account to create. Data only leaves your device if you choose to connect the app to a Llamatik Server or to another device with **Share this device**; those connections currently use plain HTTP, so keep them on networks you trust. The Android app can also send crash reports and basic usage statistics, but only if you turn that on in Settings (it is off by default and does not include your prompts, chats or documents). This website uses no cookies and no analytics trackers."
   - q: "Which devices and operating systems are supported?"
     a: "Android 8.0 or newer, iPhone and iPad with iOS 16.6 or newer, macOS (Apple Silicon and Intel), Windows 10 or newer, Debian and Ubuntu based Linux (.deb), and modern browsers through WebAssembly. Get them all on the [download page](/download/)."
   - q: "Which models can I run?"
