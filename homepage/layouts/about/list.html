@@ -12,22 +12,41 @@
     <div class="tri reveal"><div class="tri-n">03</div><h3>{{ i18n "why3_t" }}</h3><p>{{ partial "t.html" "why3_d" }}</p></div>
   </div>
 
-  <h2 class="ab-h reveal">{{ i18n "about_team" }}</h2>
-  <div class="team reveal">
-    {{ range .Pages.ByWeight }}
-    <article class="team-card">
-      {{ with .Params.image }}<img class="team-img" src="{{ . | relURL }}" alt="{{ $.Title }}" width="120" height="120" loading="lazy">{{ end }}
-      <div class="team-body">
-        <h3>{{ .Title }}</h3>
-        <p class="team-role">{{ if eq .Params.jobtitle "Developer" }}{{ i18n "about_role" }}{{ else }}{{ .Params.jobtitle }}{{ end }}</p>
-        <p class="team-bio">{{ if eq .File.ContentBaseName "ferran-pons" }}{{ i18n "about_bio" }}{{ else }}{{ .Plain | truncate 320 }}{{ end }}</p>
-        <div class="btn-row">
-          {{ with .Params.linkedinurl }}<a class="btn btn-ghost btn-sm" href="{{ . }}" target="_blank" rel="noopener">LinkedIn</a>{{ end }}
-          <a class="btn btn-ghost btn-sm" href="https://github.com/ferranpons" target="_blank" rel="noopener">GitHub</a>
-        </div>
+  <h2 class="ab-h reveal">{{ i18n "ab_who" }}</h2>
+  <article class="profile reveal">
+    <img class="profile-img" src="{{ "images/team/ferran-profile-pic.png" | relURL }}" alt="Ferran Pons" width="160" height="160" loading="lazy">
+    <div class="profile-body">
+      <h3>Ferran Pons</h3>
+      <p class="team-role">{{ i18n "ab_role" }}</p>
+      <p>{{ i18n "ab_bio1" }}</p>
+      <p>{{ i18n "ab_bio2" }}</p>
+      <p>{{ i18n "ab_bio3" }}</p>
+      <div class="btn-row">
+        <a class="btn btn-solid btn-sm" href="https://www.ferranpons.com" target="_blank" rel="me noopener">{{ i18n "ab_website" }}</a>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/ferranpons" target="_blank" rel="me noopener">GitHub</a>
+        <a class="btn btn-ghost btn-sm" href="https://www.linkedin.com/in/ferranpons/" target="_blank" rel="me noopener">LinkedIn</a>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/sponsors/ferranpons" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="margin-inline-end:6px;vertical-align:-2px"><path d="M12 20.5s-8-4.9-8-11A4.5 4.5 0 0 1 12 6.6 4.5 4.5 0 0 1 20 9.5c0 6.1-8 11-8 11z"/></svg>{{ i18n "sponsor_label" }}</a>
       </div>
-    </article>
-    {{ end }}
+    </div>
+  </article>
+
+  <h2 class="ab-h reveal">{{ i18n "ab_cap_t" }}</h2>
+  <div class="caps">
+    <div class="mdl-card reveal"><b>{{ i18n "ab_c1" }}</b><p dir="ltr">Kotlin Multiplatform · Android · iOS · Jetpack Compose · SwiftUI</p></div>
+    <div class="mdl-card reveal"><b>{{ i18n "ab_c2" }}</b><p dir="ltr">Kotlin/Native · Static linking · Linker debugging · iOS frameworks</p></div>
+    <div class="mdl-card reveal"><b>{{ i18n "ab_c3" }}</b><p dir="ltr">On-device LLMs · llama.cpp · whisper.cpp · stable-diffusion.cpp</p></div>
+    <div class="mdl-card reveal"><b>{{ i18n "ab_c4" }}</b><p dir="ltr">SDK design · CI/CD · Framework distribution · Production debugging</p></div>
+  </div>
+  <p class="ab-more reveal">{{ i18n "ab_more" }}: <a href="https://github.com/AdevintaSpain/Leku" target="_blank" rel="noopener">Leku</a> · <a href="https://github.com/MultiplatformKickstarter/Adoptme" target="_blank" rel="noopener">Adoptme</a> · <a href="{{ "/llamatik-code/" | relURL }}">Llamatik Code</a></p>
+
+  <div class="post-cta ab-sponsor reveal">
+    <div>
+      <h3>{{ i18n "ab_sp_t" }}</h3>
+      <p>{{ i18n "ab_sp_d" }}</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn-solid" href="https://github.com/sponsors/ferranpons" target="_blank" rel="noopener">{{ i18n "sponsor_label" }}</a>
+    </div>
   </div>
 
   <div class="post-cta ab-cta reveal">
@@ -41,4 +60,6 @@
     </div>
   </div>
 </div>
+{{ $person := dict "@context" "https://schema.org" "@type" "Person" "name" "Ferran Pons" "url" "https://www.ferranpons.com" "image" ("images/team/ferran-profile-pic.png" | absURL) "jobTitle" "Kotlin Multiplatform and AI engineer" "email" "info@llamatik.com" "sameAs" (slice "https://www.ferranpons.com" "https://github.com/ferranpons" "https://www.linkedin.com/in/ferranpons/") "knowsAbout" (slice "Kotlin Multiplatform" "Android" "iOS" "On-device LLMs" "llama.cpp") "worksFor" (dict "@type" "Organization" "name" "Llamatik" "url" ("/" | absURL)) }}
+<script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
 {{ end }}

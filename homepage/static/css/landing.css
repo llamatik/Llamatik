@@ -505,3 +505,16 @@ html:lang(ja) .grad,html:lang(zh) .grad{display:inline-block;max-width:100%}
 .mdl-tag.t-fast,.mdl-tag.t-best{color:#34d399;border-color:rgba(52,211,153,.35)}
 .mdl-tag.t-heavy,.mdl-tag.t-extra{color:#fbbf24;border-color:rgba(251,191,36,.35)}
 @media(max-width:700px){.mdl-start,.mdl-two{grid-template-columns:1fr}}
+
+/* about: profile */
+.profile{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start;padding:32px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
+.profile-img{width:160px;height:160px;border-radius:24px;object-fit:cover}
+.profile-body h3{font-size:26px;letter-spacing:-.02em;margin-bottom:2px}
+.profile-body p{color:var(--mut);margin:0 0 12px;max-width:68ch}
+.profile-body .team-role{color:var(--amber);font-weight:600;margin-bottom:14px}
+.profile-body .btn-row{margin-top:18px}
+.caps{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.ab-more{margin-top:18px;color:var(--mut);font-size:15px}
+.ab-more a{color:var(--text);border-bottom:1px dotted var(--dim);text-decoration:none}
+.ab-sponsor{margin-top:56px}
+@media(max-width:700px){.profile{grid-template-columns:1fr}.caps{grid-template-columns:1fr}}

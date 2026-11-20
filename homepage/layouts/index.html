@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ .Site.Language.LanguageCode }}" dir="{{ .Site.Language.LanguageDirection | default "ltr" }}">
 <head>
-{{ partial "lt-head.html" (dict "page" . "title" (i18n "meta_title") "desc" (i18n "meta_desc") "ogdesc" (i18n "meta_og_desc")) }}
+{{ partial "lt-head.html" (dict "page" . "title" (i18n "meta_title") "desc" (i18n "meta_desc") "ogdesc" (i18n "meta_og_desc") "blog" true) }}
 </head>
 <body class="lt" id="top">
 
@@ -454,6 +454,23 @@ agent.<span class="f">stream</span>(<span class="s">"What is 17% of 2,340?"</spa
     <p class="cmp-note reveal">{{ i18n "cmp_note" }}</p>
   </div>
 </section>
+
+<!-- BLOG -->
+{{ $posts := first 3 (where site.RegularPages "Section" "blog").ByDate.Reverse }}
+{{ if $posts }}
+<section class="sec" id="blog">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">{{ i18n "blog_eyebrow" }}</p>
+      <h2>{{ partial "t.html" "hb_title" }}</h2>
+    </div>
+    <div class="post-grid">
+      {{ range $posts }}{{ .Render "summary" }}{{ end }}
+    </div>
+    <div class="btn-row" style="justify-content:center;margin-top:28px"><a class="btn btn-ghost" href="{{ "blog/" | relLangURL }}">{{ i18n "hb_all" }}</a></div>
+  </div>
+</section>
+{{ end }}
 
 <!-- FINAL CTA -->
 <section class="sec final">
