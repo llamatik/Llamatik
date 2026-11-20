@@ -1,0 +1,44 @@
+{{ define "main" }}
+<section class="wrap blog-hero ab-hero">
+  <p class="eyebrow">{{ i18n "about_eyebrow" }}</p>
+  <h1 class="blog-title doc-title">{{ partial "t.html" "about_title" }}</h1>
+  <p class="lead">{{ i18n "about_lead" }}</p>
+</section>
+
+<div class="wrap ab">
+  <div class="trio">
+    <div class="tri reveal"><div class="tri-n">01</div><h3>{{ i18n "why1_t" }}</h3><p>{{ i18n "why1_d" }}</p></div>
+    <div class="tri reveal"><div class="tri-n">02</div><h3>{{ i18n "why2_t" }}</h3><p>{{ i18n "why2_d" }}</p></div>
+    <div class="tri reveal"><div class="tri-n">03</div><h3>{{ i18n "why3_t" }}</h3><p>{{ partial "t.html" "why3_d" }}</p></div>
+  </div>
+
+  <h2 class="ab-h reveal">{{ i18n "about_team" }}</h2>
+  <div class="team reveal">
+    {{ range .Pages.ByWeight }}
+    <article class="team-card">
+      {{ with .Params.image }}<img class="team-img" src="{{ . | relURL }}" alt="{{ $.Title }}" width="120" height="120" loading="lazy">{{ end }}
+      <div class="team-body">
+        <h3>{{ .Title }}</h3>
+        <p class="team-role">{{ if eq .Params.jobtitle "Developer" }}{{ i18n "about_role" }}{{ else }}{{ .Params.jobtitle }}{{ end }}</p>
+        <p class="team-bio">{{ if eq .File.ContentBaseName "ferran-pons" }}{{ i18n "about_bio" }}{{ else }}{{ .Plain | truncate 320 }}{{ end }}</p>
+        <div class="btn-row">
+          {{ with .Params.linkedinurl }}<a class="btn btn-ghost btn-sm" href="{{ . }}" target="_blank" rel="noopener">LinkedIn</a>{{ end }}
+          <a class="btn btn-ghost btn-sm" href="https://github.com/ferranpons" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </article>
+    {{ end }}
+  </div>
+
+  <div class="post-cta ab-cta reveal">
+    <div>
+      <h3>{{ i18n "about_join_t" }}</h3>
+      <p>{{ i18n "about_join_d" }}</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn-solid" href="https://github.com/ferranpons/Llamatik" target="_blank" rel="noopener">{{ i18n "dev_github" }}</a>
+      <a class="btn btn-ghost" href="{{ "contact/" | relLangURL }}">{{ i18n "foot_contact" }}</a>
+    </div>
+  </div>
+</div>
+{{ end }}

@@ -396,3 +396,57 @@ html:lang(ja) body,html:lang(zh) body{line-height:1.7}
 
 .lt .dl-sum{color:var(--dim)}
 .lt .dl-sum:hover{color:var(--text)}
+
+/* ---------- doc / contact / about pages ---------- */
+.doc-title{font-size:clamp(32px,5.4vw,58px);line-height:1.08}
+.doc-wrap{padding-bottom:100px}
+.ct{padding-bottom:100px;max-width:980px}
+.ct-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.ct-card{display:flex;flex-direction:column;gap:8px;padding:28px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line);transition:transform .25s,border-color .25s,background .25s}
+.ct-card:hover{transform:translateY(-4px);border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.05)}
+.ct-card h3{font-size:20px;letter-spacing:-.02em;margin-top:8px}
+.ct-card p{color:var(--mut);font-size:15px}
+.lt .ct-addr{color:#fbbf24;font:500 14.5px var(--mono);word-break:break-all}
+.ct-foot{margin-top:34px;text-align:center;color:var(--dim);font-size:14.5px}
+.ab{padding-bottom:100px}
+.ab-h{font-size:clamp(24px,3vw,32px);letter-spacing:-.03em;margin:76px 0 22px}
+.team{display:grid;gap:16px}
+.team-card{display:flex;gap:28px;align-items:center;padding:28px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
+.team-img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:2px solid rgba(245,158,11,.5);flex:none}
+.team-body{min-width:0}
+.team-body h3{font-size:24px;letter-spacing:-.02em}
+.team-role{color:#fbbf24;font-weight:600;font-size:14px;margin-top:2px}
+.team-bio{color:var(--mut);margin-top:12px}
+.team-body .btn-row{margin-top:18px}
+.ab-cta{margin-top:56px}
+@media (max-width:640px){.ct-grid{grid-template-columns:1fr}.team-card{flex-direction:column;align-items:flex-start}}
+[dir=rtl] .ct-addr{text-align:right}
+
+/* ---------- FAQ + 404 ---------- */
+.faq{max-width:820px;padding-bottom:100px}
+.faq-list{display:grid;gap:12px}
+.faq-item{border:1px solid var(--line);border-radius:18px;background:var(--panel);transition:border-color .25s,background .25s}
+.faq-item[open]{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.04)}
+.faq-item summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 24px;font-weight:650;font-size:17px;letter-spacing:-.01em}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary:hover{color:#fff}
+.faq-chev{flex:none;width:11px;height:11px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(45deg) translateY(-2px);transition:transform .25s}
+.faq-item[open] .faq-chev{transform:rotate(-135deg) translate(-2px,-2px);border-color:#fbbf24}
+.faq-a{padding:0 24px 22px;color:var(--mut);line-height:1.7;font-size:16px}
+.faq-a p+p{margin-top:.8em}
+.faq-a a{color:#fbbf24;text-decoration:underline;text-underline-offset:3px}
+.faq-a code{font-size:.88em}
+.faq-a strong{color:var(--text)}
+.faq-more{margin-top:48px}
+.nf{text-align:center;padding:90px 0 130px;position:relative}
+.nf-code{font-size:clamp(110px,22vw,230px);font-weight:800;letter-spacing:-.06em;line-height:.9;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.9;margin-bottom:6px}
+.nf .lead{max-width:520px;margin-inline:auto}
+html:lang(hi) .faq-item summary,html:lang(fa) .faq-item summary,html:lang(ja) .faq-item summary,html:lang(zh) .faq-item summary{line-height:1.5}
+[dir=rtl] .faq-a{text-align:right}
+
+/* balanced headline wrapping (avoids one-word / one-character orphans, esp. CJK) */
+.blog-title,.doc-title,.hero-title,.lt h2{text-wrap:balance}
+.nf .blog-title{max-width:16em;margin-inline:auto}
+.nf .eyebrow{margin-top:18px}
+/* keep a highlighted CJK phrase together instead of splitting it across lines */
+html:lang(ja) .grad,html:lang(zh) .grad{display:inline-block;max-width:100%}

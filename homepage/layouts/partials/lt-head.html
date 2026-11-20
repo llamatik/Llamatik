@@ -33,6 +33,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500{{ with $fam }}&family={{ . | safeURL }}{{ end }}&display=swap" rel="stylesheet">
 {{- $fx := dict "zh" "'Noto Sans SC'" "ja" "'Noto Sans JP'" "hi" "'Noto Sans Devanagari'" "fa" "Vazirmatn" -}}
 {{ with index $fx $lang }}<style>:root{--fx:{{ . | safeCSS }}}</style>{{ end }}
-<link rel="stylesheet" href="{{ "css/landing.css" | relURL }}?v=7">
+<link rel="stylesheet" href="{{ "css/landing.css" | relURL }}?v=11">
 {{ if .blog }}<link rel="stylesheet" href="{{ "css/blog.css" | relURL }}?v=3">{{ end }}
 <script>window.LT={{ partial "lt-js-i18n.html" . | safeJS }};</script>

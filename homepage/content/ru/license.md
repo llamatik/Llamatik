@@ -1,4 +1,5 @@
 ---
+type: "doc"
 title: 'Software License Agreement'
 date: 2023-10-25T17:01:34+07:00
 ---
