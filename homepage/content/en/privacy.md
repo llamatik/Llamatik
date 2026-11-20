@@ -72,6 +72,7 @@ Separately from Llamatik, Google Play and the App Store collect their own inform
 - **Hosting.** The site is served by GitHub Pages (GitHub, Inc., a Microsoft company). When you load a page, GitHub receives your IP address and standard request data and keeps server logs under its own policy ([GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)). We do not receive these logs.
 - **Fonts.** Fonts are served from our own site, so no font provider is contacted.
 - **GitHub statistics.** The star count and download links for the latest release are fetched when the site is built, not from your browser, so visiting the site does not contact the GitHub API.
+- **Quotes.** The home page quotes a few public Google Play reviews, with the reviewer's first name only. If you wrote one and want it removed, email us.
 - **Links.** Download buttons and other links lead to Google Play, the App Store, GitHub and other sites, which have their own privacy policies.
 - **Email.** If you write to us, we use your email address and message only to reply, and keep them for as long as needed to handle your request.
 

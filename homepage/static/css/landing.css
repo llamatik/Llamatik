@@ -473,3 +473,13 @@ html:lang(ja) .grad,html:lang(zh) .grad{display:inline-block;max-width:100%}
 .cmp-note{max-width:760px;margin:22px auto 0;text-align:center;font-size:13px;color:var(--dim)}
 .cmp-wrap{scrollbar-width:thin;scrollbar-color:#2e2e3d transparent}
 @media(max-width:640px){.cmp{font-size:14px;min-width:700px}.cmp th,.cmp td{padding:12px 10px}.cmp tbody th{min-width:150px}}
+
+/* user quotes */
+.quotes{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:980px;margin:0 auto}
+.quote{margin:0;display:flex;flex-direction:column;gap:14px;padding:28px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
+.quote .stars{color:#fbbf24;letter-spacing:.12em;font-size:15px}
+.quote blockquote{margin:0}
+.quote blockquote p{margin:0;font-size:18px;line-height:1.5;color:var(--text);font-weight:500}
+.quote figcaption{margin-top:auto;font-size:13px;color:var(--dim)}
+.quote figcaption b{color:var(--mut);font-weight:600}
+@media(max-width:700px){.quotes{grid-template-columns:1fr}}
