@@ -373,3 +373,6 @@ mdl_a2: "No. After the download, chat, vision and voice run offline. You only ne
 mdl_q3: "Which model should I start with?"
 mdl_a3: "On a phone, start with Gemma 3 270M or Gemma 3 1B. On a laptop, import a larger model from Hugging Face once you know what you want to use it for."
 foot_models: "Models"
+sponsor_label: "Sponsor"
+contact_sponsor_t: "Support the project"
+contact_sponsor_d: "Sponsors fund development time and test devices. Sponsorship is handled by GitHub."

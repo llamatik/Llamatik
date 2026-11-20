@@ -373,3 +373,6 @@ mdl_a2: "Nein. Nach dem Download laufen Chat, Bildverständnis und Sprache offli
 mdl_q3: "Mit welchem Modell soll ich anfangen?"
 mdl_a3: "Auf dem Handy starte mit Gemma 3 270M oder Gemma 3 1B. Auf dem Laptop importiere ein größeres Modell von Hugging Face, wenn du weißt, wofür du es brauchst."
 foot_models: "Modelle"
+sponsor_label: "Unterstützen"
+contact_sponsor_t: "Das Projekt unterstützen"
+contact_sponsor_d: "Sponsoren finanzieren Entwicklungszeit und Testgeräte. Die Unterstützung läuft über GitHub."

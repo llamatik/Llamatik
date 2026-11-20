@@ -373,3 +373,6 @@ mdl_a2: "不需要。下载完成后,聊天、视觉和语音都可离线运行�
 mdl_q3: "我应该从哪个模型开始?"
 mdl_a3: "在手机上,先用 Gemma 3 270M 或 Gemma 3 1B。在电脑上,等你明确用途后,再从 Hugging Face 导入更大的模型。"
 foot_models: "模型"
+sponsor_label: "赞助"
+contact_sponsor_t: "支持这个项目"
+contact_sponsor_d: "赞助用于支付开发时间和测试设备。赞助由 GitHub 处理。"

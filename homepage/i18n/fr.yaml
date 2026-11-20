@@ -371,3 +371,6 @@ mdl_a2: "Non. Une fois téléchargé, le chat, la vision et la voix fonctionnent
 mdl_q3: "Par quel modèle commencer ?"
 mdl_a3: "Sur téléphone, commencez par Gemma 3 270M ou Gemma 3 1B. Sur ordinateur, importez un modèle plus gros depuis Hugging Face quand vous savez ce que vous voulez en faire."
 foot_models: "Modèles"
+sponsor_label: "Parrainer"
+contact_sponsor_t: "Soutenir le projet"
+contact_sponsor_d: "Les sponsors financent le temps de développement et les appareils de test. Le parrainage est géré par GitHub."

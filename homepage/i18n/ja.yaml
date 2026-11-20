@@ -373,3 +373,6 @@ mdl_a2: "いいえ。ダウンロード後は、チャット、ビジョン、�
 mdl_q3: "どのモデルから始めればいい?"
 mdl_a3: "スマホなら Gemma 3 270M か Gemma 3 1B から。パソコンなら、用途が決まってから Hugging Face でより大きなモデルをインポートしてください。"
 foot_models: "モデル"
+sponsor_label: "スポンサー"
+contact_sponsor_t: "プロジェクトを支援"
+contact_sponsor_d: "スポンサーの支援は開発時間とテスト用デバイスに充てられます。スポンサーシップは GitHub が処理します。"

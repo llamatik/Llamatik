@@ -371,3 +371,6 @@ mdl_a2: "No. Dopo il download, chat, visione e voce funzionano offline. Serve la
 mdl_q3: "Con quale modello inizio?"
 mdl_a3: "Su telefono, inizia con Gemma 3 270M o Gemma 3 1B. Su computer, importa un modello più grande da Hugging Face quando sai a cosa ti serve."
 foot_models: "Modelli"
+sponsor_label: "Sostieni"
+contact_sponsor_t: "Sostieni il progetto"
+contact_sponsor_d: "Gli sponsor finanziano il tempo di sviluppo e i dispositivi di test. La sponsorizzazione è gestita da GitHub."
