@@ -85,6 +85,9 @@ if(WIN32)
     # (JBR / jpackage runtime) is exactly that case. Apply it to EVERY target (llama_jni, whisper,
     # llama, ggml, mtmd), not only ggml-base. Must come before the add_subdirectory() calls.
     add_compile_definitions(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+    # MSVC only exposes M_PI & co. with this define (llama.cpp mtmd-audio.cpp / chatterbox-gen.cpp
+    # rely on it).
+    add_compile_definitions(_USE_MATH_DEFINES)
 endif()
 
 add_subdirectory("${LLAMA_CPP_DIR}" "${CMAKE_BINARY_DIR}/llama-wrapper-build")
