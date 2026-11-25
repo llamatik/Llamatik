@@ -756,7 +756,6 @@ char *llama_generate(const char *prompt) {
                     std::strcmp(piece, "<turn|>") == 0 || std::strcmp(piece, "<|turn>") == 0) break;
         }
 
-        llama_sampler_accept(sampler, tok);
         out.push_back(tok);
         session_append_generated_token(tok);
 
@@ -840,7 +839,6 @@ char *llama_generate_json_schema(const char *prompt, const char *json_schema) {
         if (g_cancel_requested.load(std::memory_order_relaxed)) break;
         llama_token tok = llama_sampler_sample(sampler, gen_ctx, -1);
         if (tok < 0 || llama_vocab_is_eog(v, tok)) break;
-        llama_sampler_accept(sampler, tok);
         out.push_back(tok);
         session_append_generated_token(tok);
         if (cur_pos >= n_ctx) break;
@@ -991,7 +989,6 @@ void llama_generate_stream(const char *prompt,
 
         llama_token tok = llama_sampler_sample(sampler, gen_ctx, -1);
         if (tok < 0 || llama_vocab_is_eog(v, tok) || tok == llama_vocab_eot(v)) break;
-        llama_sampler_accept(sampler, tok);
 
         if (!emit_tok(tok)) break;
         ++tokens_generated;
@@ -1054,7 +1051,6 @@ void llama_generate_stream(const char *prompt,
         const llama_token first_verified = llama_sampler_sample(sampler, gen_ctx, -1);
         if (first_verified != drafts[0]) {
             if (llama_vocab_is_eog(v, first_verified) || first_verified == llama_vocab_eot(v)) goto stream_done;
-            llama_sampler_accept(sampler, first_verified);
             if (!emit_tok(first_verified)) goto stream_done;
             ++tokens_generated;
             if (!decode_trunk_token(first_verified, verify_start)) break;
@@ -1074,7 +1070,6 @@ void llama_generate_stream(const char *prompt,
             if (vrc != 0) { error_flag = true; break; }
         }
 
-        llama_sampler_accept(sampler, first_verified);
         if (!emit_tok(first_verified)) goto stream_done;
         ++tokens_generated;
         cur_pos = verify_start + 1;
@@ -1089,14 +1084,12 @@ void llama_generate_stream(const char *prompt,
                     if (llama_vocab_is_eog(v, verified) || verified == llama_vocab_eot(v)) goto stream_done;
                     const int mismatch_pos = verify_start + i;
                     if (!llama_memory_seq_rm(llama_get_memory(gen_ctx), 0, mismatch_pos, -1)) { error_flag = true; break; }
-                    llama_sampler_accept(sampler, verified);
                     if (!emit_tok(verified)) goto stream_done;
                     ++tokens_generated;
                     if (!decode_trunk_token(verified, mismatch_pos)) { error_flag = true; break; }
                     cur_pos = mismatch_pos + 1; gen_n_past = cur_pos;
                     mismatch = true; break;
                 }
-                llama_sampler_accept(sampler, verified);
                 if (!emit_tok(verified)) goto stream_done;
                 ++tokens_generated; cur_pos = verify_start + i + 1; ++n_accepted;
             }
@@ -1108,7 +1101,6 @@ void llama_generate_stream(const char *prompt,
             if (!mismatch && n_accepted == nd && tokens_generated < max_new_tokens) {
                 const llama_token bonus = llama_sampler_sample(sampler, gen_ctx, nd - 1);
                 if (!llama_vocab_is_eog(v, bonus) && bonus != llama_vocab_eot(v)) {
-                    llama_sampler_accept(sampler, bonus);
                     if (emit_tok(bonus)) {
                         ++tokens_generated;
                         if (decode_trunk_token(bonus, cur_pos)) { cur_pos++; gen_n_past = cur_pos; }
@@ -1139,7 +1131,7 @@ void llama_generate_chat_stream(const char *system_prompt,
     llama_generate_stream(prompt2.c_str(), on_delta, on_done, on_error, user);
 }
 
-void llama_generate_json_schema_stream(const char *prompt,
+static void llama_generate_json_schema_stream_impl(const char *prompt,
         const char *json_schema,
         llm_on_delta on_delta,
         llm_on_done on_done,
@@ -1195,7 +1187,6 @@ void llama_generate_json_schema_stream(const char *prompt,
         if (g_cancel_requested.load(std::memory_order_relaxed)) break;
         llama_token tok = llama_sampler_sample(sampler, gen_ctx, -1);
         if (tok < 0 || llama_vocab_is_eog(v, tok)) break;
-        llama_sampler_accept(sampler, tok);
         session_append_generated_token(tok);
         if (cur_pos >= n_ctx) break;
         llama_batch step = llama_batch_init(1, 0, 1);
@@ -1231,6 +1222,21 @@ void llama_generate_json_schema_stream(const char *prompt,
 
     llama_sampler_free(sampler);
     if (on_done) on_done(user);
+}
+
+void llama_generate_json_schema_stream(const char *prompt,
+        const char *json_schema,
+        llm_on_delta on_delta,
+        llm_on_done on_done,
+        llm_on_error on_error,
+        void *user) {
+    try {
+        llama_generate_json_schema_stream_impl(prompt, json_schema, on_delta, on_done, on_error, user);
+    } catch (const std::exception &e) {
+        if (on_error) on_error(e.what(), user);
+    } catch (...) {
+        if (on_error) on_error("unknown native error", user);
+    }
 }
 
 void llama_generate_chat_json_schema_stream(const char *system_prompt,
@@ -1350,7 +1356,6 @@ char *llama_generate_continue(const char *prompt) {
                     std::strcmp(sp, "<turn|>") == 0 || std::strcmp(sp, "<|turn>") == 0) break;
         }
 
-        llama_sampler_accept(sampler, tok);
         out.push_back(tok);
         session_append_generated_token(tok);
         if (cur_pos >= n_ctx) break;
@@ -1503,7 +1508,6 @@ void llama_generate_continue_stream(const char *prompt,
 
         llama_token tok = llama_sampler_sample(sampler, gen_ctx, -1);
         if (tok < 0 || llama_vocab_is_eog(v, tok) || tok == llama_vocab_eot(v)) break;
-        llama_sampler_accept(sampler, tok);
 
         if (!emit_tok(tok)) break;
         ++tokens_generated;
