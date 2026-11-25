@@ -430,6 +430,16 @@ static std::string sanitize_generation(std::string s) {
     return trim_str(std::move(s));
 }
 
+// A tag a model emits as a chat-template control token (not content): <|im_start|>, <start_of_turn>, <s>, ...
+static bool is_control_token_tag(const std::string &tag) {
+    if (tag.size() >= 4 && tag.compare(0, 2, "<|") == 0 && tag.compare(tag.size() - 2, 2, "|>") == 0) return true;
+    const std::string t = to_lower_str(tag);
+    for (const char *known : {"<s>", "</s>", "<bos>", "<eos>", "<pad>", "<unk>", "<start_of_turn>", "<end_of_turn>",
+                              "<turn|>", "<|turn>", "<start_of_image>", "<end_of_image>"})
+        if (t == known) return true;
+    return false;
+}
+
 static size_t find_stream_start(const std::string &s) {
     size_t i = 0;
     auto is_space   = [](char c){ return c==' '||c=='\t'||c=='\r'||c=='\n'; };
@@ -453,6 +463,9 @@ static size_t find_stream_start(const std::string &s) {
         if (s[i] == '<') {
             size_t gt = s.find('>', i + 1), nl = s.find('\n', i);
             if (gt == std::string::npos || (nl != std::string::npos && nl < gt)) return std::string::npos;
+            // Only skip leaked control tokens. Any other tag is real output: a model may legitimately start its
+            // reply with markup such as <tool_call ...> or <b>, and dropping it corrupts the answer.
+            if (!is_control_token_tag(s.substr(i, gt - i + 1))) return i;
             i = gt + 1;
             while (i < s.size() && is_space(s[i])) ++i;
             continue;
